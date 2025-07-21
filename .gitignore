@@ -23,4 +23,4 @@ Homestead.json
 Homestead.yaml
 Thumbs.db
 # Devre dışı bırakılan asset dosyaları
-/public/assets/** linguist-detectable=false
+CRM/public/assets/** linguist-detectable=false
