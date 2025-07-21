@@ -11,4 +11,4 @@ CHANGELOG.md export-ignore
 .styleci.yml export-ignore
 
 # Devre dışı bırakılan asset dosyaları
-CRM/public/assets/** linguist-detectable=false
+public/assets/** linguist-detectable=false
