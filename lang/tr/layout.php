@@ -4,11 +4,23 @@ return [
     'search' => 'Ara ...',
     'web_apps' => 'Web Uygulamaları',
     'view_all_apps' => 'Tüm Uygulamaları Gör',
+    'welcome' => 'Hoş Geldiniz',
+    'profile' => 'Profil',
+    'messages' => 'Mesajlar',
+    'taskboard' => 'Görev Panosu',
+    'help' => 'Yardım',
+    'settings' => 'Ayarlar',
+    'logout' => 'Çıkış Yap',
 
 
 
 
 
+    'apps' => 'Uygulamalar',
+    'contacts' => 'İletişimler',
+    'companies' => 'Şirketler',
+    'deals' => 'Sözleşmeler',
+    'leads' => 'Potansiyel Müşteriler',
 
 
 
@@ -70,4 +82,13 @@ return [
     'two' => 'İki',
     'three' => 'Üç',
     'reset' => 'Sıfırla',
+
+
+
+
+
+
+
+
+    'copyright' => 'Barış Tok Tüm Hakları Saklıdır.',
 ];

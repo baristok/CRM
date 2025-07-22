@@ -4,7 +4,20 @@ return [
     'search' => 'Search ...',
     'web_apps' => 'Web Apps',
     'view_all_apps' => 'View All Apps',
+    'welcome' => 'Welcome',
+    'profile' => 'Profile',
+    'messages' => 'Messages',
+    'taskboard' => 'Taskboard',
+    'help' => 'Help',
+    'settings' => 'Settings',
+    'logout' => 'Logout',
 
+
+    'apps' => 'Apps',
+    'contacts' => 'Contacts',
+    'companies' => 'Companies',
+    'deals' => 'Deals',
+    'leads' => 'Leads',
 
 
 
@@ -68,4 +81,15 @@ return [
     'two' => 'Two',
     'three' => 'Three',
     'reset' => 'Reset',
+
+
+
+
+
+
+
+
+
+
+    'copyright' => 'Barış Tok All Rights Reserved.',
 ];
