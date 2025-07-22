@@ -171,19 +171,19 @@
                 <!-- language -->
                 <div class="dropdown ms-1 topbar-head-dropdown header-item">
                     <button type="button" class="btn btn-icon btn-topbar btn-ghost-secondary rounded-circle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <img id="header-lang-img" src="assets/images/flags/us.svg" alt="Header Language" height="20" class="rounded">
+                        <img id="header-lang-img" src="{{ asset('assets/images/flags/' . (session('locale') == 'tr' ? 'tr' : 'us') . '.svg') }}" alt="Header Language" height="20" class="rounded">
                     </button>
                     <div class="dropdown-menu dropdown-menu-end">
 
                         <!-- item-->
-                        <a href="javascript:void(0);" class="dropdown-item notify-item language py-2" data-lang="en" title="English">
-                            <img src="assets/images/flags/us.svg" alt="user-image" class="me-2 rounded" height="18">
+                        <a href="{{ route('change.language', 'en') }}" class="dropdown-item notify-item language py-2" data-lang="en" title="English">
+                            <img src="{{ asset('assets/images/flags/us.svg') }}" alt="user-image" class="me-2 rounded" height="18">
                             <span class="align-middle">English</span>
                         </a>
 
                         <!-- item-->
-                        <a href="javascript:void(0);" class="dropdown-item notify-item language" data-lang="tr" title="Türkçe">
-                            <img src="assets/images/flags/tr.svg" alt="user-image" class="me-2 rounded" height="18">
+                        <a href="{{ route('change.language', 'tr') }}" class="dropdown-item notify-item language" data-lang="tr" title="Türkçe">
+                            <img src="{{ asset('assets/images/flags/tr.svg') }}" alt="user-image" class="me-2 rounded" height="18">
                             <span class="align-middle">Türkçe</span>
                         </a>
                     </div>
@@ -199,10 +199,10 @@
                         <div class="p-3 border-top-0 border-start-0 border-end-0 border-dashed border">
                             <div class="row align-items-center">
                                 <div class="col">
-                                    <h6 class="m-0 fw-semibold fs-15"> Web Apps </h6>
+                                    <h6 class="m-0 fw-semibold fs-15"> {{ __('layout.web_apps') }} </h6>
                                 </div>
                                 <div class="col-auto">
-                                    <a href="#!" class="btn btn-sm btn-soft-info"> View All Apps
+                                    <a href="#!" class="btn btn-sm btn-soft-info"> {{ __('layout.view_all_apps') }}
                                         <i class="ri-arrow-right-s-line align-middle"></i></a>
                                 </div>
                             </div>
