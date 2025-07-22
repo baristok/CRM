@@ -1,5 +1,15 @@
-<x-contacts::layouts.master>
-    <h1>Hello World</h1>
+@extends('layouts.index')
 
-    <p>Module: {!! config('contacts.name') !!}</p>
-</x-contacts::layouts.master>
+@section('title', 'Contacts')
+
+@section('css')
+
+@endsection
+
+@section('content')
+    
+@endsection
+
+@section('js')
+
+@endsection

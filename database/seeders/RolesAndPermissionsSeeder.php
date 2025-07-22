@@ -14,16 +14,21 @@ class RolesAndPermissionsSeeder extends Seeder
      */
     public function run(): void
     {
-        //customer izinleri
-        Permission::create(['name' => 'create-customer']);
-        Permission::create(['name' => 'edit-customer']);
-        Permission::create(['name' => 'delete-customer']);
+        //contact izinleri
+        Permission::create(['name' => 'view-contact']);
+        Permission::create(['name' => 'create-contact']);
+        Permission::create(['name' => 'edit-contact']);
+        Permission::create(['name' => 'delete-contact']);
 
 
         //admin rolü
         $adminRole = Role::create(['name' => 'admin']);
         $adminRole->givePermissionTo(Permission::all());
 
+
+        //user rolü
+        $userRole = Role::create(['name' => 'user']);
+        $userRole->givePermissionTo(['view-contact']);
         
     }
 }

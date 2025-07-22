@@ -659,7 +659,7 @@
                             <div class="collapse menu-dropdown" id="sidebarApps">
                                 <ul class="nav nav-sm flex-column">
                                     <li class="nav-item">
-                                        <a href="apps-crm-contacts.html" class="nav-link" data-key="t-contacts">{{__('layout.contacts')}}</a>
+                                        <a href="{{route('contacts.index')}}" class="nav-link" data-key="t-contacts">{{__('layout.contacts')}}</a>
                                     </li>
                                     <li class="nav-item">
                                         <a href="apps-crm-companies.html" class="nav-link" data-key="t-companies">{{__('layout.companies')}}</a>
