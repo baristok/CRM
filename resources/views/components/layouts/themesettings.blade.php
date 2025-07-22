@@ -1,14 +1,14 @@
 <div class="offcanvas offcanvas-end border-0" tabindex="-1" id="theme-settings-offcanvas">
     <div class="d-flex align-items-center bg-primary bg-gradient p-3 offcanvas-header">
-        <h5 class="m-0 me-2 text-white">Theme Customizer</h5>
+        <h5 class="m-0 me-2 text-white">{{ __('layout.theme_customizer') }}</h5>
 
         <button type="button" class="btn-close btn-close-white ms-auto" id="customizerclose-btn" data-bs-dismiss="offcanvas" aria-label="Close"></button>
     </div>
     <div class="offcanvas-body p-0">
         <div data-simplebar class="h-100">
             <div class="p-4">
-                <h6 class="mb-0 fw-semibold text-uppercase">Layout</h6>
-                <p class="text-muted">Choose your layout</p>
+                <h6 class="mb-0 fw-semibold text-uppercase">{{ __('layout.layout') }}</h6>
+                <p class="text-muted">{{ __('layout.choose_your_layout') }}</p>
 
                 <div class="row gy-3">
                     <div class="col-4">
@@ -33,7 +33,7 @@
                                 </span>
                             </label>
                         </div>
-                        <h5 class="fs-13 text-center mt-2">Vertical</h5>
+                        <h5 class="fs-13 text-center mt-2">{{ __('layout.vertical') }}</h5>
                     </div>
                     <div class="col-4">
                         <div class="form-check card-radio">
@@ -50,7 +50,7 @@
                                 </span>
                             </label>
                         </div>
-                        <h5 class="fs-13 text-center mt-2">Horizontal</h5>
+                        <h5 class="fs-13 text-center mt-2">{{ __('layout.horizontal') }}</h5>
                     </div>
                     <div class="col-4">
                         <div class="form-check card-radio">
@@ -82,7 +82,7 @@
                                 </span>
                             </label>
                         </div>
-                        <h5 class="fs-13 text-center mt-2">Two Column</h5>
+                        <h5 class="fs-13 text-center mt-2">{{ __('layout.two_column') }}</h5>
                     </div>
                     <!-- end col -->
 
@@ -108,13 +108,13 @@
                                 </span>
                             </label>
                         </div>
-                        <h5 class="fs-13 text-center mt-2">Semi Box</h5>
+                        <h5 class="fs-13 text-center mt-2">{{ __('layout.semi_boxed') }}</h5>
                     </div>
                     <!-- end col -->
                 </div>
 
-                <h6 class="mt-4 mb-0 fw-semibold text-uppercase">Color Scheme</h6>
-                <p class="text-muted">Choose Light or Dark Scheme.</p>
+                <h6 class="mt-4 mb-0 fw-semibold text-uppercase">{{ __('layout.color_scheme') }}</h6>
+                <p class="text-muted">{{ __('layout.choose_light_or_dark_scheme') }}</p>
 
                 <div class="colorscheme-cardradio">
                     <div class="row">
@@ -140,7 +140,7 @@
                                     </span>
                                 </label>
                             </div>
-                            <h5 class="fs-13 text-center mt-2">Light</h5>
+                            <h5 class="fs-13 text-center mt-2">{{ __('layout.light') }}</h5>
                         </div>
 
                         <div class="col-4">
@@ -165,14 +165,14 @@
                                     </span>
                                 </label>
                             </div>
-                            <h5 class="fs-13 text-center mt-2">Dark</h5>
+                            <h5 class="fs-13 text-center mt-2">{{ __('layout.dark') }}</h5>
                         </div>
                     </div>
                 </div>
 
                 <div id="sidebar-visibility">
-                    <h6 class="mt-4 mb-0 fw-semibold text-uppercase">Sidebar Visibility</h6>
-                    <p class="text-muted">Choose show or Hidden sidebar.</p>
+                    <h6 class="mt-4 mb-0 fw-semibold text-uppercase">{{ __('layout.sidebar_visibility') }}</h6>
+                    <p class="text-muted">{{ __('layout.choose_show_or_hidden_sidebar') }}</p>
             
                     <div class="row">
                         <div class="col-4">
@@ -197,7 +197,7 @@
                                     </span>
                                 </label>
                             </div>
-                            <h5 class="fs-13 text-center mt-2">Show</h5>
+                            <h5 class="fs-13 text-center mt-2">{{ __('layout.show') }}</h5>
                         </div>
                         <div class="col-4">
                             <div class="form-check card-radio">
@@ -213,14 +213,14 @@
                                     </span>
                                 </label>
                             </div>
-                            <h5 class="fs-13 text-center mt-2">Hidden</h5>
+                            <h5 class="fs-13 text-center mt-2">{{ __('layout.hidden') }}</h5>
                         </div>
                     </div>
                 </div>
 
                 <div id="layout-width">
-                    <h6 class="mt-4 mb-0 fw-semibold text-uppercase">Layout Width</h6>
-                    <p class="text-muted">Choose Fluid or Boxed layout.</p>
+                    <h6 class="mt-4 mb-0 fw-semibold text-uppercase">{{ __('layout.layout_width') }}</h6>
+                    <p class="text-muted">{{ __('layout.choose_fluid_or_boxed_layout') }}</p>
 
                     <div class="row">
                         <div class="col-4">
@@ -245,7 +245,7 @@
                                     </span>
                                 </label>
                             </div>
-                            <h5 class="fs-13 text-center mt-2">Fluid</h5>
+                            <h5 class="fs-13 text-center mt-2">{{ __('layout.fluid') }}</h5>
                         </div>
                         <div class="col-4">
                             <div class="form-check card-radio">
@@ -269,25 +269,25 @@
                                     </span>
                                 </label>
                             </div>
-                            <h5 class="fs-13 text-center mt-2">Boxed</h5>
+                            <h5 class="fs-13 text-center mt-2">{{ __('layout.boxed') }}</h5>
                         </div>
                     </div>
                 </div>
 
                 <div id="layout-position">
-                    <h6 class="mt-4 mb-0 fw-semibold text-uppercase">Layout Position</h6>
-                    <p class="text-muted">Choose Fixed or Scrollable Layout Position.</p>
+                    <h6 class="mt-4 mb-0 fw-semibold text-uppercase">{{ __('layout.layout_position') }}</h6>
+                    <p class="text-muted">{{ __('layout.choose_fixed_or_scrollable_layout_position') }}</p>
 
                     <div class="btn-group radio" role="group">
                         <input type="radio" class="btn-check" name="data-layout-position" id="layout-position-fixed" value="fixed">
-                        <label class="btn btn-light w-sm" for="layout-position-fixed">Fixed</label>
+                        <label class="btn btn-light w-sm" for="layout-position-fixed">{{ __('layout.fixed') }}</label>
 
                         <input type="radio" class="btn-check" name="data-layout-position" id="layout-position-scrollable" value="scrollable">
-                        <label class="btn btn-light w-sm ms-0" for="layout-position-scrollable">Scrollable</label>
+                        <label class="btn btn-light w-sm ms-0" for="layout-position-scrollable">{{ __('layout.scrollable') }}</label>
                     </div>
                 </div>
-                <h6 class="mt-4 mb-0 fw-semibold text-uppercase">Topbar Color</h6>
-                <p class="text-muted">Choose Light or Dark Topbar Color.</p>
+                <h6 class="mt-4 mb-0 fw-semibold text-uppercase">{{ __('layout.topbar_color') }}</h6>
+                <p class="text-muted">{{ __('layout.choose_light_or_dark_topbar_color') }}</p>
 
                 <div class="row">
                     <div class="col-4">
@@ -312,7 +312,7 @@
                                 </span>
                             </label>
                         </div>
-                        <h5 class="fs-13 text-center mt-2">Light</h5>
+                        <h5 class="fs-13 text-center mt-2">{{ __('layout.light') }}</h5>
                     </div>
                     <div class="col-4">
                         <div class="form-check card-radio">
@@ -336,13 +336,13 @@
                                 </span>
                             </label>
                         </div>
-                        <h5 class="fs-13 text-center mt-2">Dark</h5>
+                        <h5 class="fs-13 text-center mt-2">{{ __('layout.dark') }}</h5>
                     </div>
                 </div>
 
                 <div id="sidebar-size">
-                    <h6 class="mt-4 mb-0 fw-semibold text-uppercase">Sidebar Size</h6>
-                    <p class="text-muted">Choose a size of Sidebar.</p>
+                    <h6 class="mt-4 mb-0 fw-semibold text-uppercase">{{ __('layout.sidebar_size') }}</h6>
+                    <p class="text-muted">{{ __('layout.choose_a_size_of_sidebar') }}</p>
 
                     <div class="row">
                         <div class="col-4">
@@ -367,7 +367,7 @@
                                     </span>
                                 </label>
                             </div>
-                            <h5 class="fs-13 text-center mt-2">Default</h5>
+                            <h5 class="fs-13 text-center mt-2">{{ __('layout.default') }}</h5>
                         </div>
 
                         <div class="col-4">
@@ -392,7 +392,7 @@
                                     </span>
                                 </label>
                             </div>
-                            <h5 class="fs-13 text-center mt-2">Compact</h5>
+                            <h5 class="fs-13 text-center mt-2">{{ __('layout.compact') }}</h5>
                         </div>
 
                         <div class="col-4">
@@ -417,7 +417,7 @@
                                     </span>
                                 </label>
                             </div>
-                            <h5 class="fs-13 text-center mt-2">Small (Icon View)</h5>
+                            <h5 class="fs-13 text-center mt-2">{{ __('layout.small_icon_view') }}</h5>
                         </div>
 
                         <div class="col-4">
@@ -442,14 +442,14 @@
                                     </span>
                                 </label>
                             </div>
-                            <h5 class="fs-13 text-center mt-2">Small Hover View</h5>
+                            <h5 class="fs-13 text-center mt-2">{{ __('layout.small_hover_view') }}</h5>
                         </div>
                     </div>
                 </div>
 
                 <div id="sidebar-view">
-                    <h6 class="mt-4 mb-0 fw-semibold text-uppercase">Sidebar View</h6>
-                    <p class="text-muted">Choose Default or Detached Sidebar view.</p>
+                    <h6 class="mt-4 mb-0 fw-semibold text-uppercase">{{ __('layout.sidebar_view') }}</h6>
+                    <p class="text-muted">{{ __('layout.choose_default_or_detached_sidebar_view') }}</p>
 
                     <div class="row">
                         <div class="col-4">
@@ -474,7 +474,7 @@
                                     </span>
                                 </label>
                             </div>
-                            <h5 class="fs-13 text-center mt-2">Default</h5>
+                            <h5 class="fs-13 text-center mt-2">{{ __('layout.default') }}</h5>
                         </div>
                         <div class="col-4">
                             <div class="form-check sidebar-setting card-radio">
@@ -499,13 +499,13 @@
                                     </span>
                                 </label>
                             </div>
-                            <h5 class="fs-13 text-center mt-2">Detached</h5>
+                            <h5 class="fs-13 text-center mt-2">{{ __('layout.detached') }}</h5>
                         </div>
                     </div>
                 </div>
                 <div id="sidebar-color">
-                    <h6 class="mt-4 mb-0 fw-semibold text-uppercase">Sidebar Color</h6>
-                    <p class="text-muted">Choose a color of Sidebar.</p>
+                    <h6 class="mt-4 mb-0 fw-semibold text-uppercase">{{ __('layout.sidebar_color') }}</h6>
+                    <p class="text-muted">{{ __('layout.choose_a_color_of_sidebar') }}</p>
 
                     <div class="row">
                         <div class="col-4">
@@ -530,7 +530,7 @@
                                     </span>
                                 </label>
                             </div>
-                            <h5 class="fs-13 text-center mt-2">Light</h5>
+                            <h5 class="fs-13 text-center mt-2">{{ __('layout.light') }}</h5>
                         </div>
                         <div class="col-4">
                             <div class="form-check sidebar-setting card-radio" data-bs-toggle="collapse" data-bs-target="#collapseBgGradient.show">
@@ -554,7 +554,7 @@
                                     </span>
                                 </label>
                             </div>
-                            <h5 class="fs-13 text-center mt-2">Dark</h5>
+                            <h5 class="fs-13 text-center mt-2">{{ __('layout.dark') }}</h5>
                         </div>
                     </div>
                     <!-- end row -->
@@ -591,8 +591,8 @@
                 </div>
 
                 <div id="preloader-menu">
-                    <h6 class="mt-4 mb-0 fw-semibold text-uppercase">Preloader</h6>
-                    <p class="text-muted">Choose a preloader.</p>
+                    <h6 class="mt-4 mb-0 fw-semibold text-uppercase">{{ __('layout.preloader') }}</h6>
+                    <p class="text-muted">{{ __('layout.choose_a_preloader') }}</p>
                 
                     <div class="row">
                         <div class="col-4">
@@ -618,13 +618,13 @@
                                     <!-- <div id="preloader"> -->
                                     <div id="status" class="d-flex align-items-center justify-content-center">
                                         <div class="spinner-border text-primary avatar-xxs m-auto" role="status">
-                                            <span class="visually-hidden">Loading...</span>
+                                            <span class="visually-hidden">{{ __('layout.loading') }}</span>
                                         </div>
                                     </div>
                                     <!-- </div> -->
                                 </label>
                             </div>
-                            <h5 class="fs-13 text-center mt-2">Enable</h5>
+                            <h5 class="fs-13 text-center mt-2">{{ __('layout.enable') }}</h5>
                         </div>
                         <div class="col-4">
                             <div class="form-check sidebar-setting card-radio">
@@ -648,7 +648,7 @@
                                     </span>
                                 </label>
                             </div>
-                            <h5 class="fs-13 text-center mt-2">Disable</h5>
+                            <h5 class="fs-13 text-center mt-2">{{ __('layout.disable') }}</h5>
                         </div>
                     </div>
                 
@@ -656,8 +656,8 @@
                 <!-- end preloader-menu -->
 
                 <div id="body-img">
-                    <h6 class="mt-4 mb-0 fw-semibold text-uppercase">Background Image</h6>
-                    <p class="text-muted">Choose a body background image.</p>
+                    <h6 class="mt-4 mb-0 fw-semibold text-uppercase">{{ __('layout.background_image') }}</h6>
+                    <p class="text-muted">{{ __('layout.choose_a_body_background_image') }}</p>
 
                     <div class="row">
                         <div class="col-4">
@@ -682,7 +682,7 @@
                                     </span>
                                 </label>
                             </div>
-                            <h5 class="fs-13 text-center mt-2">None</h5>
+                            <h5 class="fs-13 text-center mt-2">{{ __('layout.none') }}</h5>
                         </div>
                         <!-- end col -->
                         <div class="col-4">
@@ -691,7 +691,7 @@
                                 <label class="form-check-label p-0 avatar-md w-100" data-body-image="img-1" for="body-img-one">
                                 </label>
                             </div>
-                            <h5 class="fs-13 text-center mt-2">One</h5>
+                            <h5 class="fs-13 text-center mt-2">{{ __('layout.one') }}</h5>
                         </div>
                         <!-- end col -->
 
@@ -701,7 +701,7 @@
                                 <label class="form-check-label p-0 avatar-md w-100" data-body-image="img-2" for="body-img-two">
                                 </label>
                             </div>
-                            <h5 class="fs-13 text-center mt-2">Two</h5>
+                            <h5 class="fs-13 text-center mt-2">{{ __('layout.two') }}</h5>
                         </div>
                         <!-- end col -->
 
@@ -711,7 +711,7 @@
                                 <label class="form-check-label p-0 avatar-md w-100"  data-body-image="img-3" for="body-img-three">
                                 </label>
                             </div>
-                            <h5 class="fs-13 text-center mt-2">Three</h5>
+                            <h5 class="fs-13 text-center mt-2">{{ __('layout.three') }}</h5>
                         </div>
                         <!-- end col -->
                     </div>
@@ -724,10 +724,7 @@
     <div class="offcanvas-footer border-top p-3 text-center">
         <div class="row">
             <div class="col-6">
-                <button type="button" class="btn btn-light w-100" id="reset-layout">Reset</button>
-            </div>
-            <div class="col-6">
-                <a href="https://1.envato.market/velzon-admin" target="_blank" class="btn btn-primary w-100">Buy Now</a>
+                <button type="button" class="btn btn-light w-100" id="reset-layout">{{ __('layout.reset') }}</button>
             </div>
         </div>
     </div>
