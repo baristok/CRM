@@ -17,9 +17,9 @@ return [
 
 
     'apps' => 'Uygulamalar',
-    'contacts' => 'İletişimler',
+    'contacts' => 'Kişiler',
     'companies' => 'Şirketler',
-    'deals' => 'Sözleşmeler',
+    'deals' => 'Fırsatlar',
     'leads' => 'Potansiyel Müşteriler',
 
 
