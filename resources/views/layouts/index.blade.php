@@ -168,23 +168,25 @@
                     </div>
                 </div>
 
+                {{-- eğer session yoksa default olarak tr dilin göster --}}
+
                 <!-- language -->
                 <div class="dropdown ms-1 topbar-head-dropdown header-item">
                     <button type="button" class="btn btn-icon btn-topbar btn-ghost-secondary rounded-circle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <img id="header-lang-img" src="{{ asset('assets/images/flags/' . (session('locale') == 'tr' ? 'tr' : 'us') . '.svg') }}" alt="Header Language" height="20" class="rounded">
+                        <img id="header-lang-img" src="{{ asset('assets/images/flags/' . (session('locale') == 'en' ? 'us' : 'tr') . '.svg') }}" alt="Header Language" height="20" class="rounded">
                     </button>
                     <div class="dropdown-menu dropdown-menu-end">
-
-                        <!-- item-->
-                        <a href="{{ route('change.language', 'en') }}" class="dropdown-item notify-item language py-2" data-lang="en" title="English">
-                            <img src="{{ asset('assets/images/flags/us.svg') }}" alt="user-image" class="me-2 rounded" height="18">
-                            <span class="align-middle">English</span>
-                        </a>
 
                         <!-- item-->
                         <a href="{{ route('change.language', 'tr') }}" class="dropdown-item notify-item language" data-lang="tr" title="Türkçe">
                             <img src="{{ asset('assets/images/flags/tr.svg') }}" alt="user-image" class="me-2 rounded" height="18">
                             <span class="align-middle">Türkçe</span>
+                        </a>
+                        
+                        <!-- item-->
+                        <a href="{{ route('change.language', 'en') }}" class="dropdown-item notify-item language py-2" data-lang="en" title="English">
+                            <img src="{{ asset('assets/images/flags/us.svg') }}" alt="user-image" class="me-2 rounded" height="18">
+                            <span class="align-middle">English</span>
                         </a>
                     </div>
                 </div>
@@ -656,10 +658,10 @@
                             <a class="nav-link menu-link" href="#sidebarApps" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarApps">
                                 <i class="ri-apps-2-line"></i> <span data-key="t-apps">{{__('layout.apps')}}</span>
                             </a>
-                            <div class="collapse menu-dropdown" id="sidebarApps">
+                            <div class="collapse menu-dropdown {{request()->is('contacts') ? 'show' : ''}}" id="sidebarApps">
                                 <ul class="nav nav-sm flex-column">
                                     <li class="nav-item">
-                                        <a href="{{route('contacts.index')}}" class="nav-link" data-key="t-contacts">{{__('layout.contacts')}}</a>
+                                        <a href="{{route('contacts.index')}}" class="nav-link {{request()->is('contacts') ? 'active' : ''}}" data-key="t-contacts">{{__('layout.contacts')}}</a>
                                     </li>
                                     <li class="nav-item">
                                         <a href="apps-crm-companies.html" class="nav-link" data-key="t-companies">{{__('layout.companies')}}</a>

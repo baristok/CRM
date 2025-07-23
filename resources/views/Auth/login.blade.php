@@ -65,7 +65,7 @@
 
                                         <div class="mb-3">
                                             <label for="email" class="form-label">{{__('auth.email')}}</label>
-                                            <input type="email" name="email" class="form-control" id="email" placeholder="{{__('auth.email_placeholder')}}">
+                                            <input type="email" name="email" value ="admin@example.com" class="form-control" id="email" placeholder="{{__('auth.email_placeholder')}}">
                                         </div>
 
                                         <div class="mb-3">
@@ -74,7 +74,7 @@
                                             </div>
                                             <label class="form-label" for="password-input">{{__('auth.password')}}</label>
                                             <div class="position-relative auth-pass-inputgroup mb-3">
-                                                <input type="password" name="password" class="form-control pe-5 password-input" placeholder="{{__('auth.password_placeholder')}}" id="password-input">
+                                                <input type="password" name="password" value="password" class="form-control pe-5 password-input" placeholder="{{__('auth.password_placeholder')}}" id="password-input">
                                                 <button class="btn btn-link position-absolute end-0 top-0 text-decoration-none text-muted password-addon" type="button" id="password-addon"><i class="ri-eye-fill align-middle"></i></button>
                                             </div>
                                         </div>

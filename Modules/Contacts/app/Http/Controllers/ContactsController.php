@@ -4,6 +4,8 @@ namespace Modules\Contacts\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Modules\Contacts\Models\Contacts;
+use Illuminate\Support\Facades\Auth;
 
 class ContactsController extends Controller
 {
@@ -12,7 +14,8 @@ class ContactsController extends Controller
      */
     public function index()
     {
-        return view('contacts::index');
+        $contacts = Contacts::all();
+        return view('contacts::index', compact('contacts'));
     }
 
     /**
@@ -41,7 +44,9 @@ class ContactsController extends Controller
      */
     public function edit($id)
     {
-        return view('contacts::edit');
+        $contact = Contacts::find($id);
+        $user = Auth::user();
+        return view('contacts::edit', compact('contact', 'user'));
     }
 
     /**

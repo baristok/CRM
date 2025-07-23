@@ -60,7 +60,15 @@
         "test": [
             "@php artisan config:clear --ansi",
             "@php artisan test"
-        ]
+        ],
+        
+        "clear": [
+        "php artisan config:clear",
+        "php artisan route:clear",
+        "php artisan view:clear",
+        "php artisan cache:clear",
+        "php artisan optimize:clear"
+    ]
     },
     "extra": {
         "laravel": {
@@ -84,4 +92,5 @@
     },
     "minimum-stability": "stable",
     "prefer-stable": true
+    
 }
