@@ -156,7 +156,7 @@
                                                         <li class="list-inline-item edit" data-bs-toggle="tooltip"
                                                             data-bs-trigger="hover" data-bs-placement="top"
                                                             title="{{__('contacts.message')}}">
-                                                            <a href="javascript:void(0);"
+                                                            <a  href="javascript:void(0);"
                                                                 class="text-muted d-inline-block">
                                                                 <i class="ri-question-answer-line fs-16"></i>
                                                             </a>
@@ -174,7 +174,7 @@
                                                                                 class="ri-eye-fill align-bottom me-2 text-muted"></i>{{__('contacts.view')}}</a>
                                                                     </li>
                                                                     <li><a class="dropdown-item edit-item-btn"
-                                                                            href="#showModal" data-bs-toggle="modal"><i
+                                                                            href="#showModal" onclick="EditContact()" data-bs-toggle="modal"><i
                                                                                 class="ri-pencil-fill align-bottom me-2 text-muted"></i>
                                                                             {{__('contacts.edit')}}</a></li>
                                                                     <li><a class="dropdown-item remove-item-btn"
@@ -320,12 +320,8 @@
                                                 <div class="hstack gap-2 justify-content-end">
                                                     <button type="button" class="btn btn-light"
                                                         data-bs-dismiss="modal">{{__('contacts.close')}}</button>
-                                                        <button type="submit" class="btn {{isset($contact) ? 'btn-info' : 'btn-success'}}" id="add-btn">
-                                                            @if(isset($contact))
-                                                                <i class="ri-save-line me-1 align-bottom"></i> {{__('contacts.update')}}
-                                                            @else
-                                                                <i class="ri-add-line me-1 align-bottom"></i> {{__('contacts.add')}}
-                                                            @endif
+                                                        <button type="submit" class="btn btn-success" id="add-btn">
+                                                            {{isset($contact) ? __('contacts.update') : __('contacts.add')}}
                                                         </button>
                                                     <!-- <button type="button" class="btn btn-success" id="edit-btn">Update</button> -->
                                                 </div>
@@ -459,5 +455,14 @@
 @endsection
 
 @section('js')
+
+
+
+<script>
+    function EditContact()
+    {
+        alert('Edit Contact');
+    }
+</script>
 
 @endsection
