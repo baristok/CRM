@@ -3,7 +3,11 @@
 @section('title', __('contacts.title') . ' | CRM Barış Tok')
 
 @section('css')
-
+<style>
+    #contact-detail-area {
+        display: none;
+    }
+</style>
 @endsection
 
 @section('content')
@@ -55,7 +59,7 @@
                 <script>
                     document.addEventListener('DOMContentLoaded', function() {
                         Swal.fire({
-                            html: '<div class="mt-3"><lord-icon src="https://cdn.lordicon.com/tfivrwfr.json" trigger="loop" colors="primary:#25a0e2,secondary:#00bd9d" style="width:120px;height:120px"></lord-icon><div class="mt-4 pt-2 fs-15"><h4>{{ session('success') }}</h4><p class="text-muted mx-4 mb-0">{{ session('success_message') }}</p></div></div>',
+                            html: '<div class="mt-3"><lord-icon src="https://cdn.lordicon.com/lupuorrc.json" trigger="loop" colors="primary:#25a0e2,secondary:#00bd9d" style="width:120px;height:120px"></lord-icon><div class="mt-4 pt-2 fs-15"><h4>{{ session('success') }}</h4><p class="text-muted mx-4 mb-0">{{ session('success_message') }}</p></div></div>',
                             showCancelButton: true,
                             showConfirmButton: false,
                             customClass: {
@@ -105,7 +109,7 @@
                     </div>
                 </div>
                 <!--end col-->
-                <div class="col-xxl-9">
+                <div class="col-xxl-9" id="contact-content-area">
                     <div class="card" id="contactList">
                         <div class="card-header">
                             <div class="row g-3">
@@ -467,78 +471,9 @@
                     <!--end card-->
                 </div>
                 <!--end col-->
-                <div class="col-xxl-3">
-                    <div class="card" id="contact-view-detail">
-                        <div class="card-body text-center">
-                            <div class="position-relative d-inline-block">
-                                <img src="assets/images/users/avatar-10.jpg" alt=""
-                                    class="avatar-lg rounded-circle img-thumbnail">
-                                <span class="contact-active position-absolute rounded-circle bg-success"><span
-                                        class="visually-hidden"></span>
-                            </div>
-                            <h5 class="mt-4 mb-1">Tonya Noble</h5>
-                            <p class="text-muted">Nesta Technologies</p>
-
-                            <ul class="list-inline mb-0">
-                                <li class="list-inline-item avatar-xs">
-                                    <a href="javascript:void(0);"
-                                        class="avatar-title bg-success-subtle text-success fs-15 rounded">
-                                        <i class="ri-phone-line"></i>
-                                    </a>
-                                </li>
-                                <li class="list-inline-item avatar-xs">
-                                    <a href="javascript:void(0);"
-                                        class="avatar-title bg-danger-subtle text-danger fs-15 rounded">
-                                        <i class="ri-mail-line"></i>
-                                    </a>
-                                </li>
-                                <li class="list-inline-item avatar-xs">
-                                    <a href="javascript:void(0);"
-                                        class="avatar-title bg-warning-subtle text-warning fs-15 rounded">
-                                        <i class="ri-question-answer-line"></i>
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
-                        <div class="card-body">
-                            <h6 class="text-muted text-uppercase fw-semibold mb-3">Personal Information</h6>
-                            <p class="text-muted mb-4">Hello, I'm Tonya Noble, The most effective objective is one that is
-                                tailored to the job you are applying for. It states what kind of career you are seeking, and
-                                what skills and experiences.</p>
-                            <div class="table-responsive table-card">
-                                <table class="table table-borderless mb-0">
-                                    <tbody>
-                                        <tr>
-                                            <td class="fw-medium" scope="row">Designation</td>
-                                            <td>Lead Designer / Developer</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="fw-medium" scope="row">Email ID</td>
-                                            <td>tonyanoble@velzon.com</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="fw-medium" scope="row">Phone No</td>
-                                            <td>414-453-5725</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="fw-medium" scope="row">Lead Score</td>
-                                            <td>154</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="fw-medium" scope="row">Tags</td>
-                                            <td>
-                                                <span class="badge bg-primary-subtle text-primary">Lead</span>
-                                                <span class="badge bg-primary-subtle text-primary">Partner</span>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td class="fw-medium" scope="row">Last Contacted</td>
-                                            <td>15 Dec, 2021 <small class="text-muted">08:58AM</small></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
+                <div class="col-xxl-3" id="contact-detail-area">
+                    <div class="card" id="contact-view-detail" style="display: none;">
+                        <!-- Kişi detayları burada dinamik olarak yüklenecek -->
                     </div>
                     <!--end card-->
                 </div>
@@ -677,5 +612,72 @@
             // Resmi sıfırla
             document.getElementById('customer-img').src = "assets/images/users/user-dummy-img.jpg";
         }
+        
+        // Görüntüle butonuna tıklandığında contact detaylarını göster
+        document.addEventListener('DOMContentLoaded', function() {
+            // Tüm görüntüle butonlarını seç
+            const viewButtons = document.querySelectorAll('.view-item-btn');
+            
+            // Her butona tıklama olayı ekle
+            viewButtons.forEach(function(button) {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // Kişi ID'sini al
+                    const row = this.closest('tr');
+                    const contactId = row.querySelector('.edit-item-btn').getAttribute('onclick').match(/\d+/)[0];
+                    
+                    // AJAX ile contact detaylarını çek
+                    fetch("{{ route('contacts.details', ['id' => ':id']) }}".replace(':id', contactId), {
+                        method: 'GET',
+                        headers: {
+                            'Accept': 'text/html',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        }
+                    })
+                    .then(response => response.text())
+                    .then(html => {
+                        // Detay panelini güncelle
+                        const detailPanel = document.getElementById('contact-view-detail');
+                        detailPanel.innerHTML = html;
+                        detailPanel.style.display = 'block';
+                        
+                        // Content alanını daralt
+                        document.getElementById('contact-content-area').classList.remove('col-xxl-12');
+                        document.getElementById('contact-content-area').classList.add('col-xxl-9');
+                        
+                        // Detay alanını göster
+                        document.getElementById('contact-detail-area').style.display = 'block';
+                        
+                        // Kapat butonuna tıklama olayı ekle
+                        const closeButton = document.getElementById('contact-detail-close');
+                        if (closeButton) {
+                            closeButton.addEventListener('click', function() {
+                                // Detay panelini gizle
+                                detailPanel.style.display = 'none';
+                                
+                                // Detay alanını gizle
+                                document.getElementById('contact-detail-area').style.display = 'none';
+                                
+                                // Content alanını genişlet
+                                document.getElementById('contact-content-area').classList.remove('col-xxl-9');
+                                document.getElementById('contact-content-area').classList.add('col-xxl-12');
+                            });
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('Veriler yüklenirken bir hata oluştu!');
+                    });
+                });
+            });
+            
+            // Sayfa yüklendiğinde detay paneli kapalıysa content alanını genişlet
+            if (document.getElementById('contact-view-detail').style.display === 'none') {
+                document.getElementById('contact-detail-area').style.display = 'none';
+                document.getElementById('contact-content-area').classList.remove('col-xxl-9');
+                document.getElementById('contact-content-area').classList.add('col-xxl-12');
+            }
+        });
     </script>
 @endsection

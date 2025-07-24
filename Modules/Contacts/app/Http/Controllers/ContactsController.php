@@ -101,6 +101,15 @@ class ContactsController extends Controller
     public function destroy($id) {}
     
     /**
+     * Get contact details for AJAX request
+     */
+    public function getContactDetails($id)
+    {
+        $contact = Contacts::findOrFail($id);
+        return view('contacts::partials.contact_details', compact('contact'))->render();
+    }
+    
+    /**
      * Export contacts to Excel
      */
     public function export() 
