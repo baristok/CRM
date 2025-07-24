@@ -87,8 +87,8 @@
                                             onClick="deleteMultiple()"><i class="ri-delete-bin-2-line"></i></button>
                                         <button class="btn btn-secondary"><i class="ri-filter-2-line me-1 align-bottom"></i>
                                             {{ __('contacts.filters') }}</button>
-                                        <button class="btn btn-soft-primary">{{ __('contacts.import') }}</button>
-                                        <button class="btn btn-soft-success">{{ __('contacts.export') }}</button>
+                                        <button class="btn btn-soft-primary" data-bs-toggle="modal" data-bs-target="#importModal">{{ __('contacts.import') }}</button>
+                                        <a href="{{ route('contacts.export') }}" class="btn btn-soft-success">{{ __('contacts.export') }}</a>
                                         <button type="button" id="dropdownMenuLink1" data-bs-toggle="dropdown"
                                             aria-expanded="false" class="btn btn-soft-secondary"><i
                                                 class="ri-more-2-fill"></i></button>
@@ -425,6 +425,42 @@
                                 </div>
                             </div>
                             <!--end delete modal -->
+
+                            <!-- Import Modal -->
+                            <div class="modal fade" id="importModal" tabindex="-1" aria-labelledby="importModalLabel" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered">
+                                    <div class="modal-content">
+                                        <div class="modal-header bg-light p-3">
+                                            <h5 class="modal-title" id="importModalLabel">{{ __('contacts.import_contacts') }}</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <form action="{{ route('contacts.import') }}" method="POST" enctype="multipart/form-data">
+                                                @csrf
+                                                <div class="mb-3">
+                                                    <label for="importFile" class="form-label">{{ __('contacts.select_file') }}</label>
+                                                    <input type="file" class="form-control" id="importFile" name="file" accept=".xlsx, .xls, .csv" required>
+                                                    <div class="form-text">
+                                                        {{ __('contacts.allowed_formats') }}: .xlsx, .xls, .csv
+                                                    </div>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <h6>{{ __('contacts.import_instructions') }}</h6>
+                                                    <ul class="text-muted small">
+                                                        <li>{{ __('contacts.required_columns') }}: isim, e_posta, telefon</li>
+                                                        <li>{{ __('contacts.optional_columns') }}: sirket_adi, pozisyon, lead_skoru, etiketler, son_iletisim_tarihi</li>
+                                                    </ul>
+                                                </div>
+                                                <div class="text-end">
+                                                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">{{ __('contacts.close') }}</button>
+                                                    <button type="submit" class="btn btn-primary">{{ __('contacts.upload_and_import') }}</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- End Import Modal -->
 
                         </div>
                     </div>

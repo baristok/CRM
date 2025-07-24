@@ -7,6 +7,9 @@ use Illuminate\Http\Request;
 use Modules\Contacts\Models\Contacts;
 use Illuminate\Support\Facades\Auth;
 use Exception;
+use Maatwebsite\Excel\Facades\Excel;
+use Modules\Contacts\Exports\ContactsExport;
+use Modules\Contacts\Imports\ContactsImport;
 
 class ContactsController extends Controller
 {
@@ -96,4 +99,30 @@ class ContactsController extends Controller
      * Remove the specified resource from storage.
      */
     public function destroy($id) {}
+    
+    /**
+     * Export contacts to Excel
+     */
+    public function export() 
+    {
+        return Excel::download(new ContactsExport, 'contacts.xlsx');
+    }
+    
+    /**
+     * Import contacts from Excel
+     */
+    public function import(Request $request) 
+    {
+        try {
+            $request->validate([
+                'file' => 'required|mimes:xlsx,xls,csv|max:2048',
+            ]);
+            
+            Excel::import(new ContactsImport, $request->file('file'));
+            
+            return redirect()->route('contacts.index')->with('success', 'Kişiler başarıyla içe aktarıldı.');
+        } catch (Exception $e) {
+            return redirect()->back()->with('error', 'İçe aktarma başarısız')->with('error_message', $e->getMessage());
+        }
+    }
 }
