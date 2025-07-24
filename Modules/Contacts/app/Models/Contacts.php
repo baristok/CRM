@@ -19,7 +19,7 @@ class Contacts extends Model
         'name',
         'email',
         'phone',
-        'company',
+        'company_name',
         'designation',
         'lead_score',
         'tags',

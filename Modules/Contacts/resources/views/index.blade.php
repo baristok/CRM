@@ -32,6 +32,44 @@
             </div>
             <!-- end page title -->
 
+            {{-- Hata mesajları --}}
+            @if (session('error'))
+                <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        Swal.fire({
+                            html: '<div class="mt-3"><lord-icon src="https://cdn.lordicon.com/tdrtiskw.json" trigger="loop" colors="primary:#f06548,secondary:#f7b84b" style="width:120px;height:120px"></lord-icon><div class="mt-4 pt-2 fs-15"><h4>{{ session('error') }}</h4><p class="text-muted mx-4 mb-0">{{ session('error_message') }}</p></div></div>',
+                            showCancelButton: true,
+                            showConfirmButton: false,
+                            customClass: {
+                                cancelButton: "btn btn-primary w-xs mb-1"
+                            },
+                            cancelButtonText: "Tamam",
+                            buttonsStyling: false,
+                            showCloseButton: true
+                        });
+                    });
+                </script>
+            @endif
+
+            @if (session('success'))
+                <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        Swal.fire({
+                            html: '<div class="mt-3"><lord-icon src="https://cdn.lordicon.com/tfivrwfr.json" trigger="loop" colors="primary:#25a0e2,secondary:#00bd9d" style="width:120px;height:120px"></lord-icon><div class="mt-4 pt-2 fs-15"><h4>{{ session('success') }}</h4><p class="text-muted mx-4 mb-0">{{ session('success_message') }}</p></div></div>',
+                            showCancelButton: true,
+                            showConfirmButton: false,
+                            customClass: {
+                                cancelButton: "btn btn-success w-xs mb-1"
+                            },
+                            cancelButtonText: "Tamam",
+                            buttonsStyling: false,
+                            showCloseButton: true
+                        });
+                    });
+                </script>
+            @endif
+            {{-- Hata mesajları sonu --}}
+
 
             <div class="row">
                 <div class="col-lg-12">
@@ -118,82 +156,87 @@
                                         </thead>
                                         <tbody class="list form-check-all">
                                             @foreach ($contacts as $contact)
-                                            <tr>
-                                                <th scope="row">
-                                                    <div class="form-check">
-                                                        <input class="form-check-input" type="checkbox" name="chk_child"
-                                                            value="option1">
-                                                    </div>
-                                                </th>
-                                                <td class="id" style="display:none;"><a href="javascript:void(0);"
-                                                        class="fw-medium link-primary">#VZ001</a></td>
-                                                <td class="name">
-                                                    <div class="d-flex align-items-center">
-                                                        <div class="flex-shrink-0"><img
-                                                                src="assets/images/users/avatar-10.jpg" alt=""
-                                                                class="avatar-xs rounded-circle"></div>
-                                                        <div class="flex-grow-1 ms-2 name">Tonya Noble</div>
-                                                    </div>
-                                                </td>
-                                                <td class="company_name">{{ $contact->company_name }}</td>
-                                                <td class="email_id">{{ $contact->email }}</td>
-                                                <td class="phone">{{ $contact->phone }}</td>
-                                                <td class="lead_score">{{ $contact->lead_score }}</td>
-                                                <td class="tags">
-                                                    @if($contact->tags)
-                                                        @foreach(explode(',', $contact->tags) as $tag)
-                                                            <span class="badge bg-primary-subtle text-primary">{{ $tag }}</span>
-                                                        @endforeach
-                                                    @endif
-                                                </td>
-                                                <td class="date">15 Dec, 2021 <small class="text-muted">08:58AM</small>
-                                                </td>
-                                                <td>
-                                                    <ul class="list-inline hstack gap-2 mb-0">
-                                                        <li class="list-inline-item edit" data-bs-toggle="tooltip"
-                                                            data-bs-trigger="hover" data-bs-placement="top"
-                                                            title="{{ __('contacts.call') }}">
-                                                            <a href="javascript:void(0);"
-                                                                class="text-muted d-inline-block">
-                                                                <i class="ri-phone-line fs-16"></i>
-                                                            </a>
-                                                        </li>
-                                                        <li class="list-inline-item edit" data-bs-toggle="tooltip"
-                                                            data-bs-trigger="hover" data-bs-placement="top"
-                                                            title="{{ __('contacts.message') }}">
-                                                            <a href="javascript:void(0);"
-                                                                class="text-muted d-inline-block">
-                                                                <i class="ri-question-answer-line fs-16"></i>
-                                                            </a>
-                                                        </li>
-                                                        <li class="list-inline-item">
-                                                            <div class="dropdown">
-                                                                <button class="btn btn-soft-primary btn-sm dropdown"
-                                                                    type="button" data-bs-toggle="dropdown"
-                                                                    aria-expanded="false">
-                                                                    <i class="ri-more-fill align-middle"></i>
-                                                                </button>
-                                                                <ul class="dropdown-menu dropdown-menu-end">
-                                                                    <li><a class="dropdown-item view-item-btn"
-                                                                            href="javascript:void(0);"><i
-                                                                                class="ri-eye-fill align-bottom me-2 text-muted"></i>{{ __('contacts.view') }}</a>
-                                                                    </li>
-                                                                    <li><a class="dropdown-item edit-item-btn"
-                                                                            href="#showModal" onclick="EditContact(this)"
-                                                                            data-bs-toggle="modal"><i
-                                                                                class="ri-pencil-fill align-bottom me-2 text-muted"></i>
-                                                                            {{ __('contacts.edit') }}</a></li>
-                                                                    <li><a class="dropdown-item remove-item-btn"
-                                                                            data-bs-toggle="modal"
-                                                                            href="#deleteRecordModal"><i
-                                                                                class="ri-delete-bin-fill align-bottom me-2 text-muted"></i>
-                                                                            {{ __('contacts.delete') }}</a></li>
-                                                                </ul>
-                                                            </div>
-                                                        </li>
-                                                    </ul>
-                                                </td>
-                                            </tr>
+                                                <tr>
+                                                    <th scope="row">
+                                                        <div class="form-check">
+                                                            <input class="form-check-input" type="checkbox"
+                                                                name="chk_child" value="option1">
+                                                        </div>
+                                                    </th>
+                                                    <td class="id" style="display:none;"><a
+                                                            href="javascript:void(0);"
+                                                            class="fw-medium link-primary">#VZ001</a></td>
+                                                    <td class="name">
+                                                        <div class="d-flex align-items-center">
+                                                            <div class="flex-shrink-0"><img
+                                                                    src="assets/images/users/avatar-10.jpg" alt=""
+                                                                    class="avatar-xs rounded-circle"></div>
+                                                            <div class="flex-grow-1 ms-2 name">{{ $contact->name }}</div>
+                                                        </div>
+                                                    </td>
+                                                    <td class="company_name">{{ $contact->company_name }}</td>
+                                                    <td class="email_id">{{ $contact->email }}</td>
+                                                    <td class="phone">{{ $contact->phone }}</td>
+                                                    <td class="lead_score">{{ $contact->lead_score }}</td>
+                                                    <td class="tags">
+                                                        @if ($contact->tags)
+                                                            @foreach (explode(',', $contact->tags) as $tag)
+                                                                <span
+                                                                    class="badge bg-primary-subtle text-primary">{{ $tag }}</span>
+                                                            @endforeach
+                                                        @endif
+                                                    </td>
+                                                    <td class="date">
+                                                        {{ isset($contact->last_contacted) ? $contact->last_contacted->format('d M, Y') : 'Yok' }}
+                                                        <small
+                                                            class="text-muted">{{ isset($contact->last_contacted) ? $contact->last_contacted->format('H:i') : '' }}</small>
+                                                    </td>
+                                                    <td>
+                                                        <ul class="list-inline hstack gap-2 mb-0">
+                                                            <li class="list-inline-item edit" data-bs-toggle="tooltip"
+                                                                data-bs-trigger="hover" data-bs-placement="top"
+                                                                title="{{ __('contacts.call') }}">
+                                                                <a href="javascript:void(0);"
+                                                                    class="text-muted d-inline-block">
+                                                                    <i class="ri-phone-line fs-16"></i>
+                                                                </a>
+                                                            </li>
+                                                            <li class="list-inline-item edit" data-bs-toggle="tooltip"
+                                                                data-bs-trigger="hover" data-bs-placement="top"
+                                                                title="{{ __('contacts.message') }}">
+                                                                <a href="javascript:void(0);"
+                                                                    class="text-muted d-inline-block">
+                                                                    <i class="ri-question-answer-line fs-16"></i>
+                                                                </a>
+                                                            </li>
+                                                            <li class="list-inline-item">
+                                                                <div class="dropdown">
+                                                                    <button class="btn btn-soft-primary btn-sm dropdown"
+                                                                        type="button" data-bs-toggle="dropdown"
+                                                                        aria-expanded="false">
+                                                                        <i class="ri-more-fill align-middle"></i>
+                                                                    </button>
+                                                                    <ul class="dropdown-menu dropdown-menu-end">
+                                                                        <li><a class="dropdown-item view-item-btn"
+                                                                                href="javascript:void(0);"><i
+                                                                                    class="ri-eye-fill align-bottom me-2 text-muted"></i>{{ __('contacts.view') }}</a>
+                                                                        </li>
+                                                                        <li><a class="dropdown-item edit-item-btn"
+                                                                                href="javascript:void(0);"
+                                                                                onclick="EditContact({{ $contact->id }})"><i
+                                                                                    class="ri-pencil-fill align-bottom me-2 text-muted"></i>
+                                                                                {{ __('contacts.edit') }}</a></li>
+                                                                        <li><a class="dropdown-item remove-item-btn"
+                                                                                data-bs-toggle="modal"
+                                                                                href="#deleteRecordModal"><i
+                                                                                    class="ri-delete-bin-fill align-bottom me-2 text-muted"></i>
+                                                                                {{ __('contacts.delete') }}</a></li>
+                                                                    </ul>
+                                                                </div>
+                                                            </li>
+                                                        </ul>
+                                                    </td>
+                                                </tr>
                                             @endforeach
                                         </tbody>
                                     </table>
@@ -226,12 +269,14 @@
                                     <div class="modal-content border-0">
                                         <div class="modal-header bg-primary-subtle p-3">
                                             <h5 class="modal-title" id="exampleModalLabel">
-                                                <span id="modalTitle">{{ __('contacts.add_contact') }}</span>
+                                                <span
+                                                    id="modalTitle">{{ isset($contact) ? __('contacts.edit_contact') : __('contacts.add_contact') }}</span>
                                             </h5>
                                             <button type="button" class="btn-close" data-bs-dismiss="modal"
                                                 aria-label="Close" id="close-modal"></button>
                                         </div>
-                                        <form class="tablelist-form" autocomplete="off" id="contactForm" method="POST">
+                                        <form class="tablelist-form" autocomplete="off" id="contactForm" method="POST"
+                                            action="{{ route('contacts.store') }}">
                                             @csrf
                                             <input type="hidden" name="_method" id="method" value="POST">
                                             <input type="hidden" name="contact_id" id="contact_id" value="">
@@ -267,7 +312,7 @@
                                                         <div>
                                                             <label for="name-field"
                                                                 class="form-label">{{ __('contacts.name') }}</label>
-                                                            <input type="text" name="name" id="customername-field"
+                                                            <input type="text" name="name" id="name-field"
                                                                 class="form-control"
                                                                 placeholder="{{ __('contacts.enter_name') }}" required />
                                                         </div>
@@ -276,7 +321,7 @@
                                                         <div>
                                                             <label for="company_name-field"
                                                                 class="form-label">{{ __('contacts.company_name') }}</label>
-                                                            <input type="text" name="company" id="company_name-field"
+                                                            <input type="text" name="company_name" id="company_name-field"
                                                                 class="form-control"
                                                                 placeholder="{{ __('contacts.enter_company_name') }}"
                                                                 required />
@@ -324,7 +369,7 @@
                                                         <div>
                                                             <label for="taginput-choices"
                                                                 class="form-label font-size-13 text-muted">{{ __('contacts.tags') }}</label>
-                                                            <select class="form-control" name="taginput-choices"
+                                                            <select class="form-control" name="tags"
                                                                 id="taginput-choices" multiple>
                                                                 <option value="Lead">Lead</option>
                                                                 <option value="Partner">Partner</option>
@@ -342,7 +387,7 @@
                                                     <button type="submit" class="btn btn-success" id="submitBtn">
                                                         {{ __('contacts.add') }}
                                                     </button>
-                                                    
+
                                                 </div>
                                             </div>
                                         </form>
@@ -474,7 +519,127 @@
 @endsection
 
 @section('js')
-<script>
-    
-</script>
+    <script>
+        function EditContact(id) {
+            // Modal başlığını güncelle
+            document.getElementById('modalTitle').innerText = "{{ __('contacts.edit_contact') }}";
+
+            // Form metodunu PUT olarak ayarla
+            document.getElementById('method').value = "PUT";
+
+            // Buton metnini güncelle
+            document.getElementById('submitBtn').innerText = "{{ __('contacts.edit') }}";
+
+            // Contact ID'sini gizli alana ekle
+            document.getElementById('contact_id').value = id;
+
+            // Form action URL'sini güncelle
+            document.getElementById('contactForm').action = "{{ route('contacts.index') }}/" + id;
+
+            // AJAX ile contact verilerini çek
+            fetch("{{ route('contacts.index') }}/" + id + "/edit", {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Debug için gelen veriyi kontrol et
+                    console.log('API yanıtı:', data);
+
+                    // Form alanlarını doldur - null kontrolü ekleyelim
+                    document.getElementById('name-field').value = data.name || '';
+                    document.getElementById('company_name-field').value = data.company || '';
+                    document.getElementById('designation-field').value = data.designation || '';
+                    document.getElementById('email_id-field').value = data.email || '';
+                    document.getElementById('phone-field').value = data.phone || '';
+                    document.getElementById('lead_score-field').value = data.lead_score || '';
+
+                    // Eğer resim varsa
+                    if (data.image) {
+                        document.getElementById('customer-img').src = `/storage/${data.image}`;
+                    }
+
+                    // Etiketleri ayarla
+                    if (data.tags) {
+                        const tagSelect = document.getElementById('taginput-choices');
+                        const tagArray = data.tags.split(',');
+
+                        // Choices.js kütüphanesini kullanıyorsanız:
+                        if (tagSelect && typeof tagSelect.choices !== 'undefined') {
+                            tagSelect.choices.removeActiveItems();
+                            tagArray.forEach(tag => {
+                                tagSelect.choices.setChoiceByValue(tag.trim());
+                            });
+                        } else if (tagSelect) {
+                            // Normal select elementi için
+                            Array.from(tagSelect.options).forEach(option => {
+                                option.selected = tagArray.includes(option.value);
+                            });
+                        }
+                    }
+
+                    // Modalı göster
+                    var modal = new bootstrap.Modal(document.getElementById('showModal'));
+                    modal.show();
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Veriler yüklenirken bir hata oluştu!');
+                });
+        }
+
+        // Form submit olduğunda add ve edit işlemleri için
+        document.getElementById('contactForm').addEventListener('submit', function(e) {
+            const method = document.getElementById('method').value;
+
+            // Edit durumunda method override için
+            if (method === 'PUT') {
+                e.preventDefault();
+                const form = this;
+                const formData = new FormData(form);
+                const contactId = document.getElementById('contact_id').value;
+
+                fetch("{{ route('contacts.index') }}/" + contactId, {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute(
+                                'content')
+                        }
+                    })
+                    .then(response => {
+                        if (response.ok) {
+                            window.location.reload();
+                        } else {
+                            throw new Error('Kayıt düzenlenirken bir hata oluştu');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('Kayıt düzenlenirken bir hata oluştu!');
+                    });
+            }
+        });
+
+        // Modal kapandığında formu sıfırla
+        document.getElementById('close-modal').addEventListener('click', function() {
+            resetForm();
+        });
+
+        // Formu sıfırlama fonksiyonu
+        function resetForm() {
+            document.getElementById('contactForm').reset();
+            document.getElementById('method').value = 'POST';
+            document.getElementById('contact_id').value = '';
+            document.getElementById('modalTitle').innerText = "{{ __('contacts.add_contact') }}";
+            document.getElementById('submitBtn').innerText = "{{ __('contacts.add') }}";
+            document.getElementById('contactForm').action = "{{ route('contacts.store') }}";
+
+            // Resmi sıfırla
+            document.getElementById('customer-img').src = "assets/images/users/user-dummy-img.jpg";
+        }
+    </script>
 @endsection

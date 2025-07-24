@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('email');
             $table->string('phone');
-            $table->string('company')->nullable();
+            $table->string('company_name')->nullable();
             $table->string('designation')->nullable();
             $table->string('lead_score')->nullable();
             $table->string('tags')->nullable();

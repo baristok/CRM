@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Modules\Contacts\Models\Contacts;
 use Illuminate\Support\Facades\Auth;
+use Exception;
 
 class ContactsController extends Controller
 {
@@ -30,6 +31,24 @@ class ContactsController extends Controller
      */
     public function store(Request $request)
     {
+        try {
+            $validated = $request->validate([
+                'name' => 'required|string|max:255',
+                'email' => 'required|email|max:255',
+                'phone' => 'required|string|max:20',
+                'company_name' => 'required|string|max:255',
+                'designation' => 'required|string|max:255',
+                'lead_score' => 'required|integer',
+                'tags' => 'nullable|string',
+            ]);
+
+
+            Contacts::create($validated);
+
+            return redirect()->route('contacts.index')->with('success', 'Contact created successfully');
+        } catch (Exception $e) {
+            return redirect()->back()->with('error', 'Kayıt oluşturulamadı')->with('error_message', $e->getMessage());
+        }
     }
 
     /**
@@ -44,7 +63,8 @@ class ContactsController extends Controller
      */
     public function edit($id)
     {
-        return view('contacts::edit');
+        $contact = Contacts::findOrFail($id);
+        return response()->json($contact);
     }
 
     /**
@@ -52,7 +72,24 @@ class ContactsController extends Controller
      */
     public function update(Request $request, $id)
     {
+        try {
+            $validated = $request->validate([
+                'name' => 'required|string|max:255',
+                'email' => 'required|email|max:255',
+                'phone' => 'required|string|max:20',
+                'company_name' => 'required|string|max:255',
+                'designation' => 'required|string|max:255',
+                'lead_score' => 'required|integer',
+                'tags' => 'nullable|string',
+            ]);
 
+            $contact = Contacts::findOrFail($id);
+            $contact->update($validated);
+
+            return redirect()->route('contacts.index')->with('success', 'Contact updated successfully');
+        } catch (Exception $e) {
+            return redirect()->back()->with('error', 'Kayıt güncellenemedi')->with('error_message', $e->getMessage());
+        }
     }
 
     /**
