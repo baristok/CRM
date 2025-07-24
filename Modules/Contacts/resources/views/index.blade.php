@@ -19,20 +19,18 @@
                 <div class="col-12">
                     <div class="page-title-box d-sm-flex align-items-center justify-content-between bg-transparent">
                         <h4 class="mb-sm-0">{{ __('contacts.title') }}</h4>
-            
+
                         <div class="page-title-right">
                             <ol class="breadcrumb m-0">
                                 <li class="breadcrumb-item"><a href="javascript: void(0);">CRM</a></li>
                                 <li class="breadcrumb-item active">{{ __('contacts.title') }}</li>
                             </ol>
                         </div>
-            
+
                     </div>
                 </div>
             </div>
             <!-- end page title -->
-
-
 
 
             <div class="row">
@@ -105,17 +103,21 @@
                                                             value="option">
                                                     </div>
                                                 </th>
-                                                <th class="sort" data-sort="name" scope="col">{{ __('contacts.name') }}</th>
-                                                <th class="sort" data-sort="company_name" scope="col">{{ __('contacts.company') }}</th>
-                                                <th class="sort" data-sort="email_id" scope="col">{{ __('contacts.email') }}</th>
-                                                <th class="sort" data-sort="phone" scope="col">{{ __('contacts.phone') }}</th>
-                                                <th class="sort" data-sort="lead_score" scope="col">{{ __('contacts.lead_score') }}</th>
-                                                <th class="sort" data-sort="tags" scope="col">{{ __('contacts.tags') }}</th>
-                                                <th class="sort" data-sort="date" scope="col">{{ __('contacts.last_contacted') }}</th>
+                                                <th data-sort="name" scope="col">{{ __('contacts.name') }}</th>
+                                                <th data-sort="company_name" scope="col">{{ __('contacts.company') }}
+                                                </th>
+                                                <th data-sort="email_id" scope="col">{{ __('contacts.email') }}</th>
+                                                <th data-sort="phone" scope="col">{{ __('contacts.phone') }}</th>
+                                                <th data-sort="lead_score" scope="col">{{ __('contacts.lead_score') }}
+                                                </th>
+                                                <th data-sort="tags" scope="col">{{ __('contacts.tags') }}</th>
+                                                <th data-sort="date" scope="col">{{ __('contacts.last_contacted') }}
+                                                </th>
                                                 <th scope="col">{{ __('contacts.action') }}</th>
                                             </tr>
                                         </thead>
                                         <tbody class="list form-check-all">
+                                            @foreach ($contacts as $contact)
                                             <tr>
                                                 <th scope="row">
                                                     <div class="form-check">
@@ -133,13 +135,16 @@
                                                         <div class="flex-grow-1 ms-2 name">Tonya Noble</div>
                                                     </div>
                                                 </td>
-                                                <td class="company_name">Nesta Technologies</td>
-                                                <td class="email_id">tonyanoble@velzon.com</td>
-                                                <td class="phone">414-453-5725</td>
-                                                <td class="lead_score">154</td>
+                                                <td class="company_name">{{ $contact->company_name }}</td>
+                                                <td class="email_id">{{ $contact->email }}</td>
+                                                <td class="phone">{{ $contact->phone }}</td>
+                                                <td class="lead_score">{{ $contact->lead_score }}</td>
                                                 <td class="tags">
-                                                    <span class="badge bg-primary-subtle text-primary">Lead</span>
-                                                    <span class="badge bg-primary-subtle text-primary">Partner</span>
+                                                    @if($contact->tags)
+                                                        @foreach(explode(',', $contact->tags) as $tag)
+                                                            <span class="badge bg-primary-subtle text-primary">{{ $tag }}</span>
+                                                        @endforeach
+                                                    @endif
                                                 </td>
                                                 <td class="date">15 Dec, 2021 <small class="text-muted">08:58AM</small>
                                                 </td>
@@ -147,7 +152,7 @@
                                                     <ul class="list-inline hstack gap-2 mb-0">
                                                         <li class="list-inline-item edit" data-bs-toggle="tooltip"
                                                             data-bs-trigger="hover" data-bs-placement="top"
-                                                            title="{{__('contacts.call')}}">
+                                                            title="{{ __('contacts.call') }}">
                                                             <a href="javascript:void(0);"
                                                                 class="text-muted d-inline-block">
                                                                 <i class="ri-phone-line fs-16"></i>
@@ -155,8 +160,8 @@
                                                         </li>
                                                         <li class="list-inline-item edit" data-bs-toggle="tooltip"
                                                             data-bs-trigger="hover" data-bs-placement="top"
-                                                            title="{{__('contacts.message')}}">
-                                                            <a  href="javascript:void(0);"
+                                                            title="{{ __('contacts.message') }}">
+                                                            <a href="javascript:void(0);"
                                                                 class="text-muted d-inline-block">
                                                                 <i class="ri-question-answer-line fs-16"></i>
                                                             </a>
@@ -171,23 +176,25 @@
                                                                 <ul class="dropdown-menu dropdown-menu-end">
                                                                     <li><a class="dropdown-item view-item-btn"
                                                                             href="javascript:void(0);"><i
-                                                                                class="ri-eye-fill align-bottom me-2 text-muted"></i>{{__('contacts.view')}}</a>
+                                                                                class="ri-eye-fill align-bottom me-2 text-muted"></i>{{ __('contacts.view') }}</a>
                                                                     </li>
                                                                     <li><a class="dropdown-item edit-item-btn"
-                                                                            href="#showModal" onclick="EditContact()" data-bs-toggle="modal"><i
+                                                                            href="#showModal" onclick="EditContact(this)"
+                                                                            data-bs-toggle="modal"><i
                                                                                 class="ri-pencil-fill align-bottom me-2 text-muted"></i>
-                                                                            {{__('contacts.edit')}}</a></li>
+                                                                            {{ __('contacts.edit') }}</a></li>
                                                                     <li><a class="dropdown-item remove-item-btn"
                                                                             data-bs-toggle="modal"
                                                                             href="#deleteRecordModal"><i
                                                                                 class="ri-delete-bin-fill align-bottom me-2 text-muted"></i>
-                                                                            {{__('contacts.delete')}}</a></li>
+                                                                            {{ __('contacts.delete') }}</a></li>
                                                                 </ul>
                                                             </div>
                                                         </li>
                                                     </ul>
                                                 </td>
                                             </tr>
+                                            @endforeach
                                         </tbody>
                                     </table>
                                     <div class="noresult" style="display: none">
@@ -204,11 +211,11 @@
                                 <div class="d-flex justify-content-end mt-3">
                                     <div class="pagination-wrap hstack gap-2">
                                         <a class="page-item pagination-prev disabled" href="#">
-                                            {{__('contacts.previous')}}
+                                            {{ __('contacts.previous') }}
                                         </a>
                                         <ul class="pagination listjs-pagination mb-0"></ul>
                                         <a class="page-item pagination-next" href="#">
-                                            {{__('contacts.next')}}
+                                            {{ __('contacts.next') }}
                                         </a>
                                     </div>
                                 </div>
@@ -218,13 +225,16 @@
                                 <div class="modal-dialog modal-dialog-centered">
                                     <div class="modal-content border-0">
                                         <div class="modal-header bg-primary-subtle p-3">
-                                            <h5 class="modal-title" id="exampleModalLabel">{{isset($contact) ? __('contacts.edit_contact') : __('contacts.add_contact')}}</h5>
+                                            <h5 class="modal-title" id="exampleModalLabel">
+                                                <span id="modalTitle">{{ __('contacts.add_contact') }}</span>
+                                            </h5>
                                             <button type="button" class="btn-close" data-bs-dismiss="modal"
                                                 aria-label="Close" id="close-modal"></button>
                                         </div>
-                                        <form class="tablelist-form" autocomplete="off" action= "{{isset($contact) ? route('contacts.update', $contact->id) : route('contacts.store')}}" method="POST">
+                                        <form class="tablelist-form" autocomplete="off" id="contactForm" method="POST">
                                             @csrf
-                                            @method(isset($contact) ? 'PUT' : 'POST')
+                                            <input type="hidden" name="_method" id="method" value="POST">
+                                            <input type="hidden" name="contact_id" id="contact_id" value="">
                                             <div class="modal-body">
                                                 <div class="row g-3">
                                                     <div class="col-lg-12">
@@ -255,56 +265,65 @@
                                                             </div>
                                                         </div>
                                                         <div>
-                                                            <label for="name-field" class="form-label">{{__('contacts.name')}}</label>
+                                                            <label for="name-field"
+                                                                class="form-label">{{ __('contacts.name') }}</label>
                                                             <input type="text" name="name" id="customername-field"
-                                                                class="form-control" placeholder="{{__('contacts.enter_name')}}" value="{{isset($contact) ? $contact->name : ''}}" required />
+                                                                class="form-control"
+                                                                placeholder="{{ __('contacts.enter_name') }}" required />
                                                         </div>
                                                     </div>
                                                     <div class="col-lg-12">
                                                         <div>
-                                                            <label for="company_name-field" class="form-label">{{__('contacts.company_name')}}</label>
+                                                            <label for="company_name-field"
+                                                                class="form-label">{{ __('contacts.company_name') }}</label>
                                                             <input type="text" name="company" id="company_name-field"
-                                                                class="form-control" placeholder="{{__('contacts.enter_company_name')}}"
-                                                                value="{{isset($contact) ? $contact->company : ''}}" required />
+                                                                class="form-control"
+                                                                placeholder="{{ __('contacts.enter_company_name') }}"
+                                                                required />
                                                         </div>
                                                     </div>
                                                     <div class="col-lg-12">
                                                         <div>
                                                             <label for="designation-field"
-                                                                class="form-label">{{__('contacts.designation')}}</label>
-                                                            <input type="text" name="designation" id="designation-field"
-                                                                class="form-control" placeholder="{{__('contacts.enter_designation')}}"
-                                                                value="{{isset($contact) ? $contact->designation : ''}}" required />
+                                                                class="form-label">{{ __('contacts.designation') }}</label>
+                                                            <input type="text" name="designation"
+                                                                id="designation-field" class="form-control"
+                                                                placeholder="{{ __('contacts.enter_designation') }}"
+                                                                required />
                                                         </div>
                                                     </div>
                                                     <div class="col-lg-12">
                                                         <div>
-                                                            <label for="email_id-field" class="form-label">{{__('contacts.email')}}</label>
+                                                            <label for="email_id-field"
+                                                                class="form-label">{{ __('contacts.email') }}</label>
                                                             <input type="text" name="email" id="email_id-field"
-                                                                class="form-control" placeholder="{{__('contacts.enter_email')}}" 
-                                                                value="{{isset($contact) ? $contact->email : ''}}" required />
+                                                                class="form-control"
+                                                                placeholder="{{ __('contacts.enter_email') }}" required />
                                                         </div>
                                                     </div>
                                                     <div class="col-lg-6">
                                                         <div>
-                                                            <label for="phone-field" class="form-label">{{__('contacts.phone')}}</label>
-                                                            <input type="text" name="phone" id="phone-field" class="form-control"
-                                                                placeholder="{{__('contacts.enter_phone')}}" 
-                                                                value="{{isset($contact) ? $contact->phone : ''}}" required />
+                                                            <label for="phone-field"
+                                                                class="form-label">{{ __('contacts.phone') }}</label>
+                                                            <input type="text" name="phone" id="phone-field"
+                                                                class="form-control"
+                                                                placeholder="{{ __('contacts.enter_phone') }}" required />
                                                         </div>
                                                     </div>
                                                     <div class="col-lg-6">
                                                         <div>
-                                                            <label for="lead_score-field" class="form-label">{{__('contacts.lead_score')}}</label>
+                                                            <label for="lead_score-field"
+                                                                class="form-label">{{ __('contacts.lead_score') }}</label>
                                                             <input type="text" name="lead_score" id="lead_score-field"
-                                                                class="form-control" placeholder="{{__('contacts.enter_lead_score')}}" 
-                                                                value="{{isset($contact) ? $contact->lead_score : ''}}" required />
+                                                                class="form-control"
+                                                                placeholder="{{ __('contacts.enter_lead_score') }}"
+                                                                required />
                                                         </div>
                                                     </div>
                                                     <div class="col-lg-12">
                                                         <div>
                                                             <label for="taginput-choices"
-                                                                class="form-label font-size-13 text-muted">{{__('contacts.tags')}}</label>
+                                                                class="form-label font-size-13 text-muted">{{ __('contacts.tags') }}</label>
                                                             <select class="form-control" name="taginput-choices"
                                                                 id="taginput-choices" multiple>
                                                                 <option value="Lead">Lead</option>
@@ -319,11 +338,11 @@
                                             <div class="modal-footer">
                                                 <div class="hstack gap-2 justify-content-end">
                                                     <button type="button" class="btn btn-light"
-                                                        data-bs-dismiss="modal">{{__('contacts.close')}}</button>
-                                                        <button type="submit" class="btn btn-success" id="add-btn">
-                                                            {{isset($contact) ? __('contacts.update') : __('contacts.add')}}
-                                                        </button>
-                                                    <!-- <button type="button" class="btn btn-success" id="edit-btn">Update</button> -->
+                                                        data-bs-dismiss="modal">{{ __('contacts.close') }}</button>
+                                                    <button type="submit" class="btn btn-success" id="submitBtn">
+                                                        {{ __('contacts.add') }}
+                                                    </button>
+                                                    
                                                 </div>
                                             </div>
                                         </form>
@@ -455,14 +474,7 @@
 @endsection
 
 @section('js')
-
-
-
 <script>
-    function EditContact()
-    {
-        alert('Edit Contact');
-    }
+    
 </script>
-
 @endsection
