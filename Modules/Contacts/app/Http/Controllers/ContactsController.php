@@ -18,8 +18,8 @@ class ContactsController extends Controller
      * Display a listing of the resource.
      */
     public function index()
-    {
-        $contacts = Contacts::all();
+    {        
+        $contacts = Contacts::orderBy('name', 'asc')->get();
         $tags = Tags::all();
         return view('contacts::index', compact('contacts', 'tags'));
     }

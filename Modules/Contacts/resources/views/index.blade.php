@@ -127,9 +127,10 @@
                                         <span class="text-muted">{{ __('contacts.sort_by') }}: </span>
                                         <select class="form-control mb-0" data-choices data-choices-search-false
                                             id="choices-single-default">
-                                            <option value="Name">{{ __('contacts.name') }}</option>
-                                            <option value="Company">{{ __('contacts.company') }}</option>
-                                            <option value="Lead">{{ __('contacts.lead') }}</option>
+                                            <option value="name">{{ __('contacts.name') }}</option>
+                                            <option value="company_name">{{ __('contacts.company') }}</option>
+                                            <option value="lead_score">{{ __('contacts.lead') }}</option>
+                                            <option value="created_at">{{ __('contacts.created_at') }}</option>
                                         </select>
                                     </div>
                                 </div>
@@ -674,8 +675,8 @@
                 style="width:120px;height:120px">
               </lord-icon>
               <div class="mt-4 pt-2 fs-15">
-                <h4>Well done !</h4>
-                <p class="text-muted mx-4 mb-0">Contact has been deleted.</p>
+                <h4>{{ __('contacts.contact_deleted') }}</h4>
+                <p class="text-muted mx-4 mb-0">{{ __('contacts.contact_deleted_info') }}</p>
               </div>
             </div>`,
                                 showCancelButton: true,
@@ -683,7 +684,7 @@
                                 customClass: {
                                     cancelButton: "btn btn-primary w-xs mb-1"
                                 },
-                                cancelButtonText: "Back",
+                                cancelButtonText: "{{ __('contacts.back') }}",
                                 buttonsStyling: false,
                                 showCloseButton: true
                             }).then(() => window.location.reload());
@@ -742,5 +743,7 @@
                     });
             });
         }
+
+
     </script>
 @endsection

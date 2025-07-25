@@ -49,6 +49,10 @@ return [
     'delete_contact_info' => 'Bu kişiyi silmek istediğinize emin misiniz?',
     'no' => 'Hayır, Tut',
     'yes' => 'Evet, Sil!',
+    'contact_deleted' => 'Kişi Silindi',
+    'contact_deleted_info' => 'Kişi başarıyla silindi.',
+    'back' => 'Geri',   
+    'created_at' => 'Oluşturulma Tarihi',
 ];
 
 ?>

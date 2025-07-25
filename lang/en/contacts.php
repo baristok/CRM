@@ -49,6 +49,10 @@ return [
     'delete_contact_info' => 'Are you sure you want to delete this contact?',
     'no' => 'No, Keep It',
     'yes' => 'Yes, Delete It!',
+    'contact_deleted' => 'Contact Deleted',
+    'contact_deleted_info' => 'Contact has been deleted.',
+    'back' => 'Back',
+    'created_at' => 'Created At',
 ];
 
 ?>
