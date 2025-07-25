@@ -58,8 +58,8 @@
                     <td class="fw-medium" scope="row">{{ __('contacts.tags') }}</td>
                     <td>
                         @if($contact->tags)
-                            @foreach(explode(',', $contact->tags) as $tag)
-                                <span class="badge bg-primary-subtle text-primary">{{ $tag }}</span>
+                            @foreach($contact->tags as $tag)
+                                <span class="badge bg-primary-subtle text-primary">{{ $tag->name }}</span>
                             @endforeach
                         @endif
                     </td>

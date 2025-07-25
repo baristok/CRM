@@ -3,11 +3,11 @@
 @section('title', __('contacts.title') . ' | CRM Barış Tok')
 
 @section('css')
-<style>
-    #contact-detail-area {
-        display: none;
-    }
-</style>
+    <style>
+        #contact-detail-area {
+            display: none;
+        }
+    </style>
 @endsection
 
 @section('content')
@@ -91,8 +91,10 @@
                                             onClick="deleteMultiple()"><i class="ri-delete-bin-2-line"></i></button>
                                         <button class="btn btn-secondary"><i class="ri-filter-2-line me-1 align-bottom"></i>
                                             {{ __('contacts.filters') }}</button>
-                                        <button class="btn btn-soft-primary" data-bs-toggle="modal" data-bs-target="#importModal">{{ __('contacts.import') }}</button>
-                                        <a href="{{ route('contacts.export') }}" class="btn btn-soft-success">{{ __('contacts.export') }}</a>
+                                        <button class="btn btn-soft-primary" data-bs-toggle="modal"
+                                            data-bs-target="#importModal">{{ __('contacts.import') }}</button>
+                                        <a href="{{ route('contacts.export') }}"
+                                            class="btn btn-soft-success">{{ __('contacts.export') }}</a>
                                         <button type="button" id="dropdownMenuLink1" data-bs-toggle="dropdown"
                                             aria-expanded="false" class="btn btn-soft-secondary"><i
                                                 class="ri-more-2-fill"></i></button>
@@ -183,10 +185,10 @@
                                                     <td class="phone">{{ $contact->phone }}</td>
                                                     <td class="lead_score">{{ $contact->lead_score }}</td>
                                                     <td class="tags">
-                                                        @if ($contact->tags)
-                                                            @foreach (explode(',', $contact->tags) as $tag)
+                                                        @if ($contact->tags->count() > 0)
+                                                            @foreach ($contact->tags as $tag)
                                                                 <span
-                                                                    class="badge bg-primary-subtle text-primary">{{ $tag }}</span>
+                                                                    class="badge bg-primary-subtle text-primary">{{ $tag->name }}</span>
                                                             @endforeach
                                                         @endif
                                                     </td>
@@ -231,8 +233,9 @@
                                                                                     class="ri-pencil-fill align-bottom me-2 text-muted"></i>
                                                                                 {{ __('contacts.edit') }}</a></li>
                                                                         <li><a class="dropdown-item remove-item-btn"
-                                                                                data-bs-toggle="modal"
-                                                                                href="#deleteRecordModal"><i
+
+                                                                                href="javascript:void(0);"
+                                                                                onclick="deleteContact({{ $contact->id }})"><i
                                                                                     class="ri-delete-bin-fill align-bottom me-2 text-muted"></i>
                                                                                 {{ __('contacts.delete') }}</a></li>
                                                                     </ul>
@@ -325,8 +328,8 @@
                                                         <div>
                                                             <label for="company_name-field"
                                                                 class="form-label">{{ __('contacts.company_name') }}</label>
-                                                            <input type="text" name="company_name" id="company_name-field"
-                                                                class="form-control"
+                                                            <input type="text" name="company_name"
+                                                                id="company_name-field" class="form-control"
                                                                 placeholder="{{ __('contacts.enter_company_name') }}"
                                                                 required />
                                                         </div>
@@ -373,12 +376,12 @@
                                                         <div>
                                                             <label for="taginput-choices"
                                                                 class="form-label font-size-13 text-muted">{{ __('contacts.tags') }}</label>
-                                                            <select class="form-control" name="tags"
+                                                            <select class="form-control" name="tags[]"
                                                                 id="taginput-choices" multiple>
-                                                                <option value="Lead">Lead</option>
-                                                                <option value="Partner">Partner</option>
-                                                                <option value="Exiting">Exiting</option>
-                                                                <option value="Long-term">Long-term</option>
+                                                                @foreach ($tags as $tag)
+                                                                    <option value="{{ $tag->id }}">
+                                                                        {{ $tag->name }}</option>
+                                                                @endforeach
                                                             </select>
                                                         </div>
                                                     </div>
@@ -398,52 +401,28 @@
                                     </div>
                                 </div>
                             </div>
-                            <!--end add modal-->
 
-                            <div class="modal fade zoomIn" id="deleteRecordModal" tabindex="-1" aria-hidden="true">
-                                <div class="modal-dialog modal-dialog-centered">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <button type="button" class="btn-close" id="deleteRecord-close"
-                                                data-bs-dismiss="modal" aria-label="Close" id="btn-close"></button>
-                                        </div>
-                                        <div class="modal-body p-5 text-center">
-                                            <lord-icon src="https://cdn.lordicon.com/gsqxdxog.json" trigger="loop"
-                                                colors="primary:#8c68cd,secondary:#f06548"
-                                                style="width:90px;height:90px"></lord-icon>
-                                            <div class="mt-4 text-center">
-                                                <h4 class="fs-semibold">You are about to delete a contact ?</h4>
-                                                <p class="text-muted fs-14 mb-4 pt-1">Deleting your contact will remove all
-                                                    of your information from our database.</p>
-                                                <div class="hstack gap-2 justify-content-center remove">
-                                                    <button
-                                                        class="btn btn-link link-success fw-medium text-decoration-none"
-                                                        id="deleteRecord-close" data-bs-dismiss="modal"><i
-                                                            class="ri-close-line me-1 align-middle"></i> Close</button>
-                                                    <button class="btn btn-danger" id="delete-record">Yes, Delete
-                                                        It!!</button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <!--end delete modal -->
 
                             <!-- Import Modal -->
-                            <div class="modal fade" id="importModal" tabindex="-1" aria-labelledby="importModalLabel" aria-hidden="true">
+                            <div class="modal fade" id="importModal" tabindex="-1" aria-labelledby="importModalLabel"
+                                aria-hidden="true">
                                 <div class="modal-dialog modal-dialog-centered">
                                     <div class="modal-content">
                                         <div class="modal-header bg-light p-3">
-                                            <h5 class="modal-title" id="importModalLabel">{{ __('contacts.import_contacts') }}</h5>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            <h5 class="modal-title" id="importModalLabel">
+                                                {{ __('contacts.import_contacts') }}</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                aria-label="Close"></button>
                                         </div>
                                         <div class="modal-body">
-                                            <form action="{{ route('contacts.import') }}" method="POST" enctype="multipart/form-data">
+                                            <form action="{{ route('contacts.import') }}" method="POST"
+                                                enctype="multipart/form-data">
                                                 @csrf
                                                 <div class="mb-3">
-                                                    <label for="importFile" class="form-label">{{ __('contacts.select_file') }}</label>
-                                                    <input type="file" class="form-control" id="importFile" name="file" accept=".xlsx, .xls, .csv" required>
+                                                    <label for="importFile"
+                                                        class="form-label">{{ __('contacts.select_file') }}</label>
+                                                    <input type="file" class="form-control" id="importFile"
+                                                        name="file" accept=".xlsx, .xls, .csv" required>
                                                     <div class="form-text">
                                                         {{ __('contacts.allowed_formats') }}: .xlsx, .xls, .csv
                                                     </div>
@@ -451,13 +430,17 @@
                                                 <div class="mb-3">
                                                     <h6>{{ __('contacts.import_instructions') }}</h6>
                                                     <ul class="text-muted small">
-                                                        <li>{{ __('contacts.required_columns') }}: isim, e_posta, telefon</li>
-                                                        <li>{{ __('contacts.optional_columns') }}: sirket_adi, pozisyon, lead_skoru, etiketler, son_iletisim_tarihi</li>
+                                                        <li>{{ __('contacts.required_columns') }}: isim, e_posta, telefon
+                                                        </li>
+                                                        <li>{{ __('contacts.optional_columns') }}: sirket_adi, pozisyon,
+                                                            lead_skoru, etiketler, son_iletisim_tarihi</li>
                                                     </ul>
                                                 </div>
                                                 <div class="text-end">
-                                                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">{{ __('contacts.close') }}</button>
-                                                    <button type="submit" class="btn btn-primary">{{ __('contacts.upload_and_import') }}</button>
+                                                    <button type="button" class="btn btn-light"
+                                                        data-bs-dismiss="modal">{{ __('contacts.close') }}</button>
+                                                    <button type="submit"
+                                                        class="btn btn-primary">{{ __('contacts.upload_and_import') }}</button>
                                                 </div>
                                             </form>
                                         </div>
@@ -490,24 +473,32 @@
 @endsection
 
 @section('js')
+    <!-- Tek seferlik Choices.js yüklemesi -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/choices.js/10.2.0/choices.min.js"></script>
+
     <script>
+        // Choices.js instance’ı globalde tutuyoruz
+        const tagInputField = new Choices("#taginput-choices", {
+            removeItemButton: true,
+            searchEnabled: true,
+            searchChoices: true,
+            searchFloor: 1,
+            placeholder: true,
+            placeholderValue: 'Etiket seçin veya arayın...',
+            noResultsText: 'Sonuç bulunamadı',
+            itemSelectText: 'Seçmek için tıklayın'
+        });
+
+        // Kişi düzenleme fonksiyonu
         function EditContact(id) {
-            // Modal başlığını güncelle
+            // Modal başlık ve buton metinlerini ayarla
             document.getElementById('modalTitle').innerText = "{{ __('contacts.edit_contact') }}";
-
-            // Form metodunu PUT olarak ayarla
             document.getElementById('method').value = "PUT";
-
-            // Buton metnini güncelle
             document.getElementById('submitBtn').innerText = "{{ __('contacts.edit') }}";
-
-            // Contact ID'sini gizli alana ekle
             document.getElementById('contact_id').value = id;
-
-            // Form action URL'sini güncelle
             document.getElementById('contactForm').action = "{{ route('contacts.index') }}/" + id;
 
-            // AJAX ile contact verilerini çek
+            // Verileri AJAX ile çek
             fetch("{{ route('contacts.index') }}/" + id + "/edit", {
                     method: 'GET',
                     headers: {
@@ -515,62 +506,42 @@
                         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                     }
                 })
-                .then(response => response.json())
+                .then(res => res.json())
                 .then(data => {
-                    // Debug için gelen veriyi kontrol et
-                    console.log('API yanıtı:', data);
-
-                    // Form alanlarını doldur - null kontrolü ekleyelim
+                    // Form alanlarını doldur
                     document.getElementById('name-field').value = data.name || '';
-                    document.getElementById('company_name-field').value = data.company || '';
+                    document.getElementById('company_name-field').value = data.company_name || '';
                     document.getElementById('designation-field').value = data.designation || '';
                     document.getElementById('email_id-field').value = data.email || '';
                     document.getElementById('phone-field').value = data.phone || '';
                     document.getElementById('lead_score-field').value = data.lead_score || '';
 
-                    // Eğer resim varsa
                     if (data.image) {
                         document.getElementById('customer-img').src = `/storage/${data.image}`;
                     }
 
-                    // Etiketleri ayarla
-                    if (data.tags) {
-                        const tagSelect = document.getElementById('taginput-choices');
-                        const tagArray = data.tags.split(',');
-
-                        // Choices.js kütüphanesini kullanıyorsanız:
-                        if (tagSelect && typeof tagSelect.choices !== 'undefined') {
-                            tagSelect.choices.removeActiveItems();
-                            tagArray.forEach(tag => {
-                                tagSelect.choices.setChoiceByValue(tag.trim());
-                            });
-                        } else if (tagSelect) {
-                            // Normal select elementi için
-                            Array.from(tagSelect.options).forEach(option => {
-                                option.selected = tagArray.includes(option.value);
-                            });
-                        }
+                    // Etiketleri güncelle
+                    tagInputField.removeActiveItems();
+                    if (Array.isArray(data.tag_ids)) {
+                        data.tag_ids.forEach(tagId => {
+                            tagInputField.setChoiceByValue(String(tagId));
+                        });
                     }
 
                     // Modalı göster
-                    var modal = new bootstrap.Modal(document.getElementById('showModal'));
-                    modal.show();
+                    new bootstrap.Modal(document.getElementById('showModal')).show();
                 })
-                .catch(error => {
-                    console.error('Error:', error);
+                .catch(err => {
+                    console.error('EditContact error:', err);
                     alert('Veriler yüklenirken bir hata oluştu!');
                 });
         }
 
-        // Form submit olduğunda add ve edit işlemleri için
+        // Form submit override (PUT için)
         document.getElementById('contactForm').addEventListener('submit', function(e) {
-            const method = document.getElementById('method').value;
-
-            // Edit durumunda method override için
-            if (method === 'PUT') {
+            if (document.getElementById('method').value === 'PUT') {
                 e.preventDefault();
-                const form = this;
-                const formData = new FormData(form);
+                const formData = new FormData(this);
                 const contactId = document.getElementById('contact_id').value;
 
                 fetch("{{ route('contacts.index') }}/" + contactId, {
@@ -581,26 +552,17 @@
                                 'content')
                         }
                     })
-                    .then(response => {
-                        if (response.ok) {
-                            window.location.reload();
-                        } else {
-                            throw new Error('Kayıt düzenlenirken bir hata oluştu');
-                        }
+                    .then(res => {
+                        if (res.ok) window.location.reload();
+                        else throw new Error();
                     })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        alert('Kayıt düzenlenirken bir hata oluştu!');
-                    });
+                    .catch(() => alert('Kayıt düzenlenirken bir hata oluştu!'));
             }
         });
 
-        // Modal kapandığında formu sıfırla
-        document.getElementById('close-modal').addEventListener('click', function() {
-            resetForm();
-        });
+        // Formu sıfırlarken etiketleri de temizle
+        document.getElementById('close-modal').addEventListener('click', resetForm);
 
-        // Formu sıfırlama fonksiyonu
         function resetForm() {
             document.getElementById('contactForm').reset();
             document.getElementById('method').value = 'POST';
@@ -608,76 +570,177 @@
             document.getElementById('modalTitle').innerText = "{{ __('contacts.add_contact') }}";
             document.getElementById('submitBtn').innerText = "{{ __('contacts.add') }}";
             document.getElementById('contactForm').action = "{{ route('contacts.store') }}";
-
-            // Resmi sıfırla
             document.getElementById('customer-img').src = "assets/images/users/user-dummy-img.jpg";
+            tagInputField.removeActiveItems();
         }
-        
-        // Görüntüle butonuna tıklandığında contact detaylarını göster
+
+        // Detay paneli & görüntüle tuşu davranışı
         document.addEventListener('DOMContentLoaded', function() {
-            // Tüm görüntüle butonlarını seç
-            const viewButtons = document.querySelectorAll('.view-item-btn');
-            
-            // Her butona tıklama olayı ekle
-            viewButtons.forEach(function(button) {
-                button.addEventListener('click', function(e) {
+            document.querySelectorAll('.view-item-btn').forEach(btn => {
+                btn.addEventListener('click', function(e) {
                     e.preventDefault();
-                    
-                    // Kişi ID'sini al
-                    const row = this.closest('tr');
-                    const contactId = row.querySelector('.edit-item-btn').getAttribute('onclick').match(/\d+/)[0];
-                    
-                    // AJAX ile contact detaylarını çek
-                    fetch("{{ route('contacts.details', ['id' => ':id']) }}".replace(':id', contactId), {
-                        method: 'GET',
+                    const tr = this.closest('tr');
+                    const contactId = tr.querySelector('.edit-item-btn').getAttribute('onclick')
+                        .match(/\d+/)[0];
+
+                    fetch("{{ route('contacts.details', ['id' => ':id']) }}".replace(':id',
+                            contactId), {
+                            method: 'GET',
+                            headers: {
+                                'Accept': 'text/html',
+                                'X-CSRF-TOKEN': document.querySelector(
+                                    'meta[name="csrf-token"]').getAttribute('content')
+                            }
+                        })
+                        .then(res => res.text())
+                        .then(html => {
+                            const detail = document.getElementById('contact-view-detail');
+                            detail.innerHTML = html;
+                            detail.style.display = 'block';
+                            document.getElementById('contact-content-area').classList.replace(
+                                'col-xxl-12', 'col-xxl-9');
+                            document.getElementById('contact-detail-area').style.display =
+                                'block';
+
+                            document.getElementById('contact-detail-close')?.addEventListener(
+                                'click', () => {
+                                    detail.style.display = 'none';
+                                    document.getElementById('contact-detail-area').style
+                                        .display = 'none';
+                                    document.getElementById('contact-content-area')
+                                        .classList.replace('col-xxl-9', 'col-xxl-12');
+                                });
+                        })
+                        .catch(() => alert('Detaylar yüklenirken bir hata oluştu!'));
+                });
+            });
+
+            // Başlangıçta detay kapalıysa alanı genişlet
+            const detailPanel = document.getElementById('contact-view-detail');
+            if (detailPanel.style.display === 'none') {
+                document.getElementById('contact-detail-area').style.display = 'none';
+                document.getElementById('contact-content-area').classList.replace('col-xxl-9', 'col-xxl-12');
+            }
+        });
+
+        function deleteContact(contactId) {
+            // 1️⃣ Önce onay sor
+            Swal.fire({
+                html: `
+      <div class="mt-3">
+        <lord-icon
+          src="https://cdn.lordicon.com/gsqxdxog.json"
+          trigger="loop"
+          colors="primary:#f7b84b,secondary:#f06548"
+          style="width:100px;height:100px">
+        </lord-icon>
+        <div class="mt-4 pt-2 fs-15 mx-5">
+          <h4>{{ __('contacts.delete_contact') }}</h4>
+          <p class="text-muted mx-4 mb-0">{{ __('contacts.delete_contact_info') }}</p>
+        </div>
+      </div>`,
+                showCancelButton: true,
+                customClass: {
+                    confirmButton: "btn btn-primary w-xs me-2 mb-1",
+                    cancelButton: "btn btn-danger w-xs mb-1",
+                },
+                cancelButtonText: "{{ __('contacts.no') }}",
+                confirmButtonText: "{{ __('contacts.yes') }}",
+                buttonsStyling: false,
+                showCloseButton: true
+            }).then((result) => {
+                if (!result.isConfirmed) return;
+
+                // 2️⃣ Onay verildiyse silme isteğini yolla
+                const destroyUrlTemplate = "{{ route('contacts.destroy', ':id') }}";
+                fetch(destroyUrlTemplate.replace(':id', contactId), {
+                        method: 'DELETE',
                         headers: {
-                            'Accept': 'text/html',
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                            'Accept': 'application/json'
                         }
                     })
-                    .then(response => response.text())
-                    .then(html => {
-                        // Detay panelini güncelle
-                        const detailPanel = document.getElementById('contact-view-detail');
-                        detailPanel.innerHTML = html;
-                        detailPanel.style.display = 'block';
-                        
-                        // Content alanını daralt
-                        document.getElementById('contact-content-area').classList.remove('col-xxl-12');
-                        document.getElementById('contact-content-area').classList.add('col-xxl-9');
-                        
-                        // Detay alanını göster
-                        document.getElementById('contact-detail-area').style.display = 'block';
-                        
-                        // Kapat butonuna tıklama olayı ekle
-                        const closeButton = document.getElementById('contact-detail-close');
-                        if (closeButton) {
-                            closeButton.addEventListener('click', function() {
-                                // Detay panelini gizle
-                                detailPanel.style.display = 'none';
-                                
-                                // Detay alanını gizle
-                                document.getElementById('contact-detail-area').style.display = 'none';
-                                
-                                // Content alanını genişlet
-                                document.getElementById('contact-content-area').classList.remove('col-xxl-9');
-                                document.getElementById('contact-content-area').classList.add('col-xxl-12');
+                    .then(async response => {
+                        const data = await response.json();
+                        if (response.ok) {
+                            // 3️⃣ Başarılıysa başarı uyarısı göster ve yenile
+                            Swal.fire({
+                                html: `
+            <div class="mt-3">
+              <lord-icon
+                src="https://cdn.lordicon.com/lupuorrc.json"
+                trigger="loop"
+                colors="primary:#0ab39c,secondary:#405189"
+                style="width:120px;height:120px">
+              </lord-icon>
+              <div class="mt-4 pt-2 fs-15">
+                <h4>Well done !</h4>
+                <p class="text-muted mx-4 mb-0">Contact has been deleted.</p>
+              </div>
+            </div>`,
+                                showCancelButton: true,
+                                showConfirmButton: false,
+                                customClass: {
+                                    cancelButton: "btn btn-primary w-xs mb-1"
+                                },
+                                cancelButtonText: "Back",
+                                buttonsStyling: false,
+                                showCloseButton: true
+                            }).then(() => window.location.reload());
+                        } else {
+                            // 4️⃣ Hata mesajını göster
+                            Swal.fire({
+                                html: `
+            <div class="mt-3">
+              <lord-icon
+                src="https://cdn.lordicon.com/tdrtiskw.json"
+                trigger="loop"
+                colors="primary:#f06548,secondary:#f7b84b"
+                style="width:120px;height:120px">
+              </lord-icon>
+              <div class="mt-4 pt-2 fs-15">
+                <h4>Oops...! Something went Wrong !</h4>
+                <p class="text-muted mx-4 mb-0">${data.message || 'Silme işlemi başarısız oldu.'}</p>
+              </div>
+            </div>`,
+                                showCancelButton: true,
+                                showConfirmButton: false,
+                                customClass: {
+                                    cancelButton: "btn btn-primary w-xs mb-1"
+                                },
+                                cancelButtonText: "Dismiss",
+                                buttonsStyling: false,
+                                showCloseButton: true
                             });
                         }
                     })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        alert('Veriler yüklenirken bir hata oluştu!');
+                    .catch(() => {
+                        // 5️⃣ Network hatası vs.
+                        Swal.fire({
+                            html: `
+          <div class="mt-3">
+            <lord-icon
+              src="https://cdn.lordicon.com/tdrtiskw.json"
+              trigger="loop"
+              colors="primary:#f06548,secondary:#f7b84b"
+              style="width:120px;height:120px">
+            </lord-icon>
+            <div class="mt-4 pt-2 fs-15">
+              <h4>Oops...! Something went Wrong !</h4>
+              <p class="text-muted mx-4 mb-0">Bir hata oluştu. Lütfen tekrar deneyin.</p>
+            </div>
+          </div>`,
+                            showCancelButton: true,
+                            showConfirmButton: false,
+                            customClass: {
+                                cancelButton: "btn btn-primary w-xs mb-1"
+                            },
+                            cancelButtonText: "Dismiss",
+                            buttonsStyling: false,
+                            showCloseButton: true
+                        });
                     });
-                });
             });
-            
-            // Sayfa yüklendiğinde detay paneli kapalıysa content alanını genişlet
-            if (document.getElementById('contact-view-detail').style.display === 'none') {
-                document.getElementById('contact-detail-area').style.display = 'none';
-                document.getElementById('contact-content-area').classList.remove('col-xxl-9');
-                document.getElementById('contact-content-area').classList.add('col-xxl-12');
-            }
-        });
+        }
     </script>
 @endsection

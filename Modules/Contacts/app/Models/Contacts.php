@@ -22,7 +22,7 @@ class Contacts extends Model
         'company_name',
         'designation',
         'lead_score',
-        'tags',
+        // 'tags',   //pivot tablosu için kaldırıldı
         'image',
     ];
 
@@ -35,6 +35,12 @@ class Contacts extends Model
     public function user()
     {
         return $this->belongsTo(User::class, 'id');
+    }
+
+    // pivot tablosu için: contact_id ve tag_id ile ilişkilendirme yapıyoruz.
+    public function tags()
+    {
+        return $this->belongsToMany(Tags::class, 'contacts_tags', 'contact_id', 'tag_id');
     }
     
 }

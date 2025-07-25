@@ -10,6 +10,7 @@ use Exception;
 use Maatwebsite\Excel\Facades\Excel;
 use Modules\Contacts\Exports\ContactsExport;
 use Modules\Contacts\Imports\ContactsImport;
+use Modules\Contacts\Models\Tags;
 
 class ContactsController extends Controller
 {
@@ -19,7 +20,8 @@ class ContactsController extends Controller
     public function index()
     {
         $contacts = Contacts::all();
-        return view('contacts::index', compact('contacts'));
+        $tags = Tags::all();
+        return view('contacts::index', compact('contacts', 'tags'));
     }
 
     /**
@@ -42,11 +44,15 @@ class ContactsController extends Controller
                 'company_name' => 'required|string|max:255',
                 'designation' => 'required|string|max:255',
                 'lead_score' => 'required|integer',
-                'tags' => 'nullable|string',
+                'tags' => 'nullable|array',    //tags array olarak geliyor.
             ]);
 
+            $tags = $validated['tags'];
+            unset($validated['tags']);
+            
+            $contact = Contacts::create($validated);
+            $contact->tags()->attach($tags);  //tags array olarak geliyor. 
 
-            Contacts::create($validated);
 
             return redirect()->route('contacts.index')->with('success', 'Contact created successfully');
         } catch (Exception $e) {
@@ -66,8 +72,13 @@ class ContactsController extends Controller
      */
     public function edit($id)
     {
-        $contact = Contacts::findOrFail($id);
-        return response()->json($contact);
+        $contact = Contacts::with('tags')->findOrFail($id);
+        $contactData = $contact->toArray();
+        
+        // Etiketleri ID değerleriyle birlikte ekleyelim
+        $contactData['tag_ids'] = $contact->tags->pluck('id')->toArray();
+        
+        return response()->json($contactData);
     }
 
     /**
@@ -83,11 +94,20 @@ class ContactsController extends Controller
                 'company_name' => 'required|string|max:255',
                 'designation' => 'required|string|max:255',
                 'lead_score' => 'required|integer',
-                'tags' => 'nullable|string',
+                'tags' => 'nullable|array',
             ]);
 
             $contact = Contacts::findOrFail($id);
+            
+            // Etiketleri ayır ve diğer bilgileri güncelle
+            $tags = $validated['tags'] ?? [];
+            unset($validated['tags']);
+            
+            // Contact bilgilerini güncelle
             $contact->update($validated);
+            
+            // Etiketleri güncelle
+            $contact->tags()->sync($tags);
 
             return redirect()->route('contacts.index')->with('success', 'Contact updated successfully');
         } catch (Exception $e) {
@@ -98,7 +118,32 @@ class ContactsController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy($id) {}
+    public function destroy($id) 
+    {
+        try {
+            $contact = Contacts::findOrFail($id);
+            
+            // Önce tag ilişkilerini sil
+            $contact->tags()->detach();
+            
+            // Sonra contact'ı sil
+            $contact->delete();
+            
+            // AJAX isteği ise JSON response döndür
+            if (request()->expectsJson()) {
+                return response()->json(['success' => true, 'message' => 'Contact deleted successfully']);
+            }
+            
+            return redirect()->route('contacts.index')->with('success', 'Contact deleted successfully');
+        } catch (Exception $e) {
+            // AJAX isteği ise JSON error response döndür  
+            if (request()->expectsJson()) {
+                return response()->json(['success' => false, 'message' => 'Kayıt silinemedi: ' . $e->getMessage()], 500);
+            }
+            
+            return redirect()->back()->with('error', 'Kayıt silinemedi')->with('error_message', $e->getMessage());
+        }
+    }
     
     /**
      * Get contact details for AJAX request

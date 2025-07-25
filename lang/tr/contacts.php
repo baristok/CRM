@@ -44,7 +44,11 @@ return [
     'upload_and_import' => 'Yükle ve İçe Aktar',
     'personal_information' => 'Kişisel Bilgiler',
     'no_description' => 'Açıklama yok',
-    'never' => 'Hiç'
+    'never' => 'Hiç',
+    'delete_contact' => 'Kişiyi Sil',
+    'delete_contact_info' => 'Bu kişiyi silmek istediğinize emin misiniz?',
+    'no' => 'Hayır, Tut',
+    'yes' => 'Evet, Sil!',
 ];
 
 ?>

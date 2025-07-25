@@ -44,7 +44,11 @@ return [
     'upload_and_import' => 'Upload & Import',
     'personal_information' => 'Personal Information',
     'no_description' => 'No description available',
-    'never' => 'Never'
+    'never' => 'Never',
+    'delete_contact' => 'Delete Contact',
+    'delete_contact_info' => 'Are you sure you want to delete this contact?',
+    'no' => 'No, Keep It',
+    'yes' => 'Yes, Delete It!',
 ];
 
 ?>

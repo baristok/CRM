@@ -6,6 +6,7 @@ use Modules\Contacts\Http\Controllers\ContactsController;
 Route::middleware(['auth', 'permission:view-contact'])->group(function () {
     Route::resource('contacts', ContactsController::class)->names('contacts');
     
+    
     // Kişi detaylarını getiren rota
     Route::get('contacts/{id}/details', [ContactsController::class, 'getContactDetails'])->name('contacts.details');
     

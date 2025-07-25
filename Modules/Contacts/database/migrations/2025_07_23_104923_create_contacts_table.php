@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('company_name')->nullable();
             $table->string('designation')->nullable();
             $table->string('lead_score')->nullable();
-            $table->string('tags')->nullable();
+            // $table->string('tags')->nullable();
             $table->string('last_contacted_at')->nullable()->default(null);
             $table->softDeletes();
             $table->timestamps();
