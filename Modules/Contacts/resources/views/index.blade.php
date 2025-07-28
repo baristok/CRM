@@ -42,6 +42,7 @@
                 height: 36px;
             }
             
+            
             #sortOrderBtn {
                 height: 36px;
             }
