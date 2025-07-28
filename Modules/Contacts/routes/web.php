@@ -6,6 +6,9 @@ use Modules\Contacts\Http\Controllers\ContactsController;
 Route::middleware(['auth', 'permission:view-contact'])->group(function () {
     Route::resource('contacts', ContactsController::class)->names('contacts');
     
+    // Arama route'ları
+    Route::get('contacts-search', [ContactsController::class, 'search'])->name('contacts.search');
+    Route::get('contacts-advanced-search', [ContactsController::class, 'advancedSearch'])->name('contacts.advanced.search');
     
     // Kişi detaylarını getiren rota
     Route::get('contacts/{id}/details', [ContactsController::class, 'getContactDetails'])->name('contacts.details');

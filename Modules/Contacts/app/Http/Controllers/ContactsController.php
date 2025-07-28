@@ -17,12 +17,20 @@ class ContactsController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        // $contacts = Contacts::orderBy('name', 'asc')->get();
-        $contacts = Contacts::orderBy('name', 'asc')->paginate(10);
+        $query = $request->get('search');
+        
+        if ($query) {
+            // Scout ile arama yapıyoruz
+            $contacts = Contacts::search($query)->paginate(10);
+        } else {
+            // Normal listeleme
+            $contacts = Contacts::orderBy('name', 'asc')->paginate(10);
+        }
+        
         $tags = Tags::all();
-        return view('contacts::index', compact('contacts', 'tags'));
+        return view('contacts::index', compact('contacts', 'tags', 'query'));
     }
 
     /**

@@ -116,11 +116,22 @@
                         <div class="card-header">
                             <div class="row g-3">
                                 <div class="col-md-4">
-                                    <div class="search-box">
-                                        <input type="text" class="form-control search"
-                                            placeholder="{{ __('contacts.search') }}">
-                                        <i class="ri-search-line search-icon"></i>
-                                    </div>
+                                    <form method="GET" action="{{ route('contacts.index') }}" id="searchForm">
+                                        <div class="search-box">
+                                            <input type="text" name="search" class="form-control search" id="liveSearchInput"
+                                                placeholder="{{ __('contacts.search') }}" 
+                                                value="{{ request('search') }}">
+                                            <i class="ri-search-line search-icon"></i>
+                                        </div>
+                                        {{-- @if(request('search'))
+                                            <div class="mt-2">
+                                                <small class="text-muted">
+                                                    "{{ request('search') }}" için arama sonuçları 
+                                                    <a href="{{ route('contacts.index') }}" class="text-decoration-underline">Temizle</a>
+                                                </small>
+                                            </div>
+                                        @endif --}}
+                                    </form>
                                 </div>
                                 <div class="col-md-auto ms-auto">
                                     <div class="d-flex align-items-center gap-2">
@@ -480,6 +491,29 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/choices.js/10.2.0/choices.min.js"></script>
 
     <script>
+        // Live Search Fonksiyonalitesi
+        let searchTimeout;
+        const searchInput = document.getElementById('liveSearchInput');
+        
+        searchInput.addEventListener('input', function(e) {
+            clearTimeout(searchTimeout);
+             searchTimeout = setTimeout(() => {
+                if (searchInput.value.trim() !== '') {
+                    document.getElementById('searchForm').submit();
+                }
+            }, 500); // 500ms bekle
+        });
+
+        // Sayfa yüklendiğinde search değeri varsa input'a focus ver
+        document.addEventListener('DOMContentLoaded', function() {
+            if (searchInput.value.trim() !== '') {
+                searchInput.focus();
+                // Cursor'u text'in sonuna getir
+                searchInput.setSelectionRange(searchInput.value.length, searchInput.value.length);
+            }
+        });
+
+
         // Choices.js instance’ı globalde tutuyoruz
         const tagInputField = new Choices("#taginput-choices", {
             removeItemButton: true,

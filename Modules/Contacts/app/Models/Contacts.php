@@ -6,11 +6,12 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Models\User;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Laravel\Scout\Searchable;
 // use Modules\Contacts\Database\Factories\ContactsFactory;
 
 class Contacts extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, Searchable;
 
     /**
      * The attributes that are mass assignable.
@@ -41,6 +42,29 @@ class Contacts extends Model
     public function tags()
     {
         return $this->belongsToMany(Tags::class, 'contacts_tags', 'contact_id', 'tag_id');
+    }
+
+    /**
+     * Scout için aranabilir alanları belirtir
+     */
+    public function toSearchableArray()
+    {
+        return [
+            'id' => $this->id,
+            'name' => $this->name,
+            'email' => $this->email,
+            'phone' => $this->phone,
+            'company_name' => $this->company_name,
+            'designation' => $this->designation,
+        ];
+    }
+
+    /**
+     * Scout index adını özelleştirir
+     */
+    public function searchableAs()
+    {
+        return 'contacts_index';
     }
     
 }
