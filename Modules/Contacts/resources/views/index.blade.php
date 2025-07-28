@@ -261,13 +261,15 @@
                                 </div>
                                 <div class="d-flex justify-content-end mt-3">
                                     <div class="pagination-wrap hstack gap-2">
-                                        <a class="page-item pagination-prev disabled" href="#">
+                                        {{-- <a class="page-item pagination-prev disabled" href="#">
                                             {{ __('contacts.previous') }}
                                         </a>
                                         <ul class="pagination listjs-pagination mb-0"></ul>
                                         <a class="page-item pagination-next" href="#">
                                             {{ __('contacts.next') }}
-                                        </a>
+                                        </a> --}}
+                                        {{-- {{{ $contacts->links() }}} --}}
+                                        @include('contacts::custom-pagination',['paginator' => $contacts])
                                     </div>
                                 </div>
                             </div>
