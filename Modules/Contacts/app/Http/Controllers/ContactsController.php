@@ -17,20 +17,27 @@ class ContactsController extends Controller
     /**
      * Display a listing of the resource.
      */
+    
     public function index(Request $request)
     {
         $query = $request->get('search');
+        $sortBy = $request->get('sort_by', 'name');
+        $sortOrder = $request->get('sort_order', 'asc');
+        
+        //whitelist sort_by ve sort_order
+        $sortBy = in_array($sortBy, ['name', 'company_name', 'lead_score', 'created_at']) ? $sortBy : 'name';
+        $sortOrder = in_array($sortOrder, ['asc', 'desc']) ? $sortOrder : 'asc';
         
         if ($query) {
-            // Scout ile arama yapıyoruz
-            $contacts = Contacts::search($query)->paginate(10);
+            // Scout ile arama + sorting
+            $contacts = Contacts::search($query)->orderBy($sortBy, $sortOrder)->paginate(10);
         } else {
             // Normal listeleme
-            $contacts = Contacts::orderBy('name', 'asc')->paginate(10);
+            $contacts = Contacts::orderBy($sortBy, $sortOrder)->paginate(10);
         }
-        
+        $contacts->appends(request()->query());
         $tags = Tags::all();
-        return view('contacts::index', compact('contacts', 'tags', 'query'));
+        return view('contacts::index', compact('contacts', 'tags', 'query', 'sortBy', 'sortOrder'));
     }
 
     /**

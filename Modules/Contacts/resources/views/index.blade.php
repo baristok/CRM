@@ -7,6 +7,45 @@
         #contact-detail-area {
             display: none;
         }
+        
+        /* Choices.js select kutusu hizalama düzeltmeleri */
+        .choices {
+            margin-bottom: 0 !important;
+            display: flex;
+            align-items: center;
+        }
+        
+        .choices__inner {
+            min-height: 38px;
+            height: 38px;
+            border-radius: 0.375rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        .choices__list--single {
+            padding: 4px 16px 4px 4px;
+        }
+        
+        /* Sort butonu yüksekliği eşitleme */
+        #sortOrderBtn {
+            height: 38px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* Responsive için ek güvenlik */
+        @media (max-width: 768px) {
+            .choices__inner {
+                min-height: 36px;
+                height: 36px;
+            }
+            
+            #sortOrderBtn {
+                height: 36px;
+            }
+        }
     </style>
 @endsection
 
@@ -118,12 +157,12 @@
                                 <div class="col-md-4">
                                     <form method="GET" action="{{ route('contacts.index') }}" id="searchForm">
                                         <div class="search-box">
-                                            <input type="text" name="search" class="form-control search" id="liveSearchInput"
-                                                placeholder="{{ __('contacts.search') }}" 
+                                            <input type="text" name="search" class="form-control search"
+                                                id="liveSearchInput" placeholder="{{ __('contacts.search') }}"
                                                 value="{{ request('search') }}">
                                             <i class="ri-search-line search-icon"></i>
                                         </div>
-                                        {{-- @if(request('search'))
+                                        {{-- @if (request('search'))
                                             <div class="mt-2">
                                                 <small class="text-muted">
                                                     "{{ request('search') }}" için arama sonuçları 
@@ -138,11 +177,28 @@
                                         <span class="text-muted">{{ __('contacts.sort_by') }}: </span>
                                         <select class="form-control mb-0" data-choices data-choices-search-false
                                             id="choices-single-default">
-                                            <option value="name">{{ __('contacts.name') }}</option>
-                                            <option value="company_name">{{ __('contacts.company') }}</option>
-                                            <option value="lead_score">{{ __('contacts.lead') }}</option>
-                                            <option value="created_at">{{ __('contacts.created_at') }}</option>
+                                            <option value="name" {{ request('sort_by') == 'name' ? 'selected' : '' }}>
+                                                {{ __('contacts.name') }}</option>
+                                            <option value="company_name"
+                                                {{ request('sort_by') == 'company_name' ? 'selected' : '' }}>
+                                                {{ __('contacts.company') }}</option>
+                                            <option value="lead_score"
+                                                {{ request('sort_by') == 'lead_score' ? 'selected' : '' }}>
+                                                {{ __('contacts.lead') }}</option>
+                                            <option value="created_at"
+                                                {{ request('sort_by') == 'created_at' ? 'selected' : '' }}>
+                                                {{ __('contacts.created_at') }}</option>
                                         </select>
+
+                                        <!-- Sort Order Butonu -->
+                                        <button type="button" class="btn btn-outline-secondary" id="sortOrderBtn"
+                                            title="{{ request('sort_order') == 'asc' ? 'Azalan sıralama' : 'Artan sıralama' }}">
+                                            @if (request('sort_order', 'asc') == 'asc')
+                                                <i class="ri-sort-asc"></i>
+                                            @else
+                                                <i class="ri-sort-desc"></i>
+                                            @endif
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -245,7 +301,6 @@
                                                                                     class="ri-pencil-fill align-bottom me-2 text-muted"></i>
                                                                                 {{ __('contacts.edit') }}</a></li>
                                                                         <li><a class="dropdown-item remove-item-btn"
-
                                                                                 href="javascript:void(0);"
                                                                                 onclick="deleteContact({{ $contact->id }})"><i
                                                                                     class="ri-delete-bin-fill align-bottom me-2 text-muted"></i>
@@ -280,7 +335,7 @@
                                             {{ __('contacts.next') }}
                                         </a> --}}
                                         {{-- {{{ $contacts->links() }}} --}}
-                                        @include('contacts::custom-pagination',['paginator' => $contacts])
+                                        @include('contacts::custom-pagination', ['paginator' => $contacts])
                                     </div>
                                 </div>
                             </div>
@@ -491,13 +546,29 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/choices.js/10.2.0/choices.min.js"></script>
 
     <script>
+        // Sort order button click handler
+document.getElementById('sortOrderBtn').addEventListener('click', function(e) {
+    const currentUrl = new URL(window.location);
+    const currentOrder = currentUrl.searchParams.get('sort_order') || 'asc';
+    const newOrder = currentOrder === 'asc' ? 'desc' : 'asc';
+    
+    currentUrl.searchParams.set('sort_order', newOrder);
+    window.location.href = currentUrl.toString();
+});
+        // Sort dropdown change handler
+        document.getElementById('choices-single-default').addEventListener('change', function(e) {
+            const currentUrl = new URL(window.location);
+            currentUrl.searchParams.set('sort_by', e.target.value);
+            window.location.href = currentUrl.toString();
+        });
+
         // Live Search Fonksiyonalitesi
         let searchTimeout;
         const searchInput = document.getElementById('liveSearchInput');
-        
+
         searchInput.addEventListener('input', function(e) {
             clearTimeout(searchTimeout);
-             searchTimeout = setTimeout(() => {
+            searchTimeout = setTimeout(() => {
                 if (searchInput.value.trim() !== '') {
                     document.getElementById('searchForm').submit();
                 }
@@ -779,7 +850,5 @@
                     });
             });
         }
-
-
     </script>
 @endsection
