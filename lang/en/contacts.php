@@ -53,6 +53,19 @@ return [
     'contact_deleted_info' => 'Contact has been deleted.',
     'back' => 'Back',
     'created_at' => 'Created At',
+    'select_tag' => 'Select tag or search...',
+    'no_results' => 'No results found',
+    'select_item' => 'Select item',
+    'error_loading_data' => 'Error loading data',
+    'error_saving_data' => 'Error saving data',
+    'error_loading_detail' => 'Error loading detail',
+    'error_deleting_data' => 'Error deleting data',
+    'no_record_selected' => 'No record selected',
+    'please_select_records' => 'Please select records',
+    'delete_multiple_contacts' => 'Delete Multiple Contacts',
+    'delete_multiple_contacts_info' => 'Delete multiple contacts',
+    'contact_deleted_info' => 'Contact has been deleted.',
+    
 ];
 
 ?>

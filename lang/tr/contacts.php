@@ -53,6 +53,17 @@ return [
     'contact_deleted_info' => 'Kişi başarıyla silindi.',
     'back' => 'Geri',   
     'created_at' => 'Oluşturulma Tarihi',
+    'select_tag' => 'Etiket seçin veya arayın...',
+    'no_results' => 'Sonuç bulunamadı',
+    'select_item' => 'Seçmek için tıklayın',
+    'error_loading_data' => 'Veriler yüklenirken bir hata oluştu!',
+    'error_saving_data' => 'Kayıt düzenlenirken bir hata oluştu!',
+    'error_loading_detail' => 'Detaylar yüklenirken bir hata oluştu!',
+    'error_deleting_data' => 'Silme işlemi başarısız oldu!',
+    'no_record_selected' => 'Hiç kayıt seçilmedi',
+    'please_select_records' => 'Lütfen silmek istediğiniz kayıtları seçin.',
+    'delete_multiple_contacts' => 'Toplu Silme Onayı',
+    'delete_multiple_contacts_info' => 'Toplu silme işlemi yapılacak. Emin misiniz?',
 ];
 
 ?>

@@ -665,21 +665,45 @@
                             <a class="nav-link menu-link" href="#sidebarApps" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarApps">
                                 <i class="ri-apps-2-line"></i> <span data-key="t-apps">{{__('layout.apps')}}</span>
                             </a>
-                            <div class="collapse menu-dropdown {{request()->is('contacts') ? 'show' : ''}}" id="sidebarApps">
+                            {{-- <div class="collapse menu-dropdown {{request()->is('contacts') || request()->is('companies') ? 'show' : ''}}" id="sidebarApps">
                                 <ul class="nav nav-sm flex-column">
+                                    @if(Module::isEnabled('Contacts'))
                                     <li class="nav-item">
                                         <a href="{{route('contacts.index')}}" class="nav-link {{request()->is('contacts') ? 'active' : ''}}" data-key="t-contacts">{{__('layout.contacts')}}</a>
                                     </li>
+                                    @endif
+                                    @if(Module::isEnabled('Companies'))
                                     <li class="nav-item">
-                                        <a href="apps-crm-companies.html" class="nav-link" data-key="t-companies">{{__('layout.companies')}}</a>
+                                        <a href="{{route('companies.index')}}" class="nav-link {{request()->is('companies') ? 'active' : ''}}" data-key="t-companies">{{__('layout.companies')}}</a>
                                     </li>
+                                    @endif
                                     <li class="nav-item">
                                         <a href="apps-crm-deals.html" class="nav-link" data-key="t-deals">{{__('layout.deals')}}</a>
                                     </li>
                                     <li class="nav-item">
                                         <a href="apps-crm-leads.html" class="nav-link" data-key="t-leads">{{__('layout.leads')}}</a>
                                     </li>
-                                    
+                                </ul>
+                            </div> --}}
+                                                         @php
+                                 $isAppsMenuActive = false;
+                                 foreach (app('menu')->getItems() as $item) {
+                                     if (request()->url() == $item['url'] || request()->is(trim(parse_url($item['url'], PHP_URL_PATH), '/') . '/*')) {
+                                         $isAppsMenuActive = true;
+                                         break;
+                                     }
+                                 }
+                             @endphp
+                            <div class="collapse menu-dropdown {{$isAppsMenuActive ? 'show' : ''}}" id="sidebarApps">
+                                <ul class="nav nav-sm flex-column">
+                                    @foreach (app('menu')->getItems() as $item)
+                                        <li class="nav-item @if (request()->url() == $item['url']) active @endif">
+                                            <a href="{{ $item['url'] }}" class="nav-link @if (request()->url() == $item['url']) active @endif">
+                                                <i class="{{ $item['icon'] }}"></i> 
+                                                <span data-key="t-{{ strtolower($item['title']) }}">{{ __($item['title']) }}</span>
+                                            </a>
+                                        </li>
+                                    @endforeach
                                 </ul>
                             </div>
                         </li>

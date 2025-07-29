@@ -134,7 +134,7 @@
                                             data-bs-target="#importModal">{{ __('contacts.import') }}</button>
                                         <a href="{{ route('contacts.export') }}"
                                             class="btn btn-soft-success">{{ __('contacts.export') }}</a>
-                                        <button type="button" id="dropdownMenuLink1" data-bs-toggle="dropdown"
+                                        {{-- <button type="button" id="dropdownMenuLink1" data-bs-toggle="dropdown"
                                             aria-expanded="false" class="btn btn-soft-secondary"><i
                                                 class="ri-more-2-fill"></i></button>
                                         <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink1">
@@ -142,7 +142,7 @@
                                             <li><a class="dropdown-item" href="#">Last Week</a></li>
                                             <li><a class="dropdown-item" href="#">Last Month</a></li>
                                             <li><a class="dropdown-item" href="#">Last Year</a></li>
-                                        </ul>
+                                        </ul> --}}
                                     </div>
                                 </div>
                             </div>
@@ -542,6 +542,7 @@
 @endsection
 
 @section('js')
+
     <!-- Tek seferlik Choices.js yüklemesi -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/choices.js/10.2.0/choices.min.js"></script>
 
@@ -592,9 +593,9 @@ document.getElementById('sortOrderBtn').addEventListener('click', function(e) {
             searchChoices: true,
             searchFloor: 1,
             placeholder: true,
-            placeholderValue: 'Etiket seçin veya arayın...',
-            noResultsText: 'Sonuç bulunamadı',
-            itemSelectText: 'Seçmek için tıklayın'
+            placeholderValue: '{{ __('contacts.select_tag') }}',
+            noResultsText: '{{ __('contacts.no_results') }}',
+            itemSelectText: '{{ __('contacts.select_item') }}'
         });
 
         // Kişi düzenleme fonksiyonu
@@ -641,7 +642,7 @@ document.getElementById('sortOrderBtn').addEventListener('click', function(e) {
                 })
                 .catch(err => {
                     console.error('EditContact error:', err);
-                    alert('Veriler yüklenirken bir hata oluştu!');
+                    alert('{{ __('contacts.error_loading_data') }}');
                 });
         }
 
@@ -664,7 +665,7 @@ document.getElementById('sortOrderBtn').addEventListener('click', function(e) {
                         if (res.ok) window.location.reload();
                         else throw new Error();
                     })
-                    .catch(() => alert('Kayıt düzenlenirken bir hata oluştu!'));
+                    .catch(() => alert('{{ __('contacts.error_loading_data') }}'));
             }
         });
 
@@ -684,6 +685,33 @@ document.getElementById('sortOrderBtn').addEventListener('click', function(e) {
 
         // Detay paneli & görüntüle tuşu davranışı
         document.addEventListener('DOMContentLoaded', function() {
+            // Checkbox handler'larını başlat
+            initializeCheckboxHandlers();
+            
+            // Check All Contacts functionality
+            const checkAll = document.getElementById('checkAll');
+            if (checkAll) {
+                checkAll.addEventListener('change', function() {
+                    const checkboxes = document.querySelectorAll('input[name="chk_child"]');
+                    checkboxes.forEach(checkbox => {
+                        checkbox.checked = checkAll.checked;
+                        // Satır stilini güncelle
+                        if (checkbox.checked) {
+                            checkbox.closest('tr').classList.add('table-active');
+                        } else {
+                            checkbox.closest('tr').classList.remove('table-active');
+                        }
+                    });
+                    
+                    // Seçili checkbox sayısını kontrol et
+                    const checkedCount = document.querySelectorAll('input[name="chk_child"]:checked').length;
+                    const removeActions = document.getElementById('remove-actions');
+                    if (removeActions) {
+                        removeActions.style.display = checkedCount > 0 ? 'block' : 'none';
+                    }
+                });
+            }
+            
             document.querySelectorAll('.view-item-btn').forEach(btn => {
                 btn.addEventListener('click', function(e) {
                     e.preventDefault();
@@ -719,7 +747,7 @@ document.getElementById('sortOrderBtn').addEventListener('click', function(e) {
                                         .classList.replace('col-xxl-9', 'col-xxl-12');
                                 });
                         })
-                        .catch(() => alert('Detaylar yüklenirken bir hata oluştu!'));
+                        .catch(() => alert('{{ __('contacts.error_loading_data') }}'));
                 });
             });
 
@@ -808,7 +836,7 @@ document.getElementById('sortOrderBtn').addEventListener('click', function(e) {
               </lord-icon>
               <div class="mt-4 pt-2 fs-15">
                 <h4>Oops...! Something went Wrong !</h4>
-                <p class="text-muted mx-4 mb-0">${data.message || 'Silme işlemi başarısız oldu.'}</p>
+                <p class="text-muted mx-4 mb-0">${data.message || '{{ __('contacts.error_saving_data') }}'}</p>
               </div>
             </div>`,
                                 showCancelButton: true,
@@ -835,7 +863,7 @@ document.getElementById('sortOrderBtn').addEventListener('click', function(e) {
             </lord-icon>
             <div class="mt-4 pt-2 fs-15">
               <h4>Oops...! Something went Wrong !</h4>
-              <p class="text-muted mx-4 mb-0">Bir hata oluştu. Lütfen tekrar deneyin.</p>
+              <p class="text-muted mx-4 mb-0">${data.message || '{{ __('contacts.error_saving_data') }}'}</p>
             </div>
           </div>`,
                             showCancelButton: true,
@@ -849,6 +877,184 @@ document.getElementById('sortOrderBtn').addEventListener('click', function(e) {
                         });
                     });
             });
+        }
+        function initializeCheckboxHandlers() {
+            // Her bir checkbox için change event listener ekle
+            const childCheckboxes = document.getElementsByName("chk_child");
+            
+            if (childCheckboxes.length > 0) {
+                Array.from(childCheckboxes).forEach(function(checkbox) {
+                    checkbox.addEventListener("change", function(e) {
+                        const row = e.target.closest("tr");
+                        
+                        // Checkbox seçiliyse satırı aktif yap, değilse pasif yap
+                        if (checkbox.checked) {
+                            row.classList.add("table-active");
+                        } else {
+                            row.classList.remove("table-active");
+                        }
+                        
+                        // Seçili checkbox sayısını kontrol et
+                        const checkedCount = document.querySelectorAll('[name="chk_child"]:checked').length;
+                        
+                        // Silme butonunu göster/gizle
+                        const removeButton = document.getElementById("remove-actions");
+                        if (removeButton) {
+                            removeButton.style.display = checkedCount > 0 ? "block" : "none";
+                        }
+                    });
+                });
+            }
+        }
+
+
+
+        // Delete Multiple Contacts
+        function deleteMultiple() {
+            const checkboxes = document.querySelectorAll('input[name="chk_child"]:checked');
+            if (checkboxes.length === 0) {
+                Swal.fire({
+                    title: '{{ __('contacts.no_record_selected') }}',
+                    text: '{{ __('contacts.please_select_records') }}',
+                    icon: 'warning',
+                    confirmButtonClass: 'btn btn-primary',
+                    buttonsStyling: false
+                });
+                return;
+            }
+
+            // Seçili satırlardan contact ID'lerini al
+            const contactIds = [];
+            checkboxes.forEach(checkbox => {
+                const row = checkbox.closest('tr');
+                const editBtn = row.querySelector('.edit-item-btn');
+                if (editBtn) {
+                    const onclickAttr = editBtn.getAttribute('onclick');
+                    const idMatch = onclickAttr.match(/\d+/);
+                    if (idMatch) {
+                        contactIds.push(idMatch[0]);
+                    }
+                }
+            });
+
+            if (contactIds.length > 0) {
+                Swal.fire({
+                    title: '{{ __('contacts.delete_multiple_contacts') }}',
+                    text: `${contactIds.length} {{ __('contacts.delete_multiple_contacts_info') }}`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonClass: 'btn btn-danger',
+                    cancelButtonClass: 'btn btn-secondary',
+                    confirmButtonText: '{{ __('contacts.yes') }}',
+                    cancelButtonText: '{{ __('contacts.no') }}',
+                    buttonsStyling: false
+                }).then(async (result) => {
+                    if (result.isConfirmed) {
+                        // Toplu silme işlemi
+                        let successCount = 0;
+                        let errorCount = 0;
+                        
+                        for (const contactId of contactIds) {
+                            try {
+                                const destroyUrlTemplate = "{{ route('contacts.destroy', ':id') }}";
+                                const response = await fetch(destroyUrlTemplate.replace(':id', contactId), {
+                                    method: 'DELETE',
+                                    headers: {
+                                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                                        'Accept': 'application/json'
+                                    }
+                                });
+                                
+                                if (response.ok) {
+                                    successCount++;
+                                } else {
+                                    errorCount++;
+                                }
+                            } catch (error) {
+                                errorCount++;
+                            }
+                        }
+                        
+                        // Sonuç bildirimi
+                        if (successCount > 0 && errorCount === 0) {
+                            // Tümü başarılı
+                            Swal.fire({
+                                html: `
+                                <div class="mt-3">
+                                  <lord-icon
+                                    src="https://cdn.lordicon.com/lupuorrc.json"
+                                    trigger="loop"
+                                    colors="primary:#0ab39c,secondary:#405189"
+                                    style="width:120px;height:120px">
+                                  </lord-icon>
+                                  <div class="mt-4 pt-2 fs-15">
+                                    <h4>${successCount} {{ __('contacts.contact_deleted') }}</h4>
+                                    <p class="text-muted mx-4 mb-0">{{ __('contacts.contact_deleted_info') }}</p>
+                                  </div>
+                                </div>`,
+                                showCancelButton: true,
+                                showConfirmButton: false,
+                                customClass: {
+                                    cancelButton: "btn btn-primary w-xs mb-1"
+                                },
+                                cancelButtonText: "{{ __('contacts.back') }}",
+                                buttonsStyling: false,
+                                showCloseButton: true
+                            }).then(() => window.location.reload());
+                        } else if (successCount > 0 && errorCount > 0) {
+                            // Kısmi başarı
+                            Swal.fire({
+                                html: `
+                                <div class="mt-3">
+                                  <lord-icon
+                                    src="https://cdn.lordicon.com/tdrtiskw.json"
+                                    trigger="loop"
+                                    colors="primary:#f06548,secondary:#f7b84b"
+                                    style="width:120px;height:120px">
+                                  </lord-icon>
+                                  <div class="mt-4 pt-2 fs-15">
+                                    <h4>Kısmi Başarı</h4>
+                                    <p class="text-muted mx-4 mb-0">${successCount} kişi silindi, ${errorCount} kişi silinemedi.</p>
+                                  </div>
+                                </div>`,
+                                showCancelButton: true,
+                                showConfirmButton: false,
+                                customClass: {
+                                    cancelButton: "btn btn-primary w-xs mb-1"
+                                },
+                                cancelButtonText: "{{ __('contacts.back') }}",
+                                buttonsStyling: false,
+                                showCloseButton: true
+                            }).then(() => window.location.reload());
+                        } else {
+                            // Tümü başarısız
+                            Swal.fire({
+                                html: `
+                                <div class="mt-3">
+                                  <lord-icon
+                                    src="https://cdn.lordicon.com/tdrtiskw.json"
+                                    trigger="loop"
+                                    colors="primary:#f06548,secondary:#f7b84b"
+                                    style="width:120px;height:120px">
+                                  </lord-icon>
+                                  <div class="mt-4 pt-2 fs-15">
+                                    <h4>{{ __('contacts.error_deleting_data') }}</h4>
+                                    <p class="text-muted mx-4 mb-0">{{ __('contacts.no_record_selected') }}</p>
+                                  </div>
+                                </div>`,
+                                showCancelButton: true,
+                                showConfirmButton: false,
+                                customClass: {
+                                    cancelButton: "btn btn-primary w-xs mb-1"
+                                },
+                                cancelButtonText: "{{ __('contacts.back') }}",
+                                buttonsStyling: false,
+                                showCloseButton: true
+                            });
+                        }
+                    }
+                });
+            }
         }
     </script>
 @endsection
