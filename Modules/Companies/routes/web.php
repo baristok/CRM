@@ -5,4 +5,5 @@ use Modules\Companies\Http\Controllers\CompaniesController;
 
 Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::resource('companies', CompaniesController::class)->names('companies');
+    Route::get('companies-search', [CompaniesController::class, 'search'])->name('companies.search');
 });

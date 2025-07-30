@@ -8,7 +8,7 @@ Route::middleware(['auth', 'permission:view-contact'])->group(function () {
     
     // Arama route'ları
     Route::get('contacts-search', [ContactsController::class, 'search'])->name('contacts.search');
-    Route::get('contacts-advanced-search', [ContactsController::class, 'advancedSearch'])->name('contacts.advanced.search');
+    // Route::get('contacts-advanced-search', [ContactsController::class, 'advancedSearch'])->name('contacts.advanced.search');
     
     // Kişi detaylarını getiren rota
     Route::get('contacts/{id}/details', [ContactsController::class, 'getContactDetails'])->name('contacts.details');

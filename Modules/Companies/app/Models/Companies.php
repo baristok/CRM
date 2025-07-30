@@ -4,11 +4,12 @@ namespace Modules\Companies\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Laravel\Scout\Searchable;
 // use Modules\Companies\Database\Factories\CompaniesFactory;
 
 class Companies extends Model
 {
-    use HasFactory;
+    use HasFactory, Searchable;
 
     /**
      * The attributes that are mass assignable.
@@ -30,4 +31,21 @@ class Companies extends Model
     // {
     //     // return CompaniesFactory::new();
     // }
+
+    public function toSearchableArray()
+    {
+        return [
+            'name' => $this->name,
+            'owner_name' => $this->owner_name,
+            'industry_type' => $this->industry_type,
+            'website' => $this->website,
+            'contact_email' => $this->contact_email,
+            'location' => $this->location,
+        ];
+    }
+
+    public function searchableAs()
+    {
+        return 'companies_index';
+    }
 }

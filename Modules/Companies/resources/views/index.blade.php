@@ -117,11 +117,14 @@
                         <div class="card-header">
                             <div class="row g-2">
                                 <div class="col-md-3">
-                                    <div class="search-box">
-                                        <input type="text" class="form-control search"
-                                            placeholder="{{ __('companies.search_company') }}" />
-                                        <i class="ri-search-line search-icon"></i>
-                                    </div>
+                                    <form method="GET" action="{{ route('companies.search') }}" id="searchForm">
+                                        <div class="search-box">
+                                            <input type="text" name="search" class="form-control search" id="liveSearchInput"
+                                                value="{{ request('search') }}"
+                                                placeholder="{{ __('companies.search_company') }}" />
+                                            <i class="ri-search-line search-icon"></i>
+                                        </div>
+                                    </form>
                                 </div>
                                 <div class="col-md-auto ms-auto">
                                     <div class="d-flex align-items-center gap-2">
@@ -317,23 +320,28 @@
                                                             <h5 class="fs-13 mt-3">{{ __('companies.company_logo') }}</h5>
                                                         </div>
                                                         <div>
-                                                            <label for="companyname-field" class="form-label">{{ __('companies.company_name') }}</label>
+                                                            <label for="companyname-field"
+                                                                class="form-label">{{ __('companies.company_name') }}</label>
                                                             <input type="text" id="companyname-field" name="name"
-                                                                class="form-control" placeholder="{{ __('companies.company_name_placeholder') }}"
+                                                                class="form-control"
+                                                                placeholder="{{ __('companies.company_name_placeholder') }}"
                                                                 required />
                                                         </div>
                                                     </div>
                                                     <div class="col-lg-6">
                                                         <div>
-                                                            <label for="owner-field" class="form-label">{{ __('companies.owner_name') }}</label>
+                                                            <label for="owner-field"
+                                                                class="form-label">{{ __('companies.owner_name') }}</label>
                                                             <input type="text" id="owner-field" name="owner_name"
-                                                                class="form-control" placeholder="{{ __('companies.owner_name_placeholder') }}"
+                                                                class="form-control"
+                                                                placeholder="{{ __('companies.owner_name_placeholder') }}"
                                                                 required />
                                                         </div>
                                                     </div>
                                                     <div class="col-lg-6">
                                                         <div>
-                                                            <label for="industry_type-field" class="form-label">{{ __('companies.industry_type') }}</label>
+                                                            <label for="industry_type-field"
+                                                                class="form-label">{{ __('companies.industry_type') }}</label>
                                                             <select class="form-select" id="industry_type-field"
                                                                 name="industry_type">
                                                                 <option value="">
@@ -362,7 +370,8 @@
                                                             <label for="star_value-field"
                                                                 class="form-label">{{ __('companies.rating') }}</label>
                                                             <input type="text" id="star_value-field" name="rating"
-                                                                class="form-control" placeholder="{{ __('companies.rating_placeholder') }}"
+                                                                class="form-control"
+                                                                placeholder="{{ __('companies.rating_placeholder') }}"
                                                                 required />
                                                         </div>
                                                     </div>
@@ -371,7 +380,8 @@
                                                             <label for="location-field"
                                                                 class="form-label">{{ __('companies.location') }}</label>
                                                             <input type="text" id="location-field" name="location"
-                                                                class="form-control" placeholder="{{ __('companies.location_placeholder') }}"
+                                                                class="form-control"
+                                                                placeholder="{{ __('companies.location_placeholder') }}"
                                                                 required />
                                                         </div>
                                                     </div>
@@ -381,30 +391,38 @@
                                                                 class="form-label">{{ __('companies.employee') }}</label>
                                                             <input type="text" id="employee-field"
                                                                 name="employee_count" class="form-control"
-                                                                placeholder="{{ __('companies.employee_placeholder') }}" required />
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-lg-6">
-                                                        <div>
-                                                            <label for="website-field" class="form-label">{{ __('companies.website') }}</label>
-                                                            <input type="text" id="website-field" name="website"
-                                                                class="form-control" placeholder="{{ __('companies.website_placeholder') }}"
+                                                                placeholder="{{ __('companies.employee_placeholder') }}"
                                                                 required />
                                                         </div>
                                                     </div>
                                                     <div class="col-lg-6">
                                                         <div>
-                                                            <label for="contact_email-field" class="form-label">{{ __('companies.contact_email') }}</label>
+                                                            <label for="website-field"
+                                                                class="form-label">{{ __('companies.website') }}</label>
+                                                            <input type="text" id="website-field" name="website"
+                                                                class="form-control"
+                                                                placeholder="{{ __('companies.website_placeholder') }}"
+                                                                required />
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-6">
+                                                        <div>
+                                                            <label for="contact_email-field"
+                                                                class="form-label">{{ __('companies.contact_email') }}</label>
                                                             <input type="text" id="contact_email-field"
                                                                 name="contact_email" class="form-control"
-                                                                placeholder="{{ __('companies.contact_email_placeholder') }}" required />
+                                                                placeholder="{{ __('companies.contact_email_placeholder') }}"
+                                                                required />
                                                         </div>
                                                     </div>
                                                     <div class="col-lg-12">
                                                         <div>
-                                                            <label for="since-field" class="form-label">{{ __('companies.since') }}</label>
+                                                            <label for="since-field"
+                                                                class="form-label">{{ __('companies.since') }}</label>
                                                             <input type="text" id="since-field" name="since"
-                                                                class="form-control" placeholder="{{ __('companies.since_placeholder') }}" required />
+                                                                class="form-control"
+                                                                placeholder="{{ __('companies.since_placeholder') }}"
+                                                                required />
                                                         </div>
                                                     </div>
                                                 </div>
@@ -415,7 +433,7 @@
                                                         {{ __('companies.close') }}
                                                     </button>
                                                     <button type="submit" class="btn btn-success" id="submitBtn">
-                                                        {{ __('companies.add') }}
+                                                        {{ __('companies.add_company') }}
                                                     </button>
                                                     <!-- <button type="button" class="btn btn-success" id="edit-btn">Update</button> -->
                                                 </div>
@@ -638,10 +656,17 @@
                 }
             });
         }
+        // '.add-btn' sınıfına sahip olan "Ekle" butonunu bul
+        const addCompanyButton = document.querySelector('.add-btn');
 
+        // Bu butona her tıklandığında...
+        addCompanyButton.addEventListener('click', function() {
+            // Bootstrap'in modal'ı açmasından hemen önce formu sıfırla
+            resetForm();
+        });
 
         // Formu sıfırlarken etiketleri de temizle
-        document.getElementById('close-modal').addEventListener('click', resetForm);
+        document.getElementById('close-modal', 'add-btn').addEventListener('click', resetForm);
         //formu sıfırlama
 
         function resetForm() {
@@ -651,9 +676,34 @@
             document.getElementById('modalTitle').innerText = "{{ __('companies.add_company') }}";
             document.getElementById('submitBtn').innerText = "{{ __('companies.add_company') }}";
             document.getElementById('companyForm').action = "{{ route('companies.store') }}";
-            document.getElementById('customer-img').src = "assets/images/users/user-dummy-img.jpg";
-            tagInputField.removeActiveItems();
+            // document.getElementById('customer-img').src = "assets/images/users/user-dummy-img.jpg";
+            // tagInputField.removeActiveItems();
         }
+
+
+
+
+        // Live Search Fonksiyonalitesi
+        let searchTimeout;
+        const searchInput = document.getElementById('liveSearchInput');
+
+        searchInput.addEventListener('input', function(e) {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                if (searchInput.value.trim() !== '') {
+                    document.getElementById('searchForm').submit();
+                }
+            }, 500); // 500ms bekle
+        });
+
+        // Sayfa yüklendiğinde search değeri varsa input'a focus ver
+        document.addEventListener('DOMContentLoaded', function() {
+            if (searchInput.value.trim() !== '') {
+                searchInput.focus();
+                // Cursor'u text'in sonuna getir
+                searchInput.setSelectionRange(searchInput.value.length, searchInput.value.length);
+            }
+        });
     </script>
 
 @endsection

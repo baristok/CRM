@@ -113,4 +113,26 @@ class CompaniesController extends Controller
      * Remove the specified resource from storage.
      */
     public function destroy($id) {}
+
+
+
+
+
+    public function search(Request $request)
+    {
+        $query = $request->get('search');
+        $sortBy = $request->get('sort_by', 'name');
+        $sortOrder = $request->get('sort_order', 'asc');
+
+        $sortBy = in_array($sortBy, ['name', 'owner_name', 'location', 'industry_type', 'rating', 'employee_count', 'contact_email', 'since']) ? $sortBy : 'name';
+        $sortOrder = in_array($sortOrder, ['asc', 'desc']) ? $sortOrder : 'asc';
+
+        if ($query) {
+            $companies = Companies::search($query)->orderBy($sortBy, $sortOrder)->paginate(10);
+        } else {
+            $companies = Companies::orderBy($sortBy, $sortOrder)->paginate(10);
+        }
+        $companies->appends(request()->query());
+        return view('companies::index', compact('companies', 'query', 'sortBy', 'sortOrder'));
+    }
 }
