@@ -34,6 +34,7 @@ class CompaniesController extends Controller
     {
         try {
             $validated = $request->validate([
+                'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
                 'name' => 'required|string|max:255',
                 'owner_name' => 'required|string|max:255',
                 'industry_type' => 'required|string|max:255',
@@ -65,9 +66,17 @@ class CompaniesController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit($id)
+    public function edit(Request $request, $id)
     {
-        return view('companies::edit');
+        $company = Companies::findOrFail($id);
+        // Veriyi view'a gönder
+
+        //ajax isteğini kontrol et
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json($company);
+        }
+
+        return view('companies::edit', compact('company'));
     }
 
     /**
@@ -77,15 +86,16 @@ class CompaniesController extends Controller
     {
         try {
             $validated = $request->validate([
+                'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
                 'name' => 'required|string|max:255',
                 'owner_name' => 'required|string|max:255',
                 'industry_type' => 'required|string|max:255',
                 'rating' => 'required|integer',
                 'location' => 'required|string|max:255',
                 'website' => 'required|string|max:255',
-                'employee_count' => 'required|integer',
+                'employee_count' => 'required|string|max:255',
                 'contact_email' => 'required|email|max:255',
-                'since' => 'required|integer|max:4', //4 haneli yıl
+                'since' => 'required|string|max:4', //4 haneli yıl
             ]);
             $company = Companies::findOrFail($id);
             $company->update($validated);
@@ -93,8 +103,12 @@ class CompaniesController extends Controller
         } catch (Exception $e) {
             return redirect()->back()->with('error', 'Kayıt güncellenemedi')->with('error_message', $e->getMessage());
         }
+
     }
 
+    
+
+    
     /**
      * Remove the specified resource from storage.
      */

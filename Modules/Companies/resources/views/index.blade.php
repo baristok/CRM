@@ -75,7 +75,7 @@
                                 <div class="flex-grow-1">
                                     <button class="btn btn-primary add-btn" data-bs-toggle="modal"
                                         data-bs-target="#showModal">
-                                        <i class="ri-add-fill me-1 align-bottom"></i> {{ __('companies.add') }}
+                                        <i class="ri-add-fill me-1 align-bottom"></i> {{ __('companies.add_company') }}
                                     </button>
                                 </div>
                                 <div class="flex-shrink-0">
@@ -119,18 +119,18 @@
                                 <div class="col-md-3">
                                     <div class="search-box">
                                         <input type="text" class="form-control search"
-                                            placeholder="Search for company..." />
+                                            placeholder="{{ __('companies.search_company') }}" />
                                         <i class="ri-search-line search-icon"></i>
                                     </div>
                                 </div>
                                 <div class="col-md-auto ms-auto">
                                     <div class="d-flex align-items-center gap-2">
-                                        <span class="text-muted">Sort by: </span>
+                                        <span class="text-muted">{{ __('companies.sort_by') }}: </span>
                                         <select class="form-control mb-0" data-choices data-choices-search-false
                                             id="choices-single-default">
-                                            <option value="Owner">Owner</option>
-                                            <option value="Company">Company</option>
-                                            <option value="location">Location</option>
+                                            <option value="Owner">{{ __('companies.owner') }}</option>
+                                            <option value="Company">{{ __('companies.company') }}</option>
+                                            <option value="location">{{ __('companies.location') }}</option>
                                         </select>
                                     </div>
                                 </div>
@@ -149,21 +149,21 @@
                                                     </div>
                                                 </th>
                                                 <th class="sort" data-sort="name" scope="col">
-                                                    Company Name
+                                                    {{ __('companies.company_name') }}
                                                 </th>
                                                 <th class="sort" data-sort="owner" scope="col">
-                                                    Owner
+                                                    {{ __('companies.owner') }}
                                                 </th>
                                                 <th class="sort" data-sort="industry_type" scope="col">
-                                                    Industry Type
+                                                    {{ __('companies.industry_type') }}
                                                 </th>
                                                 <th class="sort" data-sort="star_value" scope="col">
-                                                    Rating
+                                                    {{ __('companies.rating') }}
                                                 </th>
                                                 <th class="sort" data-sort="location" scope="col">
-                                                    Location
+                                                    {{ __('companies.location') }}
                                                 </th>
-                                                <th scope="col">Action</th>
+                                                <th scope="col">{{ __('companies.action') }}</th>
                                             </tr>
                                         </thead>
                                         <tbody class="list form-check-all">
@@ -224,15 +224,15 @@
                                                             <li class="list-inline-item" data-bs-toggle="tooltip"
                                                                 data-bs-trigger="hover" data-bs-placement="top"
                                                                 title="Edit">
-                                                                <a class="edit-item-btn" href="#showModal"
-                                                                    data-bs-toggle="modal"><i
+                                                                <a class="edit-item-btn" href="javascript:void(0);"
+                                                                    onclick="EditCompany({{ $company->id }})"><i
                                                                         class="ri-pencil-fill align-bottom text-muted"></i></a>
                                                             </li>
                                                             <li class="list-inline-item" data-bs-toggle="tooltip"
                                                                 data-bs-trigger="hover" data-bs-placement="top"
                                                                 title="Delete">
-                                                                <a class="remove-item-btn" data-bs-toggle="modal"
-                                                                    href="#deleteRecordModal">
+                                                                <a class="remove-item-btn" href="javascript:void(0);"
+                                                                    onclick="DeleteCompany({{ $company->id }})">
                                                                     <i
                                                                         class="ri-delete-bin-fill align-bottom text-muted"></i>
                                                                 </a>
@@ -274,13 +274,12 @@
                                     <div class="modal-content border-0">
                                         <div class="modal-header bg-primary-subtle p-3">
                                             <h5 class="modal-title" id="exampleModalLabel">
-                                                <span
-                                                    id="modalTitle">{{ isset($company) ? __('companies.edit_company') : __('companies.add_company') }}</span>
+                                                <span id="modalTitle">{{ __('companies.add_company') }}</span>
                                             </h5>
                                             <button type="button" class="btn-close" data-bs-dismiss="modal"
                                                 aria-label="Close" id="close-modal"></button>
                                         </div>
-                                        <form class="tablelist-form" autocomplete="off" method="POST"
+                                        <form class="tablelist-form" autocomplete="off" id="companyForm" method="POST"
                                             action="{{ route('companies.store') }}">
                                             @csrf
                                             <input type="hidden" name="_method" id="method" value="POST">
@@ -315,46 +314,45 @@
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                            <h5 class="fs-13 mt-3">Company Logo</h5>
+                                                            <h5 class="fs-13 mt-3">{{ __('companies.company_logo') }}</h5>
                                                         </div>
                                                         <div>
-                                                            <label for="companyname-field" class="form-label">Name</label>
+                                                            <label for="companyname-field" class="form-label">{{ __('companies.company_name') }}</label>
                                                             <input type="text" id="companyname-field" name="name"
-                                                                class="form-control" placeholder="Enter company name"
+                                                                class="form-control" placeholder="{{ __('companies.company_name_placeholder') }}"
                                                                 required />
                                                         </div>
                                                     </div>
                                                     <div class="col-lg-6">
                                                         <div>
-                                                            <label for="owner-field" class="form-label">Owner Name</label>
+                                                            <label for="owner-field" class="form-label">{{ __('companies.owner_name') }}</label>
                                                             <input type="text" id="owner-field" name="owner_name"
-                                                                class="form-control" placeholder="Enter owner name"
+                                                                class="form-control" placeholder="{{ __('companies.owner_name_placeholder') }}"
                                                                 required />
                                                         </div>
                                                     </div>
                                                     <div class="col-lg-6">
                                                         <div>
-                                                            <label for="industry_type-field" class="form-label">Industry
-                                                                Type</label>
+                                                            <label for="industry_type-field" class="form-label">{{ __('companies.industry_type') }}</label>
                                                             <select class="form-select" id="industry_type-field"
                                                                 name="industry_type">
                                                                 <option value="">
-                                                                    Select industry type
+                                                                    {{ __('companies.select_industry_type') }}
                                                                 </option>
                                                                 <option value="Computer Industry">
-                                                                    Computer Industry
+                                                                    {{ __('companies.computer_industry') }}
                                                                 </option>
                                                                 <option value="Chemical Industries">
-                                                                    Chemical Industries
+                                                                    {{ __('companies.chemical_industries') }}
                                                                 </option>
                                                                 <option value="Health Services">
-                                                                    Health Services
+                                                                    {{ __('companies.health_services') }}
                                                                 </option>
                                                                 <option value="Telecommunications Services">
-                                                                    Telecommunications Services
+                                                                    {{ __('companies.telecommunications_services') }}
                                                                 </option>
                                                                 <option value="Textiles: Clothing, Footwear">
-                                                                    Textiles: Clothing, Footwear
+                                                                    {{ __('companies.textiles_clothing_footwear') }}
                                                                 </option>
                                                             </select>
                                                         </div>
@@ -362,52 +360,51 @@
                                                     <div class="col-lg-4">
                                                         <div>
                                                             <label for="star_value-field"
-                                                                class="form-label">Rating</label>
+                                                                class="form-label">{{ __('companies.rating') }}</label>
                                                             <input type="text" id="star_value-field" name="rating"
-                                                                class="form-control" placeholder="Enter rating"
+                                                                class="form-control" placeholder="{{ __('companies.rating_placeholder') }}"
                                                                 required />
                                                         </div>
                                                     </div>
                                                     <div class="col-lg-4">
                                                         <div>
                                                             <label for="location-field"
-                                                                class="form-label">Location</label>
+                                                                class="form-label">{{ __('companies.location') }}</label>
                                                             <input type="text" id="location-field" name="location"
-                                                                class="form-control" placeholder="Enter location"
+                                                                class="form-control" placeholder="{{ __('companies.location_placeholder') }}"
                                                                 required />
                                                         </div>
                                                     </div>
                                                     <div class="col-lg-4">
                                                         <div>
                                                             <label for="employee-field"
-                                                                class="form-label">Employee</label>
+                                                                class="form-label">{{ __('companies.employee') }}</label>
                                                             <input type="text" id="employee-field"
                                                                 name="employee_count" class="form-control"
-                                                                placeholder="Enter employee" required />
+                                                                placeholder="{{ __('companies.employee_placeholder') }}" required />
                                                         </div>
                                                     </div>
                                                     <div class="col-lg-6">
                                                         <div>
-                                                            <label for="website-field" class="form-label">Website</label>
+                                                            <label for="website-field" class="form-label">{{ __('companies.website') }}</label>
                                                             <input type="text" id="website-field" name="website"
-                                                                class="form-control" placeholder="Enter website"
+                                                                class="form-control" placeholder="{{ __('companies.website_placeholder') }}"
                                                                 required />
                                                         </div>
                                                     </div>
                                                     <div class="col-lg-6">
                                                         <div>
-                                                            <label for="contact_email-field" class="form-label">Contact
-                                                                Email</label>
+                                                            <label for="contact_email-field" class="form-label">{{ __('companies.contact_email') }}</label>
                                                             <input type="text" id="contact_email-field"
                                                                 name="contact_email" class="form-control"
-                                                                placeholder="Enter contact email" required />
+                                                                placeholder="{{ __('companies.contact_email_placeholder') }}" required />
                                                         </div>
                                                     </div>
                                                     <div class="col-lg-12">
                                                         <div>
-                                                            <label for="since-field" class="form-label">Since</label>
+                                                            <label for="since-field" class="form-label">{{ __('companies.since') }}</label>
                                                             <input type="text" id="since-field" name="since"
-                                                                class="form-control" placeholder="Enter since" required />
+                                                                class="form-control" placeholder="{{ __('companies.since_placeholder') }}" required />
                                                         </div>
                                                     </div>
                                                 </div>
@@ -415,10 +412,10 @@
                                             <div class="modal-footer">
                                                 <div class="hstack gap-2 justify-content-end">
                                                     <button type="button" class="btn btn-light" data-bs-dismiss="modal">
-                                                        Close
+                                                        {{ __('companies.close') }}
                                                     </button>
-                                                    <button type="submit" class="btn btn-success" id="add-btn">
-                                                        Add Company
+                                                    <button type="submit" class="btn btn-success" id="submitBtn">
+                                                        {{ __('companies.add') }}
                                                     </button>
                                                     <!-- <button type="button" class="btn btn-success" id="edit-btn">Update</button> -->
                                                 </div>
@@ -443,21 +440,20 @@
                                                 style="width: 90px; height: 90px"></lord-icon>
                                             <div class="mt-4 text-center">
                                                 <h4 class="fs-semibold">
-                                                    You are about to delete a company ?
+                                                    {{ __('companies.delete_company') }}
                                                 </h4>
                                                 <p class="text-muted fs-14 mb-4 pt-1">
-                                                    Deleting your company will remove all of your
-                                                    information from our database.
+                                                    {{ __('companies.delete_company_message') }}
                                                 </p>
                                                 <div class="hstack gap-2 justify-content-center remove">
                                                     <button
                                                         class="btn btn-link link-success fw-medium text-decoration-none"
                                                         data-bs-dismiss="modal">
                                                         <i class="ri-close-line me-1 align-middle"></i>
-                                                        Close
+                                                        {{ __('companies.close') }}
                                                     </button>
                                                     <button class="btn btn-danger" id="delete-record">
-                                                        Yes, Delete It!!
+                                                        {{ __('companies.delete_company_button') }}
                                                     </button>
                                                 </div>
                                             </div>
@@ -572,11 +568,92 @@
 @endsection
 
 @section('js')
+    <!-- Tek seferlik Choices.js yüklemesi -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/choices.js/10.2.0/choices.min.js"></script>
     <script>
-        function 
+        function EditCompany(id) {
+            //formu düzenleme moduna çevir
+            document.getElementById('modalTitle').innerText = "{{ __('companies.edit_company') }}";
+            document.getElementById('method').value = "PUT";
+            document.getElementById('submitBtn').innerText = "{{ __('companies.edit_company') }}";
+            document.getElementById('company_id').value = id;
+            document.getElementById('companyForm').action = "{{ route('companies.index') }}/" + id;
+            // Verileri AJAX ile çek
+            fetch("{{ route('companies.index') }}/" + id + "/edit", {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    }
+                })
+                .then(res => res.json())
+                .then(data => {
+                    // Form alanlarını doldur
+                    document.getElementById('companyname-field').value = data.name || '';
+                    document.getElementById('owner-field').value = data.owner_name || '';
+                    document.getElementById('industry_type-field').value = data.industry_type || '';
+                    document.getElementById('star_value-field').value = data.rating || '';
+                    document.getElementById('location-field').value = data.location || '';
+                    document.getElementById('employee-field').value = data.employee_count || '';
+                    document.getElementById('website-field').value = data.website || '';
+                    document.getElementById('contact_email-field').value = data.contact_email || '';
+                    document.getElementById('since-field').value = data.since || '';
+
+                    if (data.logo) {
+                        document.getElementById('companylogo-img').src = `/storage/${data.logo}`;
+                    }
+
+                    // console.log('gelen veri: ', data);
+
+                    // Modalı göster
+                    new bootstrap.Modal(document.getElementById('showModal')).show();
+
+                })
+                .catch(err => {
+                    console.error('EditCompany error:', err);
+                    alert('{{ __('companies.error_loading_data') }}');
+                });
+
+            // Form submit override (PUT için)
+            document.getElementById('companyForm').addEventListener('submit', function(e) {
+                if (document.getElementById('method').value === 'PUT') {
+                    e.preventDefault();
+                    const formData = new FormData(this);
+                    const companyId = document.getElementById('company_id').value;
+
+                    fetch("{{ route('companies.index') }}/" + companyId, {
+                            method: 'POST',
+                            body: formData,
+                            headers: {
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute(
+                                    'content')
+                            }
+                        })
+                        .then(res => {
+                            if (res.ok) window.location.reload();
+                            else throw new Error();
+                        })
+                        .catch(() => alert('{{ __('companies.error_loading_data') }}'));
+                    // console.error('Error updating company:', err);
+                }
+            });
+        }
 
 
+        // Formu sıfırlarken etiketleri de temizle
+        document.getElementById('close-modal').addEventListener('click', resetForm);
+        //formu sıfırlama
 
+        function resetForm() {
+            document.getElementById('companyForm').reset();
+            document.getElementById('method').value = 'POST';
+            document.getElementById('company_id').value = '';
+            document.getElementById('modalTitle').innerText = "{{ __('companies.add_company') }}";
+            document.getElementById('submitBtn').innerText = "{{ __('companies.add_company') }}";
+            document.getElementById('companyForm').action = "{{ route('companies.store') }}";
+            document.getElementById('customer-img').src = "assets/images/users/user-dummy-img.jpg";
+            tagInputField.removeActiveItems();
+        }
     </script>
 
 @endsection
