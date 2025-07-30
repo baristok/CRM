@@ -13,7 +13,18 @@ class Companies extends Model
     /**
      * The attributes that are mass assignable.
      */
-    protected $fillable = [];
+    protected $fillable = [
+        'image',
+        'name',
+        'owner_name',
+        'industry_type',
+        'website',
+        'contact_email',
+        'rating',
+        'employee_count',
+        'location',
+        'since',
+    ];
 
     // protected static function newFactory(): CompaniesFactory
     // {

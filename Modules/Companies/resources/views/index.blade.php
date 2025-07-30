@@ -4,9 +4,48 @@
 
 @section('css')
 
+
 @endsection
 
 @section('content')
+
+    {{-- Hata mesajları --}}
+    @if (session('error'))
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                Swal.fire({
+                    html: '<div class="mt-3"><lord-icon src="https://cdn.lordicon.com/tdrtiskw.json" trigger="loop" colors="primary:#f06548,secondary:#f7b84b" style="width:120px;height:120px"></lord-icon><div class="mt-4 pt-2 fs-15"><h4>{{ session('error') }}</h4><p class="text-muted mx-4 mb-0">{{ session('error_message') }}</p></div></div>',
+                    showCancelButton: true,
+                    showConfirmButton: false,
+                    customClass: {
+                        cancelButton: "btn btn-primary w-xs mb-1"
+                    },
+                    cancelButtonText: "Tamam",
+                    buttonsStyling: false,
+                    showCloseButton: true
+                });
+            });
+        </script>
+    @endif
+
+    @if (session('success'))
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                Swal.fire({
+                    html: '<div class="mt-3"><lord-icon src="https://cdn.lordicon.com/lupuorrc.json" trigger="loop" colors="primary:#25a0e2,secondary:#00bd9d" style="width:120px;height:120px"></lord-icon><div class="mt-4 pt-2 fs-15"><h4>{{ session('success') }}</h4><p class="text-muted mx-4 mb-0">{{ session('success_message') }}</p></div></div>',
+                    showCancelButton: true,
+                    showConfirmButton: false,
+                    customClass: {
+                        cancelButton: "btn btn-success w-xs mb-1"
+                    },
+                    cancelButtonText: "Tamam",
+                    buttonsStyling: false,
+                    showCloseButton: true
+                });
+            });
+        </script>
+    @endif
+    {{-- Hata mesajları sonu --}}
 
     <div class="page-content">
         <div class="container-fluid">
@@ -50,7 +89,7 @@
                                             Filters
                                         </button>
                                         <button class="btn btn-soft-primary">Import</button>
-                                        <button type="button" id="dropdownMenuLink1" data-bs-toggle="dropdown"
+                                        {{-- <button type="button" id="dropdownMenuLink1" data-bs-toggle="dropdown"
                                             aria-expanded="false" class="btn btn-soft-primary">
                                             <i class="ri-more-2-fill"></i>
                                         </button>
@@ -65,7 +104,7 @@
                                             <li>
                                                 <a class="dropdown-item" href="#">Last Year</a>
                                             </li>
-                                        </ul>
+                                        </ul> --}}
                                     </div>
                                 </div>
                             </div>
@@ -128,77 +167,80 @@
                                             </tr>
                                         </thead>
                                         <tbody class="list form-check-all">
-                                            <tr>
-                                                <th scope="row">
-                                                    <div class="form-check">
-                                                        <input class="form-check-input" type="checkbox" name="chk_child"
-                                                            value="option1" />
-                                                    </div>
-                                                </th>
-                                                <td class="id" style="display: none">
-                                                    <a href="javascript:void(0);"
-                                                        class="fw-medium link-primary">#VZ001</a>
-                                                </td>
-                                                <td>
-                                                    <div class="d-flex align-items-center">
-                                                        <div class="flex-shrink-0">
-                                                            <img src="assets/images/brands/dribbble.png" alt=""
-                                                                class="avatar-xxs rounded-circle image_src object-fit-cover" />
+                                            @foreach ($companies as $company)
+                                                <tr>
+                                                    <th scope="row">
+                                                        <div class="form-check">
+                                                            <input class="form-check-input" type="checkbox" name="chk_child"
+                                                                value="option1" />
                                                         </div>
-                                                        <div class="flex-grow-1 ms-2 name">
-                                                            Nesta Technologies
+                                                    </th>
+                                                    <td class="id" style="display: none">
+                                                        <a href="javascript:void(0);"
+                                                            class="fw-medium link-primary">#VZ001</a>
+                                                    </td>
+                                                    <td>
+                                                        <div class="d-flex align-items-center">
+                                                            <div class="flex-shrink-0">
+                                                                <img src="assets/images/brands/dribbble.png" alt=""
+                                                                    class="avatar-xxs rounded-circle image_src object-fit-cover" />
+                                                            </div>
+                                                            <div class="flex-grow-1 ms-2 name">
+                                                                {{ $company->name }}
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                </td>
-                                                <td class="owner">Tonya Noble</td>
-                                                <td class="industry_type">Computer Industry</td>
-                                                <td>
-                                                    <span class="star_value">4.5</span>
-                                                    <i class="ri-star-fill text-warning align-bottom"></i>
-                                                </td>
-                                                <td class="location">Los Angeles, USA</td>
-                                                <td>
-                                                    <ul class="list-inline hstack gap-2 mb-0">
-                                                        <li class="list-inline-item edit" data-bs-toggle="tooltip"
-                                                            data-bs-trigger="hover" data-bs-placement="top"
-                                                            title="Call">
-                                                            <a href="javascript:void(0);"
-                                                                class="text-muted d-inline-block">
-                                                                <i class="ri-phone-line fs-16"></i>
-                                                            </a>
-                                                        </li>
-                                                        <li class="list-inline-item edit" data-bs-toggle="tooltip"
-                                                            data-bs-trigger="hover" data-bs-placement="top"
-                                                            title="Message">
-                                                            <a href="javascript:void(0);"
-                                                                class="text-muted d-inline-block">
-                                                                <i class="ri-question-answer-line fs-16"></i>
-                                                            </a>
-                                                        </li>
-                                                        <li class="list-inline-item" data-bs-toggle="tooltip"
-                                                            data-bs-trigger="hover" data-bs-placement="top"
-                                                            title="View">
-                                                            <a href="javascript:void(0);" class="view-item-btn"><i
-                                                                    class="ri-eye-fill align-bottom text-muted"></i></a>
-                                                        </li>
-                                                        <li class="list-inline-item" data-bs-toggle="tooltip"
-                                                            data-bs-trigger="hover" data-bs-placement="top"
-                                                            title="Edit">
-                                                            <a class="edit-item-btn" href="#showModal"
-                                                                data-bs-toggle="modal"><i
-                                                                    class="ri-pencil-fill align-bottom text-muted"></i></a>
-                                                        </li>
-                                                        <li class="list-inline-item" data-bs-toggle="tooltip"
-                                                            data-bs-trigger="hover" data-bs-placement="top"
-                                                            title="Delete">
-                                                            <a class="remove-item-btn" data-bs-toggle="modal"
-                                                                href="#deleteRecordModal">
-                                                                <i class="ri-delete-bin-fill align-bottom text-muted"></i>
-                                                            </a>
-                                                        </li>
-                                                    </ul>
-                                                </td>
-                                            </tr>
+                                                    </td>
+                                                    <td class="owner">{{ $company->owner_name }}</td>
+                                                    <td class="industry_type">{{ $company->industry_type }}</td>
+                                                    <td>
+                                                        <span class="star_value">{{ $company->rating }}</span>
+                                                        <i class="ri-star-fill text-warning align-bottom"></i>
+                                                    </td>
+                                                    <td class="location">{{ $company->location }}</td>
+                                                    <td>
+                                                        <ul class="list-inline hstack gap-2 mb-0">
+                                                            <li class="list-inline-item edit" data-bs-toggle="tooltip"
+                                                                data-bs-trigger="hover" data-bs-placement="top"
+                                                                title="Call">
+                                                                <a href="javascript:void(0);"
+                                                                    class="text-muted d-inline-block">
+                                                                    <i class="ri-phone-line fs-16"></i>
+                                                                </a>
+                                                            </li>
+                                                            <li class="list-inline-item edit" data-bs-toggle="tooltip"
+                                                                data-bs-trigger="hover" data-bs-placement="top"
+                                                                title="Message">
+                                                                <a href="javascript:void(0);"
+                                                                    class="text-muted d-inline-block">
+                                                                    <i class="ri-question-answer-line fs-16"></i>
+                                                                </a>
+                                                            </li>
+                                                            <li class="list-inline-item" data-bs-toggle="tooltip"
+                                                                data-bs-trigger="hover" data-bs-placement="top"
+                                                                title="View">
+                                                                <a href="javascript:void(0);" class="view-item-btn"><i
+                                                                        class="ri-eye-fill align-bottom text-muted"></i></a>
+                                                            </li>
+                                                            <li class="list-inline-item" data-bs-toggle="tooltip"
+                                                                data-bs-trigger="hover" data-bs-placement="top"
+                                                                title="Edit">
+                                                                <a class="edit-item-btn" href="#showModal"
+                                                                    data-bs-toggle="modal"><i
+                                                                        class="ri-pencil-fill align-bottom text-muted"></i></a>
+                                                            </li>
+                                                            <li class="list-inline-item" data-bs-toggle="tooltip"
+                                                                data-bs-trigger="hover" data-bs-placement="top"
+                                                                title="Delete">
+                                                                <a class="remove-item-btn" data-bs-toggle="modal"
+                                                                    href="#deleteRecordModal">
+                                                                    <i
+                                                                        class="ri-delete-bin-fill align-bottom text-muted"></i>
+                                                                </a>
+                                                            </li>
+                                                        </ul>
+                                                    </td>
+                                                </tr>
+                                            @endforeach
                                         </tbody>
                                     </table>
                                     <div class="noresult" style="display: none">
@@ -231,11 +273,18 @@
                                 <div class="modal-dialog modal-dialog-centered modal-lg">
                                     <div class="modal-content border-0">
                                         <div class="modal-header bg-primary-subtle p-3">
-                                            <h5 class="modal-title" id="exampleModalLabel"></h5>
+                                            <h5 class="modal-title" id="exampleModalLabel">
+                                                <span
+                                                    id="modalTitle">{{ isset($company) ? __('companies.edit_company') : __('companies.add_company') }}</span>
+                                            </h5>
                                             <button type="button" class="btn-close" data-bs-dismiss="modal"
                                                 aria-label="Close" id="close-modal"></button>
                                         </div>
-                                        <form class="tablelist-form" autocomplete="off">
+                                        <form class="tablelist-form" autocomplete="off" method="POST"
+                                            action="{{ route('companies.store') }}">
+                                            @csrf
+                                            <input type="hidden" name="_method" id="method" value="POST">
+                                            <input type="hidden" name="company_id" id="company_id" value="">
                                             <div class="modal-body">
                                                 <input type="hidden" id="id-field" />
                                                 <div class="row g-3">
@@ -254,7 +303,8 @@
                                                                         </div>
                                                                     </label>
                                                                     <input class="form-control d-none" value=""
-                                                                        id="company-logo-input" type="file"
+                                                                        id="company-logo-input" name="logo"
+                                                                        type="file"
                                                                         accept="image/png, image/gif, image/jpeg" />
                                                                 </div>
                                                                 <div class="avatar-lg p-1">
@@ -269,7 +319,7 @@
                                                         </div>
                                                         <div>
                                                             <label for="companyname-field" class="form-label">Name</label>
-                                                            <input type="text" id="companyname-field"
+                                                            <input type="text" id="companyname-field" name="name"
                                                                 class="form-control" placeholder="Enter company name"
                                                                 required />
                                                         </div>
@@ -277,15 +327,17 @@
                                                     <div class="col-lg-6">
                                                         <div>
                                                             <label for="owner-field" class="form-label">Owner Name</label>
-                                                            <input type="text" id="owner-field" class="form-control"
-                                                                placeholder="Enter owner name" required />
+                                                            <input type="text" id="owner-field" name="owner_name"
+                                                                class="form-control" placeholder="Enter owner name"
+                                                                required />
                                                         </div>
                                                     </div>
                                                     <div class="col-lg-6">
                                                         <div>
                                                             <label for="industry_type-field" class="form-label">Industry
                                                                 Type</label>
-                                                            <select class="form-select" id="industry_type-field">
+                                                            <select class="form-select" id="industry_type-field"
+                                                                name="industry_type">
                                                                 <option value="">
                                                                     Select industry type
                                                                 </option>
@@ -311,7 +363,7 @@
                                                         <div>
                                                             <label for="star_value-field"
                                                                 class="form-label">Rating</label>
-                                                            <input type="text" id="star_value-field"
+                                                            <input type="text" id="star_value-field" name="rating"
                                                                 class="form-control" placeholder="Enter rating"
                                                                 required />
                                                         </div>
@@ -320,7 +372,7 @@
                                                         <div>
                                                             <label for="location-field"
                                                                 class="form-label">Location</label>
-                                                            <input type="text" id="location-field"
+                                                            <input type="text" id="location-field" name="location"
                                                                 class="form-control" placeholder="Enter location"
                                                                 required />
                                                         </div>
@@ -330,15 +382,16 @@
                                                             <label for="employee-field"
                                                                 class="form-label">Employee</label>
                                                             <input type="text" id="employee-field"
-                                                                class="form-control" placeholder="Enter employee"
-                                                                required />
+                                                                name="employee_count" class="form-control"
+                                                                placeholder="Enter employee" required />
                                                         </div>
                                                     </div>
                                                     <div class="col-lg-6">
                                                         <div>
                                                             <label for="website-field" class="form-label">Website</label>
-                                                            <input type="text" id="website-field" class="form-control"
-                                                                placeholder="Enter website" required />
+                                                            <input type="text" id="website-field" name="website"
+                                                                class="form-control" placeholder="Enter website"
+                                                                required />
                                                         </div>
                                                     </div>
                                                     <div class="col-lg-6">
@@ -346,15 +399,15 @@
                                                             <label for="contact_email-field" class="form-label">Contact
                                                                 Email</label>
                                                             <input type="text" id="contact_email-field"
-                                                                class="form-control" placeholder="Enter contact email"
-                                                                required />
+                                                                name="contact_email" class="form-control"
+                                                                placeholder="Enter contact email" required />
                                                         </div>
                                                     </div>
                                                     <div class="col-lg-12">
                                                         <div>
                                                             <label for="since-field" class="form-label">Since</label>
-                                                            <input type="text" id="since-field" class="form-control"
-                                                                placeholder="Enter since" required />
+                                                            <input type="text" id="since-field" name="since"
+                                                                class="form-control" placeholder="Enter since" required />
                                                         </div>
                                                     </div>
                                                 </div>
@@ -519,5 +572,11 @@
 @endsection
 
 @section('js')
+    <script>
+        function 
+
+
+
+    </script>
 
 @endsection
