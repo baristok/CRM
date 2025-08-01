@@ -5,6 +5,7 @@ namespace Modules\Companies\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Laravel\Scout\Searchable;
+use Modules\Companies\Database\Factories\CompaniesFactory;
 // use Modules\Companies\Database\Factories\CompaniesFactory;
 
 class Companies extends Model
@@ -27,10 +28,10 @@ class Companies extends Model
         'since',
     ];
 
-    // protected static function newFactory(): CompaniesFactory
-    // {
-    //     // return CompaniesFactory::new();
-    // }
+    protected static function newFactory()
+    {
+        return CompaniesFactory::new();
+    }
 
     public function toSearchableArray()
     {
@@ -48,4 +49,7 @@ class Companies extends Model
     {
         return 'companies_index';
     }
+
+
+    
 }

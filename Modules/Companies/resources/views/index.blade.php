@@ -4,7 +4,50 @@
 
 @section('css')
 
+    <style>
+        #company-detail-area {
+            display: none;
+        }
 
+        /* Choices.js select kutusu hizalama düzeltmeleri */
+        .choices {
+            margin-bottom: 0 !important;
+            display: flex;
+            align-items: center;
+        }
+
+        .choices__inner {
+            min-height: 38px;
+            height: 38px;
+            border-radius: 0.375rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .choices__list--single {
+            padding: 4px 16px 4px 4px;
+        }
+
+        /* Sort butonu yüksekliği eşitleme */
+        #sortOrderBtn {
+            height: 38px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Responsive için ek güvenlik */
+        @media (max-width: 768px) {
+            .choices__inner {
+                min-height: 36px;
+                height: 36px;
+            }
+
+            #sortOrderBtn {
+                height: 36px;
+            }
+        }
+    </style>
 @endsection
 
 @section('content')
@@ -80,8 +123,8 @@
                                 </div>
                                 <div class="flex-shrink-0">
                                     <div class="hstack text-nowrap gap-2">
-                                        <button class="btn btn-soft-secondary" id="remove-actions"
-                                            onClick="deleteMultiple()">
+                                        <button class="btn btn-soft-danger" id="remove-actions"
+                                            onClick="deleteMultiple()" style="display: none;">
                                             <i class="ri-delete-bin-2-line"></i>
                                         </button>
                                         <button class="btn btn-secondary">
@@ -112,15 +155,15 @@
                     </div>
                 </div>
                 <!--end col-->
-                <div class="col-xxl-9">
+                <div class="col-xxl-9" id="company-content-area">
                     <div class="card" id="companyList">
                         <div class="card-header">
                             <div class="row g-2">
                                 <div class="col-md-3">
                                     <form method="GET" action="{{ route('companies.search') }}" id="searchForm">
                                         <div class="search-box">
-                                            <input type="text" name="search" class="form-control search" id="liveSearchInput"
-                                                value="{{ request('search') }}"
+                                            <input type="text" name="search" class="form-control search"
+                                                id="liveSearchInput" value="{{ request('search') }}"
                                                 placeholder="{{ __('companies.search_company') }}" />
                                             <i class="ri-search-line search-icon"></i>
                                         </div>
@@ -151,19 +194,19 @@
                                                             value="option" />
                                                     </div>
                                                 </th>
-                                                <th class="sort" data-sort="name" scope="col">
+                                                <th data-sort="name" scope="col">
                                                     {{ __('companies.company_name') }}
                                                 </th>
-                                                <th class="sort" data-sort="owner" scope="col">
+                                                <th data-sort="owner" scope="col">
                                                     {{ __('companies.owner') }}
                                                 </th>
-                                                <th class="sort" data-sort="industry_type" scope="col">
+                                                <th data-sort="industry_type" scope="col">
                                                     {{ __('companies.industry_type') }}
                                                 </th>
-                                                <th class="sort" data-sort="star_value" scope="col">
+                                                <th data-sort="star_value" scope="col">
                                                     {{ __('companies.rating') }}
                                                 </th>
-                                                <th class="sort" data-sort="location" scope="col">
+                                                <th data-sort="location" scope="col">
                                                     {{ __('companies.location') }}
                                                 </th>
                                                 <th scope="col">{{ __('companies.action') }}</th>
@@ -221,7 +264,8 @@
                                                             <li class="list-inline-item" data-bs-toggle="tooltip"
                                                                 data-bs-trigger="hover" data-bs-placement="top"
                                                                 title="View">
-                                                                <a href="javascript:void(0);" class="view-item-btn"><i
+                                                                <a href="javascript:void(0);" class="view-item-btn"
+                                                                    data-company-id="{{ $company->id }}"><i
                                                                         class="ri-eye-fill align-bottom text-muted"></i></a>
                                                             </li>
                                                             <li class="list-inline-item" data-bs-toggle="tooltip"
@@ -235,7 +279,7 @@
                                                                 data-bs-trigger="hover" data-bs-placement="top"
                                                                 title="Delete">
                                                                 <a class="remove-item-btn" href="javascript:void(0);"
-                                                                    onclick="DeleteCompany({{ $company->id }})">
+                                                                    onclick="deleteCompany({{ $company->id }})">
                                                                     <i
                                                                         class="ri-delete-bin-fill align-bottom text-muted"></i>
                                                                 </a>
@@ -259,7 +303,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="d-flex justify-content-end mt-3">
+                                {{-- <div class="d-flex justify-content-end mt-3">
                                     <div class="pagination-wrap hstack gap-2">
                                         <a class="page-item pagination-prev disabled" href="#">
                                             Previous
@@ -269,7 +313,16 @@
                                             Next
                                         </a>
                                     </div>
+                                </div> --}}
+                                <div class="d-flex justify-content-end mt-3">
+                                    <div class="pagination-wrap hstack gap-2">
+
+                                        @include('companies::custom-pagination', [
+                                            'paginator' => $companies,
+                                        ])
+                                    </div>
                                 </div>
+
                             </div>
                             <div class="modal fade" id="showModal" tabindex="-1" aria-labelledby="exampleModalLabel"
                                 aria-hidden="true">
@@ -482,103 +535,22 @@
                             <!--end delete modal -->
                         </div>
                     </div>
-                    <!--end card-->
                 </div>
-                <!--end col-->
-                <div class="col-xxl-3">
-                    <div class="card" id="company-view-detail">
-                        <div class="card-body text-center">
-                            <div class="position-relative d-inline-block">
-                                <div class="avatar-md">
-                                    <div class="avatar-title bg-light rounded-circle">
-                                        <img src="assets/images/brands/mail_chimp.png" alt=""
-                                            class="avatar-sm rounded-circle object-fit-cover" />
-                                    </div>
-                                </div>
-                            </div>
-                            <h5 class="mt-3 mb-1">Syntyce Solution</h5>
-                            <p class="text-muted">Michael Morris</p>
-
-                            <ul class="list-inline mb-0">
-                                <li class="list-inline-item avatar-xs">
-                                    <a href="javascript:void(0);"
-                                        class="avatar-title bg-success-subtle text-success fs-15 rounded">
-                                        <i class="ri-global-line"></i>
-                                    </a>
-                                </li>
-                                <li class="list-inline-item avatar-xs">
-                                    <a href="javascript:void(0);"
-                                        class="avatar-title bg-danger-subtle text-danger fs-15 rounded">
-                                        <i class="ri-mail-line"></i>
-                                    </a>
-                                </li>
-                                <li class="list-inline-item avatar-xs">
-                                    <a href="javascript:void(0);"
-                                        class="avatar-title bg-warning-subtle text-warning fs-15 rounded">
-                                        <i class="ri-question-answer-line"></i>
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
-                        <div class="card-body">
-                            <h6 class="text-muted text-uppercase fw-semibold mb-3">
-                                Information
-                            </h6>
-                            <p class="text-muted mb-4">
-                                A company incurs fixed and variable costs such as the
-                                purchase of raw materials, salaries and overhead, as
-                                explained by AccountingTools, Inc. Business owners have
-                                the discretion to determine the actions.
-                            </p>
-                            <div class="table-responsive table-card">
-                                <table class="table table-borderless mb-0">
-                                    <tbody>
-                                        <tr>
-                                            <td class="fw-medium" scope="row">Industry Type</td>
-                                            <td>Chemical Industries</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="fw-medium" scope="row">Location</td>
-                                            <td>Damascus, Syria</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="fw-medium" scope="row">Employee</td>
-                                            <td>10-50</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="fw-medium" scope="row">Rating</td>
-                                            <td>
-                                                4.0
-                                                <i class="ri-star-fill text-warning align-bottom"></i>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td class="fw-medium" scope="row">Website</td>
-                                            <td>
-                                                <a href="javascript:void(0);"
-                                                    class="link-primary text-decoration-underline">www.syntycesolution.com</a>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td class="fw-medium" scope="row">Contact Email</td>
-                                            <td>info@syntycesolution.com</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="fw-medium" scope="row">Since</td>
-                                            <td>1995</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
+                <div class="col-xxl-3" id="company-detail-area">
+                    <div class="card" id="company-view-detail" style="display: none;">
+                        <!-- Şirket detayları burada dinamik olarak yüklenecek -->
                     </div>
                     <!--end card-->
                 </div>
-                <!--end col-->
+                <!--end card-->
             </div>
-            <!--end row-->
+            <!--end col-->
+            <!--end col-->
+            {{-- Company-details --}}
         </div>
-        <!-- container-fluid -->
+        <!--end row-->
+    </div>
+    <!-- container-fluid -->
     </div>
 
 
@@ -704,6 +676,390 @@
                 searchInput.setSelectionRange(searchInput.value.length, searchInput.value.length);
             }
         });
+
+
+
+
+
+
+        // Detay paneli & görüntüle tuşu davranışı
+        document.addEventListener('DOMContentLoaded', function() {
+            // Checkbox handler'larını başlat
+            initializeCheckboxHandlers();
+
+            // Check All Companies functionality
+            const checkAll = document.getElementById('checkAll');
+            if (checkAll) {
+                checkAll.addEventListener('change', function() {
+                    const checkboxes = document.querySelectorAll('input[name="chk_child"]');
+                    checkboxes.forEach(checkbox => {
+                        checkbox.checked = checkAll.checked;
+                        // Satır stilini güncelle
+                        if (checkbox.checked) {
+                            checkbox.closest('tr').classList.add('table-active');
+                        } else {
+                            checkbox.closest('tr').classList.remove('table-active');
+                        }
+                    });
+
+                    // Seçili checkbox sayısını kontrol et
+                    const checkedCount = document.querySelectorAll('input[name="chk_child"]:checked')
+                        .length;
+                    const removeActions = document.getElementById('remove-actions');
+                    if (removeActions) {
+                        removeActions.style.display = checkedCount > 0 ? 'block' : 'none';
+                    }
+                });
+            }
+
+            document.querySelectorAll('.view-item-btn').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+
+                    // Company ID'yi al
+                    const companyId = this.getAttribute('data-company-id');
+
+                    // AJAX ile detay bilgilerini çek
+                    fetch("{{ route('companies.details', ['id' => ':id']) }}".replace(':id',
+                            companyId), {
+                            method: 'GET',
+                            headers: {
+                                'Accept': 'text/html',
+                                'X-CSRF-TOKEN': document.querySelector(
+                                        'meta[name="csrf-token"]')
+                                    .getAttribute('content')
+                            }
+                        })
+                        .then(res => res.text())
+                        .then(html => {
+                            // Detay alanına HTML'i yerleştir
+                            const detail = document.getElementById('company-view-detail');
+                            detail.innerHTML = html;
+                            detail.style.display = 'block';
+
+                            // Responsive mekanizma
+                            document.getElementById('company-content-area')
+                                .classList.replace('col-xxl-12', 'col-xxl-9');
+
+                            document.getElementById('company-detail-area').style.display =
+                                'block';
+
+                            // Kapatma butonu
+                            document.getElementById('company-detail-close')?.addEventListener(
+                                'click', () => {
+                                    detail.style.display = 'none';
+                                    document.getElementById('company-detail-area').style
+                                        .display = 'none';
+                                    document.getElementById('company-content-area')
+                                        .classList.replace('col-xxl-9', 'col-xxl-12');
+                                });
+                        })
+                        .catch(() => alert('{{ __('companies.error_loading_data') }}'));
+                });
+            });
+
+            // Başlangıçta detay kapalı olduğu için alanı genişlet
+            document.getElementById('company-detail-area').style.display = 'none';
+            document.getElementById('company-content-area').classList.add('col-xxl-12');
+            document.getElementById('company-content-area').classList.remove('col-xxl-9');
+        });
+
+        // Checkbox işleyicilerini başlat
+        function initializeCheckboxHandlers() {
+            // Her bir checkbox için change event listener ekle
+            const childCheckboxes = document.getElementsByName("chk_child");
+            
+            if (childCheckboxes.length > 0) {
+                Array.from(childCheckboxes).forEach(function(checkbox) {
+                    checkbox.addEventListener("change", function(e) {
+                        const row = e.target.closest("tr");
+                        
+                        // Checkbox seçiliyse satırı aktif yap, değilse pasif yap
+                        if (checkbox.checked) {
+                            row.classList.add("table-active");
+                        } else {
+                            row.classList.remove("table-active");
+                        }
+                        
+                        // Seçili checkbox sayısını kontrol et
+                        const checkedCount = document.querySelectorAll('[name="chk_child"]:checked').length;
+                        
+                        // Silme butonunu göster/gizle
+                        const removeButton = document.getElementById("remove-actions");
+                        if (removeButton) {
+                            removeButton.style.display = checkedCount > 0 ? "block" : "none";
+                        }
+                    });
+                });
+            }
+        }
+
+        // Çoklu Şirket Silme
+        function deleteMultiple() {
+            const checkboxes = document.querySelectorAll('input[name="chk_child"]:checked');
+            if (checkboxes.length === 0) {
+                Swal.fire({
+                    title: '{{ __('companies.no_record_selected') }}',
+                    text: '{{ __('companies.please_select_records') }}',
+                    icon: 'warning',
+                    confirmButtonClass: 'btn btn-primary',
+                    buttonsStyling: false
+                });
+                return;
+            }
+
+            // Seçili satırlardan company ID'lerini al
+            const companyIds = [];
+            checkboxes.forEach(checkbox => {
+                const row = checkbox.closest('tr');
+                const editBtn = row.querySelector('.edit-item-btn');
+                if (editBtn) {
+                    const onclickAttr = editBtn.getAttribute('onclick');
+                    const idMatch = onclickAttr.match(/\d+/);
+                    if (idMatch) {
+                        companyIds.push(idMatch[0]);
+                    }
+                }
+            });
+
+            if (companyIds.length > 0) {
+                Swal.fire({
+                    title: '{{ __('companies.delete_multiple_companies') }}',
+                    text: `${companyIds.length} {{ __('companies.delete_multiple_companies_info') }}`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonClass: 'btn btn-danger',
+                    cancelButtonClass: 'btn btn-secondary',
+                    confirmButtonText: '{{ __('companies.yes') }}',
+                    cancelButtonText: '{{ __('companies.no') }}',
+                    buttonsStyling: false
+                }).then(async (result) => {
+                    if (result.isConfirmed) {
+                        // Toplu silme işlemi
+                        let successCount = 0;
+                        let errorCount = 0;
+                        
+                        for (const companyId of companyIds) {
+                            try {
+                                const destroyUrlTemplate = "{{ route('companies.destroy', ':id') }}";
+                                const response = await fetch(destroyUrlTemplate.replace(':id', companyId), {
+                                    method: 'DELETE',
+                                    headers: {
+                                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                                        'Accept': 'application/json'
+                                    }
+                                });
+                                
+                                if (response.ok) {
+                                    successCount++;
+                                } else {
+                                    errorCount++;
+                                }
+                            } catch (error) {
+                                errorCount++;
+                            }
+                        }
+                        
+                        // Sonuç bildirimi
+                        if (successCount > 0 && errorCount === 0) {
+                            // Tümü başarılı
+                            Swal.fire({
+                                html: `
+                                <div class="mt-3">
+                                  <lord-icon
+                                    src="https://cdn.lordicon.com/lupuorrc.json"
+                                    trigger="loop"
+                                    colors="primary:#0ab39c,secondary:#405189"
+                                    style="width:120px;height:120px">
+                                  </lord-icon>
+                                  <div class="mt-4 pt-2 fs-15">
+                                    <h4>${successCount} {{ __('companies.company_deleted') }}</h4>
+                                    <p class="text-muted mx-4 mb-0">{{ __('companies.company_deleted_info') }}</p>
+                                  </div>
+                                </div>`,
+                                showCancelButton: true,
+                                showConfirmButton: false,
+                                customClass: {
+                                    cancelButton: "btn btn-primary w-xs mb-1"
+                                },
+                                cancelButtonText: "{{ __('companies.back') }}",
+                                buttonsStyling: false,
+                                showCloseButton: true
+                            }).then(() => window.location.reload());
+                        } else if (successCount > 0 && errorCount > 0) {
+                            // Kısmi başarı
+                            Swal.fire({
+                                html: `
+                                <div class="mt-3">
+                                  <lord-icon
+                                    src="https://cdn.lordicon.com/tdrtiskw.json"
+                                    trigger="loop"
+                                    colors="primary:#f06548,secondary:#f7b84b"
+                                    style="width:120px;height:120px">
+                                  </lord-icon>
+                                  <div class="mt-4 pt-2 fs-15">
+                                    <h4>{{ __('companies.partial_success') }}</h4>
+                                    <p class="text-muted mx-4 mb-0">${successCount} şirket silindi, ${errorCount} şirket silinemedi.</p>
+                                  </div>
+                                </div>`,
+                                showCancelButton: true,
+                                showConfirmButton: false,
+                                customClass: {
+                                    cancelButton: "btn btn-primary w-xs mb-1"
+                                },
+                                cancelButtonText: "{{ __('companies.back') }}",
+                                buttonsStyling: false,
+                                showCloseButton: true
+                            }).then(() => window.location.reload());
+                        } else {
+                            // Tümü başarısız
+                            Swal.fire({
+                                html: `
+                                <div class="mt-3">
+                                  <lord-icon
+                                    src="https://cdn.lordicon.com/tdrtiskw.json"
+                                    trigger="loop"
+                                    colors="primary:#f06548,secondary:#f7b84b"
+                                    style="width:120px;height:120px">
+                                  </lord-icon>
+                                  <div class="mt-4 pt-2 fs-15">
+                                    <h4>{{ __('companies.error_deleting_data') }}</h4>
+                                    <p class="text-muted mx-4 mb-0">{{ __('companies.no_record_selected') }}</p>
+                                  </div>
+                                </div>`,
+                                showCancelButton: true,
+                                showConfirmButton: false,
+                                customClass: {
+                                    cancelButton: "btn btn-primary w-xs mb-1"
+                                },
+                                cancelButtonText: "{{ __('companies.back') }}",
+                                buttonsStyling: false,
+                                showCloseButton: true
+                            });
+                        }
+                    }
+                });
+            }
+        }
+
+        function deleteCompany(id) {
+            // 1️⃣ Önce onay sor
+            Swal.fire({
+                html: `
+      <div class="mt-3">
+        <lord-icon
+          src="https://cdn.lordicon.com/gsqxdxog.json"
+          trigger="loop"
+          colors="primary:#f7b84b,secondary:#f06548"
+          style="width:100px;height:100px">
+        </lord-icon>
+        <div class="mt-4 pt-2 fs-15 mx-5">
+          <h4>{{ __('companies.delete_company') }}</h4>
+          <p class="text-muted mx-4 mb-0">{{ __('companies.delete_company_info') }}</p>
+        </div>
+      </div>`,
+                showCancelButton: true,
+                customClass: {
+                    confirmButton: "btn btn-primary w-xs me-2 mb-1",
+                    cancelButton: "btn btn-danger w-xs mb-1",
+                },
+                cancelButtonText: "{{ __('companies.no') }}",
+                confirmButtonText: "{{ __('companies.yes') }}",
+                buttonsStyling: false,
+                showCloseButton: true
+            }).then((result) => {
+                if (!result.isConfirmed) return;
+                // 2️⃣ Onay verildiyse silme isteğini yolla
+                const destroyUrlTemplate = "{{ route('companies.destroy', ':id') }}";
+                fetch(destroyUrlTemplate.replace(':id', id), {
+                        method: 'DELETE',
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                            'Accept': 'application/json'
+                        }
+                    })
+                    .then(async response => {
+                        const data = await response.json();
+                        if (response.ok) {
+                            // 3️⃣ Başarılıysa başarı uyarısı göster ve yenile
+                            Swal.fire({
+                                html: `
+                                 <div class="mt-3">
+              <lord-icon
+                src="https://cdn.lordicon.com/lupuorrc.json"
+                trigger="loop"
+                colors="primary:#0ab39c,secondary:#405189"
+                style="width:120px;height:120px">
+              </lord-icon>
+              <div class="mt-4 pt-2 fs-15">
+                <h4>{{ __('companies.company_deleted') }}</h4>
+                <p class="text-muted mx-4 mb-0">{{ __('companies.company_deleted_info') }}</p>
+              </div>
+            </div>`,
+                                showCancelButton: true,
+                                showConfirmButton: false,
+                                customClass: {
+                                    cancelButton: "btn btn-primary w-xs mb-1"
+                                },
+                                cancelButtonText: "{{ __('companies.back') }}",
+                                buttonsStyling: false,
+                                showCloseButton: true
+                            }).then(() => window.location.reload());
+                        } else {
+                            // 4️⃣ Hata mesajını göster
+                            Swal.fire({
+                                html: `
+                                <div class="mt-3">
+              <lord-icon
+                src="https://cdn.lordicon.com/tdrtiskw.json"
+                trigger="loop"
+                colors="primary:#f06548,secondary:#f7b84b"
+                style="width:120px;height:120px">
+              </lord-icon>
+              <div class="mt-4 pt-2 fs-15">
+                <h4>Oops...! Something went Wrong !</h4>
+                <p class="text-muted mx-4 mb-0">${data.message || '{{ __('companies.error_saving_data') }}'}</p>
+              </div>
+            </div>`,
+                                showCancelButton: true,
+                                showConfirmButton: false,
+                                customClass: {
+                                    cancelButton: "btn btn-primary w-xs mb-1"
+                                },
+                                cancelButtonText: "Dismiss",
+                                buttonsStyling: false,
+                                showCloseButton: true
+                            });
+                        }
+                    })
+                    .catch(() => {
+                        // 5️⃣ Network hatası vs.
+                        Swal.fire({
+                            html: `
+          <div class="mt-3">
+            <lord-icon
+              src="https://cdn.lordicon.com/tdrtiskw.json"
+              trigger="loop"
+              colors="primary:#f06548,secondary:#f7b84b"
+              style="width:120px;height:120px">
+            </lord-icon>
+            <div class="mt-4 pt-2 fs-15">
+              <h4>Oops...! Something went Wrong !</h4>
+              <p class="text-muted mx-4 mb-0">{{ __('companies.error_loading_data') }}</p>
+            </div>
+          </div>`,
+                            showCancelButton: true,
+                            showConfirmButton: false,
+                            customClass: {
+                                cancelButton: "btn btn-primary w-xs mb-1"
+                            },
+                            cancelButtonText: "Dismiss",
+                            buttonsStyling: false,
+                            showCloseButton: true
+                        });
+                    });
+            });
+        }
     </script>
 
 @endsection

@@ -12,10 +12,22 @@ class CompaniesController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $companies = Companies::all();
-        return view('companies::index', compact('companies'));
+        $query = $request->get('search');
+        $sortBy = $request->get('sort_by', 'name');
+        $sortOrder = $request->get('sort_order', 'asc');
+
+        $sortBy = in_array($sortBy, ['name', 'owner_name', 'location', 'industry_type', 'rating', 'employee_count', 'contact_email', 'since']) ? $sortBy : 'name';
+        $sortOrder = in_array($sortOrder, ['asc', 'desc']) ? $sortOrder : 'asc';
+
+        if ($query) {
+            $companies = Companies::search($query)->orderBy($sortBy, $sortOrder)->paginate(10);
+        } else {
+            $companies = Companies::orderBy($sortBy, $sortOrder)->paginate(10);
+        }
+        $companies->appends(request()->query());
+        return view('companies::index', compact('companies', 'query', 'sortBy', 'sortOrder'));
     }
 
     /**
@@ -112,27 +124,31 @@ class CompaniesController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy($id) {}
-
-
-
-
-
-    public function search(Request $request)
+    public function destroy($id) 
     {
-        $query = $request->get('search');
-        $sortBy = $request->get('sort_by', 'name');
-        $sortOrder = $request->get('sort_order', 'asc');
-
-        $sortBy = in_array($sortBy, ['name', 'owner_name', 'location', 'industry_type', 'rating', 'employee_count', 'contact_email', 'since']) ? $sortBy : 'name';
-        $sortOrder = in_array($sortOrder, ['asc', 'desc']) ? $sortOrder : 'asc';
-
-        if ($query) {
-            $companies = Companies::search($query)->orderBy($sortBy, $sortOrder)->paginate(10);
-        } else {
-            $companies = Companies::orderBy($sortBy, $sortOrder)->paginate(10);
+        try {
+            $company = Companies::findOrFail($id);
+            $company->delete();
+            if(request()->expectsJson()) {
+                return response()->json(['success' => true, 'message' => 'Company deleted successfully']);
+            }
+            return redirect()->route('companies.index')->with('success', 'Company deleted successfully');
+        } catch (Exception $e) {
+            if(request()->expectsJson()) {
+                return response()->json(['success' => false, 'message' => 'Kayıt silinemedi: ' . $e->getMessage()], 500);
+            }
+            return redirect()->back()->with('error', 'Kayıt silinemedi')->with('error_message', $e->getMessage());
         }
-        $companies->appends(request()->query());
-        return view('companies::index', compact('companies', 'query', 'sortBy', 'sortOrder'));
+    }
+
+
+
+
+
+
+    public function getCompanyDetails($id)
+    {
+        $company = Companies::findOrFail($id);
+        return view('companies::partials.company-details', compact('company'))->render();
     }
 }
