@@ -123,15 +123,18 @@
                                 </div>
                                 <div class="flex-shrink-0">
                                     <div class="hstack text-nowrap gap-2">
-                                        <button class="btn btn-soft-danger" id="remove-actions"
-                                            onClick="deleteMultiple()" style="display: none;">
+                                        <button class="btn btn-soft-danger" id="remove-actions" onClick="deleteMultiple()"
+                                            style="display: none;">
                                             <i class="ri-delete-bin-2-line"></i>
                                         </button>
                                         <button class="btn btn-secondary">
                                             <i class="ri-filter-2-line me-1 align-bottom"></i>
                                             Filters
                                         </button>
-                                        <button class="btn btn-soft-primary">Import</button>
+                                        <button class="btn btn-soft-primary" data-bs-toggle="modal"
+                                            data-bs-target="#importModal">{{ __('companies.import') }}</button>
+                                        <a href="{{ route('companies.export') }}"
+                                            class="btn btn-soft-success">{{ __('companies.export') }}</a>
                                         {{-- <button type="button" id="dropdownMenuLink1" data-bs-toggle="dropdown"
                                             aria-expanded="false" class="btn btn-soft-primary">
                                             <i class="ri-more-2-fill"></i>
@@ -174,10 +177,26 @@
                                         <span class="text-muted">{{ __('companies.sort_by') }}: </span>
                                         <select class="form-control mb-0" data-choices data-choices-search-false
                                             id="choices-single-default">
-                                            <option value="Owner">{{ __('companies.owner') }}</option>
-                                            <option value="Company">{{ __('companies.company') }}</option>
-                                            <option value="location">{{ __('companies.location') }}</option>
+                                            <option value="name" {{ request('sort_by') == 'name' ? 'selected' : '' }}>
+                                                {{ __('companies.company') }}</option>
+                                            <option value="owner_name"
+                                                {{ request('sort_by') == 'owner_name' ? 'selected' : '' }}>
+                                                {{ __('companies.owner') }}</option>
+                                            <option value="location"
+                                                {{ request('sort_by') == 'location' ? 'selected' : '' }}>
+                                                {{ __('companies.location') }}</option>
+                                            <option value="rating" {{ request('sort_by') == 'rating' ? 'selected' : '' }}>
+                                                {{ __('companies.rating') }}</option>
                                         </select>
+                                        <!-- Sort Order Butonu -->
+                                        <button type="button" class="btn btn-outline-secondary" id="sortOrderBtn"
+                                            title="{{ request('sort_order') == 'asc' ? 'Azalan sıralama' : 'Artan sıralama' }}">
+                                            @if (request('sort_order', 'asc') == 'asc')
+                                                <i class="ri-sort-asc"></i>
+                                            @else
+                                                <i class="ri-sort-desc"></i>
+                                            @endif
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -533,6 +552,51 @@
                                 </div>
                             </div>
                             <!--end delete modal -->
+
+                            <!-- Import Modal -->
+                            <div class="modal fade" id="importModal" tabindex="-1" aria-labelledby="importModalLabel"
+                                aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered">
+                                    <div class="modal-content">
+                                        <div class="modal-header bg-light p-3">
+                                            <h5 class="modal-title" id="importModalLabel">
+                                                {{ __('companies.import_companies') }}</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <form action="{{ route('companies.import') }}" method="POST"
+                                                enctype="multipart/form-data">
+                                                @csrf
+                                                <div class="mb-3">
+                                                    <label for="importFile"
+                                                        class="form-label">{{ __('companies.select_file') }}</label>
+                                                    <input type="file" class="form-control" id="importFile"
+                                                        name="file" accept=".xlsx, .xls, .csv" required>
+                                                    <div class="form-text">
+                                                        {{ __('companies.allowed_formats') }}: .xlsx, .xls, .csv
+                                                    </div>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <h6>{{ __('companies.import_instructions') }}</h6>
+                                                    <ul class="text-muted small">
+                                                        <li>{{ __('companies.required_columns') }}: sirket_adi, sahip_adi, sektor_turu</li>
+                                                        <li>{{ __('companies.optional_columns') }}: website, iletisim_e_postasi, degerlendirme, calisan_sayisi, konum, kurulus_tarihi</li>
+                                                    </ul>
+                                                </div>
+                                                <div class="text-end">
+                                                    <button type="button" class="btn btn-light"
+                                                        data-bs-dismiss="modal">{{ __('companies.close') }}</button>
+                                                    <button type="submit"
+                                                        class="btn btn-primary">{{ __('companies.upload_and_import') }}</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- End Import Modal -->
+
                         </div>
                     </div>
                 </div>
@@ -561,6 +625,49 @@
     <!-- Tek seferlik Choices.js yüklemesi -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/choices.js/10.2.0/choices.min.js"></script>
     <script>
+
+                // Sort order button click handler
+document.getElementById('sortOrderBtn').addEventListener('click', function(e) {
+    const currentUrl = new URL(window.location);
+    const currentOrder = currentUrl.searchParams.get('sort_order') || 'asc';
+    const newOrder = currentOrder === 'asc' ? 'desc' : 'asc';
+    
+    currentUrl.searchParams.set('sort_order', newOrder);
+    window.location.href = currentUrl.toString();
+});
+
+        // Sıralama dropdown'ı için JavaScript kodu
+        document.addEventListener('DOMContentLoaded', function() {
+            // Sort dropdown'ını bul
+            const sortDropdown = document.getElementById('choices-single-default');
+
+            if (sortDropdown) {
+                // Choices.js ile initialize et (eğer henüz edilmemişse)
+                if (!sortDropdown._choices) {
+                    const choices = new Choices(sortDropdown, {
+                        searchEnabled: false,
+                        removeItemButton: false,
+                        shouldSort: false
+                    });
+                }
+
+                // Change event listener ekle
+                sortDropdown.addEventListener('change', function() {
+                    const selectedValue = this.value;
+
+                    // Mevcut URL parametrelerini al
+                    const currentUrl = new URL(window.location);
+                    const currentParams = new URLSearchParams(currentUrl.search);
+
+                    // sort_by parametresini güncelle
+                    currentParams.set('sort_by', selectedValue);
+
+                    // Sayfayı yeniden yükle
+                    window.location.href = currentUrl.pathname + '?' + currentParams.toString();
+                });
+            }
+        });
+
         function EditCompany(id) {
             //formu düzenleme moduna çevir
             document.getElementById('modalTitle').innerText = "{{ __('companies.edit_company') }}";
@@ -768,22 +875,22 @@
         function initializeCheckboxHandlers() {
             // Her bir checkbox için change event listener ekle
             const childCheckboxes = document.getElementsByName("chk_child");
-            
+
             if (childCheckboxes.length > 0) {
                 Array.from(childCheckboxes).forEach(function(checkbox) {
                     checkbox.addEventListener("change", function(e) {
                         const row = e.target.closest("tr");
-                        
+
                         // Checkbox seçiliyse satırı aktif yap, değilse pasif yap
                         if (checkbox.checked) {
                             row.classList.add("table-active");
                         } else {
                             row.classList.remove("table-active");
                         }
-                        
+
                         // Seçili checkbox sayısını kontrol et
                         const checkedCount = document.querySelectorAll('[name="chk_child"]:checked').length;
-                        
+
                         // Silme butonunu göster/gizle
                         const removeButton = document.getElementById("remove-actions");
                         if (removeButton) {
@@ -838,18 +945,19 @@
                         // Toplu silme işlemi
                         let successCount = 0;
                         let errorCount = 0;
-                        
+
                         for (const companyId of companyIds) {
                             try {
                                 const destroyUrlTemplate = "{{ route('companies.destroy', ':id') }}";
                                 const response = await fetch(destroyUrlTemplate.replace(':id', companyId), {
                                     method: 'DELETE',
                                     headers: {
-                                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                                        'X-CSRF-TOKEN': document.querySelector(
+                                            'meta[name="csrf-token"]').content,
                                         'Accept': 'application/json'
                                     }
                                 });
-                                
+
                                 if (response.ok) {
                                     successCount++;
                                 } else {
@@ -859,7 +967,7 @@
                                 errorCount++;
                             }
                         }
-                        
+
                         // Sonuç bildirimi
                         if (successCount > 0 && errorCount === 0) {
                             // Tümü başarılı

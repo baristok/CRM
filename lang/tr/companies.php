@@ -66,6 +66,15 @@ return [
     'error_deleting_data' => 'Silme işlemi başarısız',
     'partial_success' => 'Kısmi Başarı',
     'partial_success_message' => 'şirket silindi, {error_count} şirket silinemedi.',
+    'import' => 'İçe Aktar',
+    'export' => 'Dışa Aktar',
+    'import_companies' => 'Şirketleri İçe Aktar',
+    'select_file' => 'Dosya Seçin',
+    'allowed_formats' => 'İzin Verilen Formatlar',
+    'import_instructions' => 'İçe Aktarma Talimatları',
+    'required_columns' => 'Zorunlu Sütunlar',
+    'optional_columns' => 'İsteğe Bağlı Sütunlar',
+    'upload_and_import' => 'Yükle ve İçe Aktar',
 ];  
 
 

@@ -26,7 +26,7 @@ class CompaniesFactory extends Factory
             'rating' => $this->faker->numberBetween(1, 5),
             'employee_count' => $this->faker->numberBetween(1, 1000),
             'location' => $this->faker->city,
-            'since' => $this->faker->date('Y-m-d'),
+            'since' => $this->faker->numberBetween(1900, 2025),
         ];
     }
 }

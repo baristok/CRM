@@ -6,6 +6,9 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Modules\Companies\Models\Companies;
 use Exception;
+use Maatwebsite\Excel\Facades\Excel;
+use Modules\Companies\Exports\CompaniesExport;
+use Modules\Companies\Imports\CompaniesImport;
 
 class CompaniesController extends Controller
 {
@@ -72,7 +75,6 @@ class CompaniesController extends Controller
      */
     public function show($id)
     {
-        return view('companies::show');
     }
 
     /**
@@ -150,5 +152,25 @@ class CompaniesController extends Controller
     {
         $company = Companies::findOrFail($id);
         return view('companies::partials.company-details', compact('company'))->render();
+    }
+
+    public function export()
+    {
+        return Excel::download(new CompaniesExport, 'companies.xlsx');
+    }
+
+    public function import(Request $request)
+    {
+        try {
+            $request->validate([
+                'file' => 'required|mimes:xlsx,xls,csv|max:2048',
+            ]);
+            
+            Excel::import(new CompaniesImport, $request->file('file'));
+            
+            return redirect()->route('companies.index')->with('success', 'Şirketler başarıyla içe aktarıldı.');
+        } catch (Exception $e) {
+            return redirect()->back()->with('error', 'İçe aktarma başarısız')->with('error_message', $e->getMessage());
+        }
     }
 }
