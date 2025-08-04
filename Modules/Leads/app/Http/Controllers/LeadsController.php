@@ -104,7 +104,7 @@ class LeadsController extends Controller
             $lead = Leads::findOrFail($id);
             $lead->update($validated);
             
-            // Update tags relationship
+            
             if ($request->has('tags')) {
                 $lead->tags()->sync($request->input('tags'));
             }
