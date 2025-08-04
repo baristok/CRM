@@ -13,11 +13,11 @@ return [
     'logout' => 'Logout',
 
 
-    'apps' => 'Apps',
-    'contacts' => 'Contacts',
-    'companies' => 'Companies',
-    'deals' => 'Deals',
-    'leads' => 'Leads',
+    // 'apps' => 'Apps',
+    // 'contacts' => 'Contacts',
+    // 'companies' => 'Companies',
+    // 'deals' => 'Deals',
+    // 'leads' => 'Leads',
 
 
 

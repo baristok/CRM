@@ -2,7 +2,7 @@
 
 
 return[
-    'title' => 'layout.contacts',
+    'title' => 'contacts.title',
     'icon' => 'fa fa-users',
     'route' => 'contacts.index',
     'permission' => 'contacts.index',

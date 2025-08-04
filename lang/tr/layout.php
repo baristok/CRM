@@ -16,11 +16,11 @@ return [
 
 
 
-    'apps' => 'Uygulamalar',
-    'contacts' => 'Kişiler',
-    'companies' => 'Şirketler',
-    'deals' => 'Fırsatlar',
-    'leads' => 'Potansiyel Müşteriler',
+    // 'apps' => 'Uygulamalar',
+    // 'contacts' => 'Kişiler',
+    // 'companies' => 'Şirketler',
+    // 'deals' => 'Fırsatlar',
+    // 'leads' => 'Potansiyel Müşteriler',
 
 
 

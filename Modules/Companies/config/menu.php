@@ -2,7 +2,7 @@
 
 
 return[
-    'title' => 'layout.companies',
+    'title' => 'companies.title',
     'icon' => 'fa fa-building',
     'route' => 'companies.index',
     'permission' => 'companies.index',
