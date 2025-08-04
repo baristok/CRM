@@ -32,11 +32,6 @@ class Contacts extends Model
     //     // return ContactsFactory::new();
     // }
 
-    // kullanıcıyı kontrol ediyor
-    public function user()
-    {
-        return $this->belongsTo(User::class, 'id');
-    }
 
     // pivot tablosu için: contact_id ve tag_id ile ilişkilendirme yapıyoruz.
     public function tags()

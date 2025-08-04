@@ -16,7 +16,14 @@ class LeadsFactory extends Factory
      */
     public function definition(): array
     {
-        return [];
+        return [
+            'name' => $this->faker->name(),
+            'company' => $this->faker->company(),
+            'lead_score' => $this->faker->numberBetween(1, 100),
+            'phone' => $this->faker->numerify('05#########'),
+            'location' => $this->faker->city(),
+            'created_at' => $this->faker->dateTimeBetween('-1 year', 'now'),
+        ];
     }
 }
 

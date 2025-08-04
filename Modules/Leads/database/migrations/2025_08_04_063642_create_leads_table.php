@@ -13,7 +13,13 @@ return new class extends Migration
     {
         Schema::create('leads', function (Blueprint $table) {
             $table->id();
-            
+            $table->string('image')->nullable();
+            $table->string('name');
+            $table->string('company'); 
+            $table->integer('lead_score');
+            $table->string('phone');
+            $table->string('location');
+            $table->date('created_date');
             $table->timestamps();
         });
     }
