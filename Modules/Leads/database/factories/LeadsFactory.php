@@ -18,11 +18,11 @@ class LeadsFactory extends Factory
     {
         return [
             'name' => $this->faker->name(),
-            'company' => $this->faker->company(),
+            'company_name' => $this->faker->company(),
             'lead_score' => $this->faker->numberBetween(1, 100),
             'phone' => $this->faker->numerify('05#########'),
-            'location' => $this->faker->city(),
-            'created_at' => $this->faker->dateTimeBetween('-1 year', 'now'),
+            'location' => $this->faker->address(),
+            'created_date' => $this->faker->dateTimeBetween('-1 year', 'now'),
         ];
     }
 }

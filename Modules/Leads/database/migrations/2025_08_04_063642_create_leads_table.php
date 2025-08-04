@@ -15,11 +15,12 @@ return new class extends Migration
             $table->id();
             $table->string('image')->nullable();
             $table->string('name');
-            $table->string('company'); 
+            $table->string('company_name'); 
             $table->integer('lead_score');
             $table->string('phone');
             $table->string('location');
             $table->date('created_date');
+            $table->softDeletes();
             $table->timestamps();
         });
     }

@@ -16,7 +16,7 @@ return [
 
 
 
-    // 'apps' => 'Uygulamalar',
+    'apps' => 'Uygulamalar',
     // 'contacts' => 'Kişiler',
     // 'companies' => 'Şirketler',
     // 'deals' => 'Fırsatlar',

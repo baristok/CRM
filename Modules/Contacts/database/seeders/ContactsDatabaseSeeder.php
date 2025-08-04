@@ -13,6 +13,7 @@ class ContactsDatabaseSeeder extends Seeder
     {
         $this->call([
             ContactsSeeder::class,
+            TagsSeeder::class,
         ]);
     }
 }

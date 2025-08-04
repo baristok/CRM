@@ -4,12 +4,12 @@ namespace Modules\Leads\Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-class TagsFactory extends Factory
+class TagsLeadsFactory extends Factory
 {
     /**
      * The name of the factory's corresponding model.
      */
-    protected $model = \Modules\Leads\Models\Tags::class;
+    protected $model = \Modules\Leads\Models\TagsLeads::class;
 
     /**
      * Define the model's default state.

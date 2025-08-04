@@ -65,7 +65,7 @@ return [
     |
     */
 
-    'timezone' => 'UTC',
+    'timezone' => 'Europe/Istanbul',
 
     /*
     |--------------------------------------------------------------------------
@@ -82,7 +82,7 @@ return [
 
     'fallback_locale' => env('APP_FALLBACK_LOCALE', 'tr'),
 
-    'faker_locale' => env('APP_FAKER_LOCALE', 'en_US'),
+    'faker_locale' => env('APP_FAKER_LOCALE', 'tr_TR'),
 
     /*
     |--------------------------------------------------------------------------

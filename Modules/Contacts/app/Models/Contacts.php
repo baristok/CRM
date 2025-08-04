@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Models\User;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Laravel\Scout\Searchable;
-// use Modules\Contacts\Database\Factories\ContactsFactory;
+use Modules\Contacts\Database\Factories\ContactsFactory;
 
 class Contacts extends Model
 {
@@ -27,10 +27,10 @@ class Contacts extends Model
         'image',
     ];
 
-    // protected static function newFactory(): ContactsFactory
-    // {
-    //     // return ContactsFactory::new();
-    // }
+    protected static function newFactory(): ContactsFactory
+    {
+        return ContactsFactory::new();
+    }
 
 
     // pivot tablosu için: contact_id ve tag_id ile ilişkilendirme yapıyoruz.

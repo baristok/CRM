@@ -16,7 +16,15 @@ class ContactsFactory extends Factory
      */
     public function definition(): array
     {
-        return [];
+        return [
+            'name' => $this->faker->name(),
+            'email' => $this->faker->email(),
+            'phone' => $this->faker->phoneNumber(),
+            'company_name' => $this->faker->company(),
+            'designation' => $this->faker->jobTitle(),
+            'lead_score' => $this->faker->numberBetween(1, 100),
+            'created_at' => $this->faker->dateTimeBetween('-1 year', 'now'),
+        ];
     }
 }
 
