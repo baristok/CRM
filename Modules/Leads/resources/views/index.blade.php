@@ -6,9 +6,6 @@
 
     <style>
 
-
-
-
         #contact-detail-area {
             display: none;
         }
@@ -55,6 +52,43 @@
 @endsection
 
 @section('content')
+    {{-- Hata mesajları --}}
+    @if (session('error'))
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                Swal.fire({
+                    html: '<div class="mt-3"><lord-icon src="https://cdn.lordicon.com/tdrtiskw.json" trigger="loop" colors="primary:#f06548,secondary:#f7b84b" style="width:120px;height:120px"></lord-icon><div class="mt-4 pt-2 fs-15"><h4>{{ session('error') }}</h4><p class="text-muted mx-4 mb-0">{{ session('error_message') }}</p></div></div>',
+                    showCancelButton: true,
+                    showConfirmButton: false,
+                    customClass: {
+                        cancelButton: "btn btn-primary w-xs mb-1"
+                    },
+                    cancelButtonText: "Tamam",
+                    buttonsStyling: false,
+                    showCloseButton: true
+                });
+            });
+        </script>
+    @endif
+
+    @if (session('success'))
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                Swal.fire({
+                    html: '<div class="mt-3"><lord-icon src="https://cdn.lordicon.com/lupuorrc.json" trigger="loop" colors="primary:#25a0e2,secondary:#00bd9d" style="width:120px;height:120px"></lord-icon><div class="mt-4 pt-2 fs-15"><h4>{{ session('success') }}</h4><p class="text-muted mx-4 mb-0">{{ session('success_message') }}</p></div></div>',
+                    showCancelButton: true,
+                    showConfirmButton: false,
+                    customClass: {
+                        cancelButton: "btn btn-success w-xs mb-1"
+                    },
+                    cancelButtonText: "Tamam",
+                    buttonsStyling: false,
+                    showCloseButton: true
+                });
+            });
+        </script>
+    @endif
+    {{-- Hata mesajları sonu --}}
 
     <div class="page-content">
         <div class="container-fluid">
@@ -204,7 +238,7 @@
                                                             <li class="list-inline-item" data-bs-toggle="tooltip"
                                                                 data-bs-trigger="hover" data-bs-placement="top"
                                                                 title="Edit">
-                                                                <a class="edit-item-btn" href="#showModal"
+                                                                <a class="edit-item-btn" href="javascript:void(0);" onclick="EditLead({{ $lead->id }})"
                                                                     data-bs-toggle="modal"><i
                                                                         class="ri-pencil-fill align-bottom text-muted"></i></a>
                                                             </li>
@@ -236,13 +270,9 @@
                                 </div>
                                 <div class="d-flex justify-content-end mt-3">
                                     <div class="pagination-wrap hstack gap-2">
-                                        <a class="page-item pagination-prev disabled" href="#">
-                                            Previous
-                                        </a>
-                                        <ul class="pagination listjs-pagination mb-0"></ul>
-                                        <a class="page-item pagination-next" href="#">
-                                            Next
-                                        </a>
+                                        @include('leads::custom-pagination', [
+                                            'paginator' => $leads,
+                                        ])
                                     </div>
                                 </div>
                             </div>
@@ -251,7 +281,7 @@
                                 <div class="modal-dialog modal-dialog-centered">
                                     <div class="modal-content">
                                         <div class="modal-header bg-light p-3">
-                                            <h5 class="modal-title" id="exampleModalLabel"></h5>
+                                            <h5 class="modal-title" id="modalTitle">{{ __('leads.add_lead') }}</h5>
                                             <button type="button" class="btn-close" data-bs-dismiss="modal"
                                                 aria-label="Close" id="close-modal"></button>
                                         </div>
@@ -335,10 +365,10 @@
                                                     <div class="col-lg-12">
                                                         <div>
                                                             <label for="location-field"
-                                                                class="form-label">{{ __('leads.address') }}</label>
+                                                                class="form-label">{{ __('leads.location') }}</label>
                                                             <input type="text" id="location-field" name="location"
-                                                                class="form-control"
-                                                                placeholder="{{ __('leads.enter_address') }}" required />
+                                                                class="form-control"    
+                                                                placeholder="{{ __('leads.enter_location') }}" required />
                                                         </div>
                                                     </div>
                                                     <!--end col-->
@@ -372,9 +402,7 @@
                                                 <div class="hstack gap-2 justify-content-end">
                                                     <button type="button" class="btn btn-light"
                                                         data-bs-dismiss="modal">Close</button>
-                                                    <button type="submit" class="btn btn-success" id="add-btn">Add
-                                                        leads</button>
-                                                    <!-- <button type="button" class="btn btn-success" id="edit-btn">Update</button> -->
+                                                    <button type="submit" class="btn btn-success" id="submitBtn">{{ __('leads.add_lead') }}</button>
                                                 </div>
                                             </div>
                                         </form>
@@ -1016,6 +1044,203 @@
                         });
                     });
             });
+        }
+
+        function EditLead(id) {
+            // Formu düzenleme moduna çevir
+            document.getElementById('modalTitle').innerText = "{{ __('leads.edit_lead') }}";
+            document.getElementById('method').value = "PUT";
+            document.getElementById('submitBtn').innerText = "{{ __('leads.update_lead') }}";
+            document.getElementById('lead_id').value = id;
+            document.getElementById('leadForm').action = "{{ route('leads.index') }}/" + id;
+            
+            // Verileri AJAX ile çek
+            fetch("{{ route('leads.index') }}/" + id + "/edit", {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    }
+                })
+                .then(res => res.json())
+                .then(data => {
+                    // Form alanlarını doldur
+                    document.getElementById('leadname-field').value = data.name || '';
+                    document.getElementById('company_name-field').value = data.company_name || '';
+                    document.getElementById('leads_score-field').value = data.lead_score || '';
+                    document.getElementById('phone-field').value = data.phone || '';
+                    document.getElementById('location-field').value = data.location || '';
+                    document.getElementById('date-field').value = data.created_date || '';
+
+                    // Tags'leri doldur (Choices.js için)
+                    if (data.tags && data.tags.length > 0) {
+                        const tagIds = data.tags.map(tag => tag.id.toString());
+                        // Önce mevcut seçimleri temizle
+                        tagInputField.removeActiveItems();
+                        // Yeni değerleri seç
+                        tagIds.forEach(tagId => {
+                            tagInputField.setChoiceByValue(tagId);
+                        });
+                    } else {
+                        tagInputField.removeActiveItems();
+                    }
+
+                    if (data.image) {
+                        document.getElementById('lead-img').src = `/storage/${data.image}`;
+                    }
+
+                    // Modalı göster
+                    new bootstrap.Modal(document.getElementById('showModal')).show();
+                })
+                .catch(err => {
+                    console.error('EditLead error:', err);
+                    Swal.fire({
+                        html: `
+                        <div class="mt-3">
+                            <lord-icon src="https://cdn.lordicon.com/tdrtiskw.json" trigger="loop" colors="primary:#f06548,secondary:#f7b84b" style="width:120px;height:120px"></lord-icon>
+                            <div class="mt-4 pt-2 fs-15">
+                                <h4>{{ __('leads.error_loading_data') }}</h4>
+                                <p class="text-muted mx-4 mb-0">${err.message || '{{ __('leads.error_loading_data') }}'}</p>
+                            </div>
+                        </div>`,
+                        showCancelButton: true,
+                        showConfirmButton: false,
+                        customClass: {
+                            cancelButton: "btn btn-primary w-xs mb-1"
+                        },
+                        cancelButtonText: "{{ __('leads.back') }}",
+                        buttonsStyling: false,
+                        showCloseButton: true
+                    });
+                });
+        }
+
+        // Düzenleme fonksiyonu için form gönderim işlemi
+        document.getElementById('leadForm').addEventListener('submit', function(e) {
+            const method = document.getElementById('method').value;
+            const leadId = document.getElementById('lead_id').value;
+            
+            if (method === 'PUT' && leadId) {
+                e.preventDefault();
+                const formData = new FormData(this);
+                // Laravel için method override ekle
+                formData.append('_method', 'PUT');
+                
+                fetch("{{ route('leads.index') }}/" + leadId, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                        'Accept': 'application/json'
+                    }
+                })
+                .then(res => {
+                    // Response'un content-type'ını kontrol et
+                    const contentType = res.headers.get('content-type');
+                    if (contentType && contentType.includes('application/json')) {
+                        return res.json();
+                    } else {
+                        // HTML response geldi, muhtemelen redirect oldu
+                        throw new Error('Sunucudan beklenmeyen yanıt alındı. Sayfa yenilenecek.');
+                    }
+                })
+                .then(data => {
+                    if (data.success) {
+                        Swal.fire({
+                            html: `
+                            <div class="mt-3">
+                                <lord-icon src="https://cdn.lordicon.com/lupuorrc.json" trigger="loop" colors="primary:#0ab39c,secondary:#405189" style="width:120px;height:120px"></lord-icon>
+                                <div class="mt-4 pt-2 fs-15">
+                                    <h4>{{ __('leads.lead_updated') }}</h4>
+                                    <p class="text-muted mx-4 mb-0">{{ __('leads.lead_updated_info') }}</p>
+                                </div>
+                            </div>`,
+                            showCancelButton: true,
+                            showConfirmButton: false,
+                            customClass: {
+                                cancelButton: "btn btn-primary w-xs mb-1"
+                            },
+                            cancelButtonText: "{{ __('leads.back') }}",
+                            buttonsStyling: false,
+                            showCloseButton: true
+                        }).then(() => window.location.reload());
+                    } else {
+                        throw new Error(data.message || '{{ __('leads.error_saving_data') }}');
+                    }
+                })
+                .catch(err => {
+                    console.error('Update error:', err);
+                    
+                    // Eğer sayfa yenilenmesi gereken bir hata ise
+                    if (err.message.includes('beklenmeyen yanıt')) {
+                        Swal.fire({
+                            html: `
+                            <div class="mt-3">
+                                <lord-icon src="https://cdn.lordicon.com/lupuorrc.json" trigger="loop" colors="primary:#0ab39c,secondary:#405189" style="width:120px;height:120px"></lord-icon>
+                                <div class="mt-4 pt-2 fs-15">
+                                    <h4>İşlem Tamamlandı</h4>
+                                    <p class="text-muted mx-4 mb-0">Güncelleme başarılı olabilir. Sayfa yenileniyor...</p>
+                                </div>
+                            </div>`,
+                            showCancelButton: false,
+                            showConfirmButton: false,
+                            timer: 2000,
+                            timerProgressBar: true,
+                            allowOutsideClick: false
+                        }).then(() => {
+                            window.location.reload();
+                        });
+                    } else {
+                        Swal.fire({
+                            html: `
+                            <div class="mt-3">
+                                <lord-icon src="https://cdn.lordicon.com/tdrtiskw.json" trigger="loop" colors="primary:#f06548,secondary:#f7b84b" style="width:120px;height:120px"></lord-icon>
+                                <div class="mt-4 pt-2 fs-15">
+                                    <h4>{{ __('leads.error_saving_data') }}</h4>
+                                    <p class="text-muted mx-4 mb-0">${err.message || '{{ __('leads.error_saving_data') }}'}</p>
+                                </div>
+                            </div>`,
+                            showCancelButton: true,
+                            showConfirmButton: false,
+                            customClass: {
+                                cancelButton: "btn btn-primary w-xs mb-1"
+                            },
+                            cancelButtonText: "{{ __('leads.back') }}",
+                            buttonsStyling: false,
+                            showCloseButton: true
+                        });
+                    }
+                });
+            }
+        });
+
+        // '.add-btn' sınıfına sahip olan "Ekle" butonunu bul
+        const addLeadButton = document.querySelector('.add-btn');
+
+        // Bu butona her tıklandığında...
+        if (addLeadButton) {
+            addLeadButton.addEventListener('click', function() {
+                // Bootstrap'in modal'ı açmasından hemen önce formu sıfırla
+                resetForm();
+            });
+        }
+
+        // Formu sıfırlarken etiketleri de temizle
+        document.getElementById('close-modal').addEventListener('click', resetForm);
+        // Formu sıfırlama
+        function resetForm() {
+            document.getElementById('leadForm').reset();
+            document.getElementById('method').value = 'POST';
+            document.getElementById('lead_id').value = '';
+            document.getElementById('modalTitle').innerText = "{{ __('leads.add_lead') }}";
+            document.getElementById('submitBtn').innerText = "{{ __('leads.add_lead') }}";
+            document.getElementById('leadForm').action = "{{ route('leads.store') }}";
+            document.getElementById('lead-img').src = "assets/images/users/user-dummy-img.jpg";
+            
+            // Choices.js field'ını temizle
+            if (tagInputField) {
+                tagInputField.removeActiveItems();
+            }
         }
     </script>
 

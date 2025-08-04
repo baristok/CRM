@@ -628,7 +628,7 @@ document.getElementById('sortOrderBtn').addEventListener('click', function(e) {
                     if (data.image) {
                         document.getElementById('customer-img').src = `/storage/${data.image}`;
                     }
-                    console.log('gelen veri: ', data);
+                    // console.log('gelen veri: ', data);
                     // Etiketleri güncelle
                     tagInputField.removeActiveItems();
                     if (Array.isArray(data.tag_ids)) {

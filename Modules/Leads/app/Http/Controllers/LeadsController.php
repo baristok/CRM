@@ -47,7 +47,7 @@ class LeadsController extends Controller
                 'lead_score' => 'required|integer',
                 'phone' => 'required|string|max:20',
                 'location' => 'required|string|max:255',
-                'tags' => 'required|array',
+                'tags' => 'array',
                 'created_date' => 'required|date',
             ]);
 
@@ -76,15 +76,57 @@ class LeadsController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit($id)
+    public function edit(Request $request, $id)
     {
-        return view('leads::edit');
+        $lead = Leads::with('tags')->findOrFail($id);
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json($lead);
+        }
+        return view('leads::edit', compact('lead'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, $id) {}
+    public function update(Request $request, $id) 
+    {
+        try {
+            $validated = $request->validate([
+                'name' => 'required|string|max:255',
+                'company_name' => 'required|string|max:255',
+                'lead_score' => 'required|integer',
+                'phone' => 'required|string|max:20',
+                'location' => 'required|string|max:255',
+                'tags' => 'array',
+                'created_date' => 'required|date',
+            ]);
+            
+            $lead = Leads::findOrFail($id);
+            $lead->update($validated);
+            
+            // Update tags relationship
+            if ($request->has('tags')) {
+                $lead->tags()->sync($request->input('tags'));
+            }
+            
+            if ($request->wantsJson() || $request->ajax()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Lead updated successfully'
+                ]);
+            }
+            
+            return redirect()->route('leads.index')->with('success', 'Kayıt güncellendi');
+        } catch (Exception $e) {
+            if ($request->wantsJson() || $request->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Kayıt güncellenemedi: ' . $e->getMessage()
+                ], 500);
+            }
+            return redirect()->back()->with('error', 'Kayıt güncellenemedi')->with('error_message', $e->getMessage());
+        }
+    }
 
     /**
      * Remove the specified resource from storage.
