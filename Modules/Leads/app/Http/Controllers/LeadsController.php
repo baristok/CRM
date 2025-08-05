@@ -154,4 +154,22 @@ class LeadsController extends Controller
         }
 
     }
+
+    public function details($id)
+    {
+        $lead = Leads::with('tags')->find($id);
+        
+        if (!$lead) {
+            if (request()->expectsJson()) {
+                return response()->json(['error' => 'Lead bulunamadı'], 404);
+            }
+            return redirect()->route('leads.index')->with('error', 'Lead bulunamadı');
+        }
+        
+        if (request()->expectsJson()) {
+            return response()->json($lead);
+        }
+        
+        return view('leads::partials.lead-details', compact('lead'));
+    }
 }

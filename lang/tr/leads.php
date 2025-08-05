@@ -44,4 +44,8 @@ return [
     'select_item' => 'Seçin',
     'previous' => 'Önceki',
     'next' => 'Sonraki',
+    'lead_details' => 'Potansiyel Müşteri Detayları',
+    'lead_information' => 'Potansiyel Müşteri Bilgileri',
+    'lead_profile' => 'Potansiyel Müşteri Profili',
+    'created_at' => 'Kayıt Tarihi',
 ];

@@ -5,7 +5,6 @@
 @section('css')
 
     <style>
-
         #contact-detail-area {
             display: none;
         }
@@ -232,13 +231,17 @@
                                                             <li class="list-inline-item" data-bs-toggle="tooltip"
                                                                 data-bs-trigger="hover" data-bs-placement="top"
                                                                 title="View">
-                                                                <a href="javascript:void(0);"><i
-                                                                        class="ri-eye-fill align-bottom text-muted"></i></a>
+                                                                <a href="javascript:void(0);"
+                                                                    onclick="showLeadDetails({{ $lead->id }})"
+                                                                    data-bs-toggle="modal" data-bs-target="#modal-lg">
+                                                                    <i class="ri-eye-fill align-bottom text-muted"></i>
+                                                                </a>
                                                             </li>
                                                             <li class="list-inline-item" data-bs-toggle="tooltip"
                                                                 data-bs-trigger="hover" data-bs-placement="top"
                                                                 title="Edit">
-                                                                <a class="edit-item-btn" href="javascript:void(0);" onclick="EditLead({{ $lead->id }})"
+                                                                <a class="edit-item-btn" href="javascript:void(0);"
+                                                                    onclick="EditLead({{ $lead->id }})"
                                                                     data-bs-toggle="modal"><i
                                                                         class="ri-pencil-fill align-bottom text-muted"></i></a>
                                                             </li>
@@ -367,7 +370,7 @@
                                                             <label for="location-field"
                                                                 class="form-label">{{ __('leads.location') }}</label>
                                                             <input type="text" id="location-field" name="location"
-                                                                class="form-control"    
+                                                                class="form-control"
                                                                 placeholder="{{ __('leads.enter_location') }}" required />
                                                         </div>
                                                     </div>
@@ -402,7 +405,8 @@
                                                 <div class="hstack gap-2 justify-content-end">
                                                     <button type="button" class="btn btn-light"
                                                         data-bs-dismiss="modal">Close</button>
-                                                    <button type="submit" class="btn btn-success" id="submitBtn">{{ __('leads.add_lead') }}</button>
+                                                    <button type="submit" class="btn btn-success"
+                                                        id="submitBtn">{{ __('leads.add_lead') }}</button>
                                                 </div>
                                             </div>
                                         </form>
@@ -651,6 +655,46 @@
         <!-- container-fluid -->
     </div>
 
+
+    <div class="modal fade bs-example-modal-lg" id="modal-lg" tabindex="-1" role="dialog"
+        aria-labelledby="myLargeModalLabel" aria-hidden="true">
+        <!--  Large modal example -->
+
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="myLargeModalLabel">{{ __('leads.lead_details') }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="lead-details-content">
+                    <!-- İçerik AJAX ile yüklenecek -->
+                    <div class="text-center">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Yükleniyor...</span>
+                        </div>
+                        <p class="mt-2">Lead detayları yükleniyor...</p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                   
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 @endsection
 
 @section('js')
@@ -726,16 +770,16 @@
 
 
         // Choices.js instance’ı globalde tutuyoruz
-            const tagInputField = new Choices("#taginput-choices", {
-                removeItemButton: true,
-                searchEnabled: true,
-                searchChoices: true,
-                searchFloor: 1,
-                placeholder: true,
-                placeholderValue: '{{ __('contacts.select_tag') }}',
-                noResultsText: '{{ __('contacts.no_results') }}',
-                itemSelectText: '{{ __('contacts.select_item') }}'
-            });
+        const tagInputField = new Choices("#taginput-choices", {
+            removeItemButton: true,
+            searchEnabled: true,
+            searchChoices: true,
+            searchFloor: 1,
+            placeholder: true,
+            placeholderValue: '{{ __('contacts.select_tag') }}',
+            noResultsText: '{{ __('contacts.no_results') }}',
+            itemSelectText: '{{ __('contacts.select_item') }}'
+        });
 
 
 
@@ -1053,7 +1097,7 @@
             document.getElementById('submitBtn').innerText = "{{ __('leads.update_lead') }}";
             document.getElementById('lead_id').value = id;
             document.getElementById('leadForm').action = "{{ route('leads.index') }}/" + id;
-            
+
             // Verileri AJAX ile çek
             fetch("{{ route('leads.index') }}/" + id + "/edit", {
                     method: 'GET',
@@ -1119,35 +1163,36 @@
         document.getElementById('leadForm').addEventListener('submit', function(e) {
             const method = document.getElementById('method').value;
             const leadId = document.getElementById('lead_id').value;
-            
+
             if (method === 'PUT' && leadId) {
                 e.preventDefault();
                 const formData = new FormData(this);
                 // Laravel için method override ekle
                 formData.append('_method', 'PUT');
-                
+
                 fetch("{{ route('leads.index') }}/" + leadId, {
-                    method: 'POST',
-                    body: formData,
-                    headers: {
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                        'Accept': 'application/json'
-                    }
-                })
-                .then(res => {
-                    // Response'un content-type'ını kontrol et
-                    const contentType = res.headers.get('content-type');
-                    if (contentType && contentType.includes('application/json')) {
-                        return res.json();
-                    } else {
-                        // HTML response geldi, muhtemelen redirect oldu
-                        throw new Error('Sunucudan beklenmeyen yanıt alındı. Sayfa yenilenecek.');
-                    }
-                })
-                .then(data => {
-                    if (data.success) {
-                        Swal.fire({
-                            html: `
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute(
+                                'content'),
+                            'Accept': 'application/json'
+                        }
+                    })
+                    .then(res => {
+                        // Response'un content-type'ını kontrol et
+                        const contentType = res.headers.get('content-type');
+                        if (contentType && contentType.includes('application/json')) {
+                            return res.json();
+                        } else {
+                            // HTML response geldi, muhtemelen redirect oldu
+                            throw new Error('Sunucudan beklenmeyen yanıt alındı. Sayfa yenilenecek.');
+                        }
+                    })
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire({
+                                html: `
                             <div class="mt-3">
                                 <lord-icon src="https://cdn.lordicon.com/lupuorrc.json" trigger="loop" colors="primary:#0ab39c,secondary:#405189" style="width:120px;height:120px"></lord-icon>
                                 <div class="mt-4 pt-2 fs-15">
@@ -1155,26 +1200,26 @@
                                     <p class="text-muted mx-4 mb-0">{{ __('leads.lead_updated_info') }}</p>
                                 </div>
                             </div>`,
-                            showCancelButton: true,
-                            showConfirmButton: false,
-                            customClass: {
-                                cancelButton: "btn btn-primary w-xs mb-1"
-                            },
-                            cancelButtonText: "{{ __('leads.back') }}",
-                            buttonsStyling: false,
-                            showCloseButton: true
-                        }).then(() => window.location.reload());
-                    } else {
-                        throw new Error(data.message || '{{ __('leads.error_saving_data') }}');
-                    }
-                })
-                .catch(err => {
-                    console.error('Update error:', err);
-                    
-                    // Eğer sayfa yenilenmesi gereken bir hata ise
-                    if (err.message.includes('beklenmeyen yanıt')) {
-                        Swal.fire({
-                            html: `
+                                showCancelButton: true,
+                                showConfirmButton: false,
+                                customClass: {
+                                    cancelButton: "btn btn-primary w-xs mb-1"
+                                },
+                                cancelButtonText: "{{ __('leads.back') }}",
+                                buttonsStyling: false,
+                                showCloseButton: true
+                            }).then(() => window.location.reload());
+                        } else {
+                            throw new Error(data.message || '{{ __('leads.error_saving_data') }}');
+                        }
+                    })
+                    .catch(err => {
+                        console.error('Update error:', err);
+
+                        // Eğer sayfa yenilenmesi gereken bir hata ise
+                        if (err.message.includes('beklenmeyen yanıt')) {
+                            Swal.fire({
+                                html: `
                             <div class="mt-3">
                                 <lord-icon src="https://cdn.lordicon.com/lupuorrc.json" trigger="loop" colors="primary:#0ab39c,secondary:#405189" style="width:120px;height:120px"></lord-icon>
                                 <div class="mt-4 pt-2 fs-15">
@@ -1182,17 +1227,17 @@
                                     <p class="text-muted mx-4 mb-0">Güncelleme başarılı olabilir. Sayfa yenileniyor...</p>
                                 </div>
                             </div>`,
-                            showCancelButton: false,
-                            showConfirmButton: false,
-                            timer: 2000,
-                            timerProgressBar: true,
-                            allowOutsideClick: false
-                        }).then(() => {
-                            window.location.reload();
-                        });
-                    } else {
-                        Swal.fire({
-                            html: `
+                                showCancelButton: false,
+                                showConfirmButton: false,
+                                timer: 2000,
+                                timerProgressBar: true,
+                                allowOutsideClick: false
+                            }).then(() => {
+                                window.location.reload();
+                            });
+                        } else {
+                            Swal.fire({
+                                html: `
                             <div class="mt-3">
                                 <lord-icon src="https://cdn.lordicon.com/tdrtiskw.json" trigger="loop" colors="primary:#f06548,secondary:#f7b84b" style="width:120px;height:120px"></lord-icon>
                                 <div class="mt-4 pt-2 fs-15">
@@ -1200,17 +1245,17 @@
                                     <p class="text-muted mx-4 mb-0">${err.message || '{{ __('leads.error_saving_data') }}'}</p>
                                 </div>
                             </div>`,
-                            showCancelButton: true,
-                            showConfirmButton: false,
-                            customClass: {
-                                cancelButton: "btn btn-primary w-xs mb-1"
-                            },
-                            cancelButtonText: "{{ __('leads.back') }}",
-                            buttonsStyling: false,
-                            showCloseButton: true
-                        });
-                    }
-                });
+                                showCancelButton: true,
+                                showConfirmButton: false,
+                                customClass: {
+                                    cancelButton: "btn btn-primary w-xs mb-1"
+                                },
+                                cancelButtonText: "{{ __('leads.back') }}",
+                                buttonsStyling: false,
+                                showCloseButton: true
+                            });
+                        }
+                    });
             }
         });
 
@@ -1236,11 +1281,61 @@
             document.getElementById('submitBtn').innerText = "{{ __('leads.add_lead') }}";
             document.getElementById('leadForm').action = "{{ route('leads.store') }}";
             document.getElementById('lead-img').src = "assets/images/users/user-dummy-img.jpg";
-            
+
             // Choices.js field'ını temizle
             if (tagInputField) {
                 tagInputField.removeActiveItems();
             }
+        }
+
+
+
+        //view modal detailing with ajax
+        function showLeadDetails(id) {
+            // Modal içeriğini temizle ve loading göster
+            const modalContent = document.getElementById('lead-details-content');
+            modalContent.innerHTML = `
+                <div class="text-center">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Yükleniyor...</span>
+                    </div>
+                    <p class="mt-2">Lead detayları yükleniyor...</p>
+                </div>
+            `;
+            
+            // Modalı aç
+            const modal = new bootstrap.Modal(document.getElementById('modal-lg'));
+            modal.show();
+            
+            // AJAX ile detayları çek
+            fetch(`{{ route('leads.details', ':id') }}`.replace(':id', id), {
+                method: 'GET',
+                headers: {
+                    'Accept': 'text/html',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Lead bulunamadı');
+                }
+                return response.text();
+            })
+            .then(html => {
+                // Modal içeriğini güncelle
+                modalContent.innerHTML = html;
+            })
+            .catch(err => {
+                console.error('Error:', err);
+                modalContent.innerHTML = `
+                    <div class="text-center">
+                        <lord-icon src="https://cdn.lordicon.com/tdrtiskw.json" trigger="loop" 
+                            colors="primary:#f06548,secondary:#f7b84b" style="width:120px;height:120px"></lord-icon>
+                        <h5 class="mt-2">Hata Oluştu</h5>
+                        <p class="text-muted mb-0">${err.message || 'Lead detayları yüklenirken bir hata oluştu.'}</p>
+                    </div>
+                `;
+            });
         }
     </script>
 
