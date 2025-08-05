@@ -62,7 +62,7 @@
                     customClass: {
                         cancelButton: "btn btn-primary w-xs mb-1"
                     },
-                    cancelButtonText: "Tamam",
+                    cancelButtonText: "{{__('leads.okey')}}",
                     buttonsStyling: false,
                     showCloseButton: true
                 });
@@ -80,7 +80,7 @@
                     customClass: {
                         cancelButton: "btn btn-success w-xs mb-1"
                     },
-                    cancelButtonText: "Tamam",
+                    cancelButtonText: "{{__('leads.okey')}}",
                     buttonsStyling: false,
                     showCloseButton: true
                 });
@@ -136,22 +136,19 @@
                                             {{ __('leads.add_lead') }}</button>
                                         <button type="button" class="btn btn-secondary" data-bs-toggle="offcanvas"
                                             href="#offcanvasExample"><i class="ri-filter-3-line align-bottom me-1"></i>
-                                            Fliters</button>
+                                            {{__('leads.filters')}}</button>
                                         <span class="dropdown">
                                             <button class="btn btn-soft-primary btn-icon fs-14" type="button"
                                                 id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
                                                 <i class="ri-settings-4-line"></i>
                                             </button>
                                             <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                                                <li><a class="dropdown-item" href="#">Copy</a></li>
-                                                <li><a class="dropdown-item" href="#">Move to pipline</a></li>
-                                                <li><a class="dropdown-item" href="#">Add to exceptions</a></li>
-                                                <li><a class="dropdown-item" href="#">Switch to common form view</a>
-                                                </li>
-                                                <li><a class="dropdown-item" href="#">Reset form view to default</a>
-                                                </li>
+                                                <li><a class="dropdown-item" href="{{ route('leads.export') }}">{{__('leads.export')}}</a></li>
+                                                <li><a class="dropdown-item" data-bs-target="#importModal" data-bs-toggle="modal" href="{{ route('leads.import') }}">{{__('leads.import')}}</a></li>
                                             </ul>
                                         </span>
+                                        {{-- <button class="btn btn-soft-primary" data-bs-toggle="modal"
+                                            data-bs-target="#importModal">{{ __('leads.import') }}</button> --}}
                                     </div>
                                 </div>
                             </div>
@@ -260,16 +257,6 @@
                                             @endforeach
                                         </tbody>
                                     </table>
-                                    <div class="noresult" style="display: none">
-                                        <div class="text-center">
-                                            <lord-icon src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop"
-                                                colors="primary:#8c68cd,secondary:#4788ff"
-                                                style="width:75px;height:75px"></lord-icon>
-                                            <h5 class="mt-2">Sorry! No Result Found</h5>
-                                            <p class="text-muted mb-0">We've searched more than 150+ leads We did not find
-                                                any leads for you search.</p>
-                                        </div>
-                                    </div>
                                 </div>
                                 <div class="d-flex justify-content-end mt-3">
                                     <div class="pagination-wrap hstack gap-2">
@@ -322,7 +309,7 @@
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                            <h5 class="fs-13 mt-3">Lead Image</h5>
+                                                            <h5 class="fs-13 mt-3">{{ __('leads.lead_image') }}</h5>
                                                         </div>
                                                         <div>
                                                             <label for="leadname-field"
@@ -404,7 +391,7 @@
                                             <div class="modal-footer">
                                                 <div class="hstack gap-2 justify-content-end">
                                                     <button type="button" class="btn btn-light"
-                                                        data-bs-dismiss="modal">Close</button>
+                                                        data-bs-dismiss="modal">{{ __('leads.close') }}</button>
                                                     <button type="submit" class="btn btn-success"
                                                         id="submitBtn">{{ __('leads.add_lead') }}</button>
                                                 </div>
@@ -415,38 +402,52 @@
                             </div>
                             <!--end modal-->
 
-                            <!-- Modal -->
-                            <div class="modal fade zoomIn" id="deleteRecordModal" tabindex="-1"
-                                aria-labelledby="deleteRecordLabel" aria-hidden="true">
+                            <!-- Import Modal -->
+                            <div class="modal fade" id="importModal" tabindex="-1" aria-labelledby="importModalLabel"
+                                aria-hidden="true">
                                 <div class="modal-dialog modal-dialog-centered">
                                     <div class="modal-content">
-                                        <div class="modal-header">
+                                        <div class="modal-header bg-light p-3">
+                                            <h5 class="modal-title" id="importModalLabel">
+                                                {{ __('leads.import_leads') }}</h5>
                                             <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                aria-label="Close" id="btn-close"></button>
+                                                aria-label="Close"></button>
                                         </div>
-                                        <div class="modal-body p-5 text-center">
-                                            <lord-icon src="https://cdn.lordicon.com/gsqxdxog.json" trigger="loop"
-                                                colors="primary:#405189,secondary:#f06548"
-                                                style="width:90px;height:90px"></lord-icon>
-                                            <div class="mt-4 text-center">
-                                                <h4 class="fs-semibold">You are about to delete a lead ?</h4>
-                                                <p class="text-muted fs-14 mb-4 pt-1">Deleting your lead will remove all of
-                                                    your information from our database.</p>
-                                                <div class="hstack gap-2 justify-content-center remove">
-                                                    <button
-                                                        class="btn btn-link link-success fw-medium text-decoration-none"
-                                                        id="deleteRecord-close" data-bs-dismiss="modal"><i
-                                                            class="ri-close-line me-1 align-middle"></i> Close</button>
-                                                    <button class="btn btn-danger" id="delete-record">Yes, Delete
-                                                        It!!</button>
+                                        <div class="modal-body">
+                                            <form action="{{ route('leads.import') }}" method="POST"
+                                                enctype="multipart/form-data">
+                                                @csrf
+                                                <div class="mb-3">
+                                                    <label for="importFile"
+                                                        class="form-label">{{ __('leads.select_file') }}</label>
+                                                    <input type="file" class="form-control" id="importFile"
+                                                        name="file" accept=".xlsx, .xls, .csv" required>
+                                                    <div class="form-text">
+                                                        {{ __('leads.allowed_formats') }}: .xlsx, .xls, .csv
+                                                    </div>
                                                 </div>
-                                            </div>
+                                                <div class="mb-3">
+                                                    <h6>{{ __('leads.import_instructions') }}</h6>
+                                                    <ul class="text-muted small">
+                                                        <li>{{ __('leads.required_columns') }}: isim, sirket_adi, telefon, konum</li>
+                                                        <li>{{ __('leads.optional_columns') }}: lead_skoru, etiketler, olusturma_tarihi</li>
+                                                    </ul>
+                                                </div>
+                                                <div class="text-end">
+                                                    <button type="button" class="btn btn-light"
+                                                        data-bs-dismiss="modal">{{ __('leads.close') }}</button>
+                                                    <button type="submit"
+                                                        class="btn btn-primary">{{ __('leads.upload_and_import') }}</button>
+                                                </div>
+                                            </form>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            <!--end modal -->
+                            <!-- End Import Modal -->
 
+                            <!-- Filter Modal -->
+                            
 
                             <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasExample"
                                 aria-labelledby="offcanvasExampleLabel">
@@ -641,7 +642,9 @@
                                     <!--end offcanvas-footer-->
                                 </form>
                             </div>
-                            <!--end offcanvas-->
+
+                            <!-- End Filter Modal -->
+
 
                         </div>
                     </div>
@@ -670,9 +673,9 @@
                     <!-- İçerik AJAX ile yüklenecek -->
                     <div class="text-center">
                         <div class="spinner-border text-primary" role="status">
-                            <span class="visually-hidden">Yükleniyor...</span>
+                            <span class="visually-hidden">{{ __('leads.loading') }}</span>
                         </div>
-                        <p class="mt-2">Lead detayları yükleniyor...</p>
+                        <p class="mt-2">{{ __('leads.lead_details_loading') }}</p>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -1297,9 +1300,9 @@
             modalContent.innerHTML = `
                 <div class="text-center">
                     <div class="spinner-border text-primary" role="status">
-                        <span class="visually-hidden">Yükleniyor...</span>
+                        <span class="visually-hidden">{{ __('leads.loading') }}</span>
                     </div>
-                    <p class="mt-2">Lead detayları yükleniyor...</p>
+                    <p class="mt-2">{{ __('leads.lead_details_loading') }}</p>
                 </div>
             `;
             

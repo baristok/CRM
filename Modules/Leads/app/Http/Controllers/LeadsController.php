@@ -7,6 +7,9 @@ use Illuminate\Http\Request;
 use Modules\Leads\Models\Leads;
 use Exception;
 use Modules\Leads\Models\TagsLeads;
+use Maatwebsite\Excel\Facades\Excel;
+use Modules\Leads\Exports\LeadsExport;
+use Modules\Leads\Imports\LeadsImport;
 
 class LeadsController extends Controller
 {
@@ -172,4 +175,25 @@ class LeadsController extends Controller
         
         return view('leads::partials.lead-details', compact('lead'));
     }
+
+    public function import(Request $request)
+    {
+        try {
+            $request->validate([
+                'file' => 'required|mimes:xlsx,xls,csv|max:2048',
+            ]);
+
+            Excel::import(new LeadsImport, $request->file('file'));
+            return redirect()->route('leads.index')->with('success', 'Leadler başarıyla içe aktarıldı.');
+        } catch (Exception $e) {
+            return redirect()->back()->with('error', 'İçe aktarma başarısız')->with('error_message', $e->getMessage());
+        }
+    }
+
+    public function export()
+    {
+        return Excel::download(new LeadsExport, 'leads.xlsx');
+    }
+
+
 }

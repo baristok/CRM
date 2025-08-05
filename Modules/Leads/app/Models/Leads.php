@@ -52,4 +52,5 @@ class Leads extends Model
     {
         return 'leads_index';
     }
+    
 }

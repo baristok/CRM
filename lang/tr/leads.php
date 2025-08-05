@@ -1,6 +1,4 @@
 <?php
-
-
 return [
     'title' => 'Potansiyel Müşteriler ',
     'search' => 'Ara ...',
@@ -48,4 +46,21 @@ return [
     'lead_information' => 'Potansiyel Müşteri Bilgileri',
     'lead_profile' => 'Potansiyel Müşteri Profili',
     'created_at' => 'Kayıt Tarihi',
+    'okey' => 'Tamam',
+    'import' => 'İçe Aktar',
+    'export' => 'Dışa Aktar',
+    'filters' => 'Filtreler',
+    'lead_image' => 'Resim Yükle',
+    'close' => 'Kapat',
+    'loading' => 'Yükleniyor...',
+    'lead_details_loading' => 'Potansiyel müşteri detayları yükleniyor...',
+    'company' => 'Şirket',
+    'address' => 'Adres',
+    'import_leads' => 'Potansiyel Müşterileri İçe Aktar',
+    'select_file' => 'Dosya Seçin',
+    'allowed_formats' => 'İzin Verilen Formatlar',
+    'import_instructions' => 'İçe Aktarma Talimatları',
+    'required_columns' => 'Zorunlu Sütunlar',
+    'optional_columns' => 'İsteğe Bağlı Sütunlar',
+    'upload_and_import' => 'Yükle ve İçe Aktar',
 ];
