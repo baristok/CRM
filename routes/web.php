@@ -14,7 +14,7 @@ Route::middleware(['auth'])->group(function () {
     
     
     Route::get('/', function () {
-        return view('layouts.index');
+        return view('index');
     })->name('index');
 
 });

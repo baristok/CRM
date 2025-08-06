@@ -1,5 +1,6 @@
 {
     "Contacts": true,
     "Companies": true,
-    "Leads": true
+    "Leads": true,
+    "Notes": true
 }

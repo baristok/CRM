@@ -23,7 +23,8 @@ class ContactsFactory extends Factory
             'company_name' => $this->faker->company(),
             'designation' => $this->faker->jobTitle(),
             'lead_score' => $this->faker->numberBetween(1, 100),
-            'created_at' => $this->faker->dateTimeBetween('-1 year', 'now'),
+            // 'created_at' => $this->faker->dateTimeBetween('-1 year', 'now'),
+            'created_at' => $this->faker->dateTimeBetween('-1 year', 'now')->format('Y-m-d H:i:s'),
         ];
     }
 }
