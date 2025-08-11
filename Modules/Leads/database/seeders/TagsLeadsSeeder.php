@@ -3,6 +3,7 @@
 namespace Modules\Leads\Database\Seeders;
 
 use Illuminate\Database\Seeder;
+use Modules\Leads\Models\TagsLeads;
 
 class TagsLeadsSeeder extends Seeder
 {
@@ -12,5 +13,6 @@ class TagsLeadsSeeder extends Seeder
     public function run(): void
     {
         // $this->call([]);
+        TagsLeads::factory()->count(10)->create();
     }
 }

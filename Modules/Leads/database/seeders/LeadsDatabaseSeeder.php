@@ -13,7 +13,9 @@ class LeadsDatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        Leads::factory()->count(100)->create();
-        TagsLeads::factory()->count(10)->create();
+        $this->call([
+            LeadsSeeder::class,
+            TagsLeadsSeeder::class,
+        ]);
     }
 }

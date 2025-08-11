@@ -3,6 +3,7 @@
 namespace Modules\Leads\Database\Seeders;
 
 use Illuminate\Database\Seeder;
+use Modules\Leads\Models\Leads;
 
 class LeadsSeeder extends Seeder
 {
@@ -11,6 +12,7 @@ class LeadsSeeder extends Seeder
      */
     public function run(): void
     {
-        // $this->call([]);
+        // $this->call([]); 
+        Leads::factory()->count(100)->create();
     }
 }

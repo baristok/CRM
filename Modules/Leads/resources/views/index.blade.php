@@ -51,6 +51,8 @@
 @endsection
 
 @section('content')
+
+
     {{-- Hata mesajları --}}
     @if (session('error'))
         <script>
@@ -62,7 +64,7 @@
                     customClass: {
                         cancelButton: "btn btn-primary w-xs mb-1"
                     },
-                    cancelButtonText: "{{__('leads.okey')}}",
+                    cancelButtonText: "{{ __('leads.okey') }}",
                     buttonsStyling: false,
                     showCloseButton: true
                 });
@@ -80,7 +82,7 @@
                     customClass: {
                         cancelButton: "btn btn-success w-xs mb-1"
                     },
-                    cancelButtonText: "{{__('leads.okey')}}",
+                    cancelButtonText: "{{ __('leads.okey') }}",
                     buttonsStyling: false,
                     showCloseButton: true
                 });
@@ -136,15 +138,20 @@
                                             {{ __('leads.add_lead') }}</button>
                                         <button type="button" class="btn btn-secondary" data-bs-toggle="offcanvas"
                                             href="#offcanvasExample"><i class="ri-filter-3-line align-bottom me-1"></i>
-                                            {{__('leads.filters')}}</button>
+                                            {{ __('leads.filters') }}</button>
                                         <span class="dropdown">
                                             <button class="btn btn-soft-primary btn-icon fs-14" type="button"
                                                 id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
                                                 <i class="ri-settings-4-line"></i>
                                             </button>
                                             <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                                                <li><a class="dropdown-item" href="{{ route('leads.export') }}">{{__('leads.export')}}</a></li>
-                                                <li><a class="dropdown-item" data-bs-target="#importModal" data-bs-toggle="modal" href="{{ route('leads.import') }}">{{__('leads.import')}}</a></li>
+                                                <li><a class="dropdown-item"
+                                                        href="{{ route('leads.export') }}">{{ __('leads.export') }}</a>
+                                                </li>
+                                                <li><a class="dropdown-item" data-bs-target="#importModal"
+                                                        data-bs-toggle="modal"
+                                                        href="{{ route('leads.import') }}">{{ __('leads.import') }}</a>
+                                                </li>
                                             </ul>
                                         </span>
                                         {{-- <button class="btn btn-soft-primary" data-bs-toggle="modal"
@@ -366,6 +373,7 @@
                                                         <div>
                                                             <label for="taginput-choices"
                                                                 class="form-label font-size-13 text-muted">{{ __('leads.tags') }}</label>
+
                                                             <select class="form-control" name="tags[]"
                                                                 id="taginput-choices" multiple>
                                                                 @foreach ($tags as $tag)
@@ -429,8 +437,10 @@
                                                 <div class="mb-3">
                                                     <h6>{{ __('leads.import_instructions') }}</h6>
                                                     <ul class="text-muted small">
-                                                        <li>{{ __('leads.required_columns') }}: isim, sirket_adi, telefon, konum</li>
-                                                        <li>{{ __('leads.optional_columns') }}: lead_skoru, etiketler, olusturma_tarihi</li>
+                                                        <li>{{ __('leads.required_columns') }}: isim, sirket_adi, telefon,
+                                                            konum</li>
+                                                        <li>{{ __('leads.optional_columns') }}: lead_skoru, etiketler,
+                                                            olusturma_tarihi</li>
                                                     </ul>
                                                 </div>
                                                 <div class="text-end">
@@ -447,7 +457,7 @@
                             <!-- End Import Modal -->
 
                             <!-- Filter Modal -->
-                            
+
 
                             <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasExample"
                                 aria-labelledby="offcanvasExampleLabel">
@@ -679,7 +689,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                   
+
                 </div>
             </div><!-- /.modal-content -->
         </div><!-- /.modal-dialog -->
@@ -703,7 +713,7 @@
 @section('js')
 
 
-    <!-- Tek seferlik Choices.js yüklemesi -->
+    <!-- Choices.js CDN -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/choices.js/10.2.0/choices.min.js"></script>
 
     <script>
@@ -772,16 +782,22 @@
 
 
 
-        // Choices.js instance’ı globalde tutuyoruz
-        const tagInputField = new Choices("#taginput-choices", {
-            removeItemButton: true,
-            searchEnabled: true,
-            searchChoices: true,
-            searchFloor: 1,
-            placeholder: true,
-            placeholderValue: '{{ __('contacts.select_tag') }}',
-            noResultsText: '{{ __('contacts.no_results') }}',
-            itemSelectText: '{{ __('contacts.select_item') }}'
+        // Choices.js'i DOM tamamen yüklendikten sonra initialize et
+        document.addEventListener('DOMContentLoaded', function() {
+            const selectElement = document.getElementById('taginput-choices');
+            if (selectElement) {
+                // Choices.js initialization
+                window.tagInputField = new Choices("#taginput-choices", {
+                    removeItemButton: true,
+                    searchEnabled: true,
+                    searchChoices: true,
+                    searchFloor: 1,
+                    placeholder: true,
+                    placeholderValue: '{{ __('leads.select_tag') }}',
+                    noResultsText: '{{ __('leads.no_results') }}',
+                    itemSelectText: '{{ __('leads.select_item') }}'
+                });
+            }
         });
 
 
@@ -1123,13 +1139,13 @@
                     if (data.tags && data.tags.length > 0) {
                         const tagIds = data.tags.map(tag => tag.id.toString());
                         // Önce mevcut seçimleri temizle
-                        tagInputField.removeActiveItems();
+                        window.tagInputField.removeActiveItems();
                         // Yeni değerleri seç
                         tagIds.forEach(tagId => {
-                            tagInputField.setChoiceByValue(tagId);
+                            window.tagInputField.setChoiceByValue(tagId);
                         });
                     } else {
-                        tagInputField.removeActiveItems();
+                        window.tagInputField.removeActiveItems();
                     }
 
                     if (data.image) {
@@ -1286,8 +1302,8 @@
             document.getElementById('lead-img').src = "assets/images/users/user-dummy-img.jpg";
 
             // Choices.js field'ını temizle
-            if (tagInputField) {
-                tagInputField.removeActiveItems();
+            if (window.tagInputField) {
+                window.tagInputField.removeActiveItems();
             }
         }
 
@@ -1305,32 +1321,32 @@
                     <p class="mt-2">{{ __('leads.lead_details_loading') }}</p>
                 </div>
             `;
-            
+
             // Modalı aç
             const modal = new bootstrap.Modal(document.getElementById('modal-lg'));
             modal.show();
-            
+
             // AJAX ile detayları çek
             fetch(`{{ route('leads.details', ':id') }}`.replace(':id', id), {
-                method: 'GET',
-                headers: {
-                    'Accept': 'text/html',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                }
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Lead bulunamadı');
-                }
-                return response.text();
-            })
-            .then(html => {
-                // Modal içeriğini güncelle
-                modalContent.innerHTML = html;
-            })
-            .catch(err => {
-                console.error('Error:', err);
-                modalContent.innerHTML = `
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'text/html',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    }
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Lead bulunamadı');
+                    }
+                    return response.text();
+                })
+                .then(html => {
+                    // Modal içeriğini güncelle
+                    modalContent.innerHTML = html;
+                })
+                .catch(err => {
+                    console.error('Error:', err);
+                    modalContent.innerHTML = `
                     <div class="text-center">
                         <lord-icon src="https://cdn.lordicon.com/tdrtiskw.json" trigger="loop" 
                             colors="primary:#f06548,secondary:#f7b84b" style="width:120px;height:120px"></lord-icon>
@@ -1338,7 +1354,7 @@
                         <p class="text-muted mb-0">${err.message || 'Lead detayları yüklenirken bir hata oluştu.'}</p>
                     </div>
                 `;
-            });
+                });
         }
     </script>
 
