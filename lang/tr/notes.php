@@ -2,5 +2,5 @@
 
 
 return[
-    'title' => 'Notlar',
+    'title' => 'Notlar'
 ];

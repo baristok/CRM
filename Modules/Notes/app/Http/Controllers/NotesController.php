@@ -9,6 +9,7 @@ use Modules\Notes\Models\Notes;
 use Illuminate\Support\Facades\Auth;
 use Exception;
 use Modules\Notes\Models\NotesTags;
+
 class NotesController extends Controller
 {
     /**
@@ -25,7 +26,7 @@ class NotesController extends Controller
                 $q->with('tags');
             }])
             ->get();
-            
+
         return view('notes::index', compact('boards', 'tags'));
     }
 
@@ -40,7 +41,7 @@ class NotesController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request){}
+    public function store(Request $request) {}
 
     public function storePrivateBoard(Request $request)
     {
@@ -54,20 +55,20 @@ class NotesController extends Controller
                 'user_id' => Auth::user()->id,
                 'type' => 'private',
             ]);
-            
+
             if (request()->expectsJson()) {
                 return response()->json([
-                    'success' => true, 
-                    'message' => 'Board başarıyla oluşturuldu', 
+                    'success' => true,
+                    'message' => 'Board başarıyla oluşturuldu',
                     'board' => $board
                 ]);
             }
-            
+
             return redirect()->route('notes.index')->with('success', 'Board başarıyla oluşturuldu');
         } catch (Exception $e) {
             if (request()->expectsJson()) {
                 return response()->json([
-                    'success' => false, 
+                    'success' => false,
                     'message' => 'Board oluşturulamadı: ' . $e->getMessage()
                 ], 500);
             }
@@ -89,10 +90,10 @@ class NotesController extends Controller
             ]);
             // Store tags as array (JSON) to match DB column type and model cast
             $tags = $validated['tags'] ?? [];
-            
+
             // En yüksek position'ı bul ve +1 ekle
             $maxPosition = Notes::where('board_id', $validated['board_id'])->max('position') ?? 0;
-            
+
             $task = Notes::create([
                 'board_id' => $validated['board_id'],
                 'user_id' => $validated['user_id'],
@@ -105,20 +106,20 @@ class NotesController extends Controller
             ]);
 
             $task->tags()->attach($tags);
-            
+
             if (request()->expectsJson()) {
                 return response()->json([
-                    'success' => true, 
-                    'message' => 'Task başarıyla oluşturuldu', 
+                    'success' => true,
+                    'message' => 'Task başarıyla oluşturuldu',
                     'task' => $task
                 ]);
             }
-            
+
             return redirect()->route('notes.index')->with('success', 'Task başarıyla oluşturuldu');
         } catch (Exception $e) {
             if (request()->expectsJson()) {
                 return response()->json([
-                    'success' => false, 
+                    'success' => false,
                     'message' => 'Task oluşturulamadı: ' . $e->getMessage()
                 ], 500);
             }
@@ -138,15 +139,69 @@ class NotesController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit($id)
+    public function edit(Notes $note)
     {
-        return view('notes::edit');
+        // Route Model Binding sayesinde $note zaten bulundu.
+        $note->load('tags'); // İlişkili etiketleri yükle
+
+        if (request()->wantsJson() || request()->ajax()) {
+            return response()->json($note);
+        }
+
+        // Bu view normalde tam sayfa düzenleme için kullanılır,
+        // modal kullandığımız için bu kısım şu an aktif olmayabilir.
+        return view('notes::edit', compact('note'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, $id) {}
+    public function update(Request $request, Notes $note)
+    {
+        try {
+            $validated = $request->validate([
+                'title' => 'required|string|max:255',
+                'description' => 'nullable|string',
+                'due_date' => 'nullable|date',
+                'tags' => 'nullable|array',
+                'progress' => 'nullable|integer|min:0|max:100',
+            ]);
+
+            // Kullanıcının sadece kendi notunu güncelleyebildiğinden emin ol (isteğe bağlı güvenlik kontrolü)
+            if ($note->user_id !== Auth::id()) {
+                return response()->json(['success' => false, 'message' => 'Yetkisiz işlem'], 403);
+            }
+            
+            $note->update($validated);
+
+            if ($request->has('tags')) {
+                $note->tags()->sync($request->input('tags'));
+            } else {
+                // Eğer tags boş gelirse, tüm ilişkili etiketleri kaldır
+                $note->tags()->detach();
+            }
+
+            if ($request->wantsJson() || $request->ajax()) {
+                // Güncellenmiş notu ilişkili etiketlerle birlikte döndür
+                $note->load('tags');
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Not başarıyla güncellendi',
+                    'note' => $note
+                ]);
+            }
+
+            return redirect()->route('notes.index')->with('success', 'Not başarıyla güncellendi');
+        } catch (Exception $e) {
+            if (request()->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Not güncellenemedi: ' . $e->getMessage()
+                ], 500);
+            }
+            return redirect()->back()->with('error', 'Not güncellenemedi')->with('error_message', $e->getMessage());
+        }
+    }
 
     /**
      * Remove the specified resource from storage.
@@ -162,20 +217,24 @@ class NotesController extends Controller
 
             $board = NoteBoards::findOrFail($id);
             $board->update($validated);
-            
-            if (request()->expectsJson()) {
+            if ($request->has('tags')) {
+                $board->tags()->sync($request->input('tags'));
+            }
+
+
+            if ($request->wantsJson() || $request->ajax()) {
                 return response()->json([
-                    'success' => true, 
-                    'message' => 'Board başarıyla güncellendi', 
+                    'success' => true,
+                    'message' => 'Board başarıyla güncellendi',
                     'board' => $board
                 ]);
             }
-            
+
             return redirect()->route('notes.index')->with('success', 'Board başarıyla güncellendi');
         } catch (Exception $e) {
             if (request()->expectsJson()) {
                 return response()->json([
-                    'success' => false, 
+                    'success' => false,
                     'message' => 'Board güncellenemedi: ' . $e->getMessage()
                 ], 500);
             }
@@ -188,67 +247,23 @@ class NotesController extends Controller
         try {
             $board = NoteBoards::findOrFail($id);
             $board->delete();
-            
+
             if (request()->expectsJson()) {
                 return response()->json([
-                    'success' => true, 
+                    'success' => true,
                     'message' => 'Board başarıyla silindi'
                 ]);
             }
-            
+
             return redirect()->route('notes.index')->with('success', 'Board başarıyla silindi');
         } catch (Exception $e) {
             if (request()->expectsJson()) {
                 return response()->json([
-                    'success' => false, 
+                    'success' => false,
                     'message' => 'Board silinemedi: ' . $e->getMessage()
                 ], 500);
             }
             return redirect()->back()->with('error', 'Board silinemedi')->with('error_message', $e->getMessage());
-        }
-    }
-
-    public function updateNote(Request $request, $id)
-    {
-        try {
-            $validated = $request->validate([
-                'title' => 'required|string|max:255',
-                'description' => 'nullable|string',
-                'due_date' => 'nullable|date',
-                'tags' => 'nullable|array',
-                'progress' => 'nullable|integer|min:0|max:100',
-            ]);
-
-            $tags = $validated['tags'] ?? [];
-            
-            $note = Notes::findOrFail($id);
-            $note->update([
-                'title' => $validated['title'],
-                'description' => $validated['description'] ?? null,
-                'due_date' => $validated['due_date'] ?? null,
-                // 'tags' => $tags,
-                'progress' => $validated['progress'] ?? 0,
-            ]);
-
-            $note->tags()->sync($tags);
-
-            if (request()->expectsJson()) {
-                return response()->json([
-                    'success' => true, 
-                    'message' => 'Not başarıyla güncellendi', 
-                    'note' => $note
-                ]);
-            }
-            
-            return redirect()->route('notes.index')->with('success', 'Not başarıyla güncellendi');
-        } catch (Exception $e) {
-            if (request()->expectsJson()) {
-                return response()->json([
-                    'success' => false, 
-                    'message' => 'Not güncellenemedi: ' . $e->getMessage()
-                ], 500);
-            }
-            return redirect()->back()->with('error', 'Not güncellenemedi')->with('error_message', $e->getMessage());
         }
     }
 
@@ -257,19 +272,19 @@ class NotesController extends Controller
         try {
             $note = Notes::findOrFail($id);
             $note->delete();
-            
+
             if (request()->expectsJson()) {
                 return response()->json([
-                    'success' => true, 
+                    'success' => true,
                     'message' => 'Not başarıyla silindi'
                 ]);
             }
-            
+
             return redirect()->route('notes.index')->with('success', 'Not başarıyla silindi');
         } catch (Exception $e) {
             if (request()->expectsJson()) {
                 return response()->json([
-                    'success' => false, 
+                    'success' => false,
                     'message' => 'Not silinemedi: ' . $e->getMessage()
                 ], 500);
             }
@@ -277,41 +292,5 @@ class NotesController extends Controller
         }
     }
 
-    public function updatePosition(Request $request)
-    {
-        try {
-            $validated = $request->validate([
-                'items' => 'required|array',
-                'items.*.id' => 'required|integer|exists:notes,id',
-                'items.*.position' => 'required|integer|min:0',
-                'items.*.board_id' => 'required|integer|exists:note_boards,id'
-            ]);
-
-            foreach ($validated['items'] as $item) {
-                Notes::where('id', $item['id'])
-                    ->where('user_id', Auth::user()->id) // Güvenlik kontrolü
-                    ->update([
-                        'position' => $item['position'],
-                        'board_id' => $item['board_id']
-                    ]);
-            }
-
-            if (request()->expectsJson()) {
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Pozisyonlar başarıyla güncellendi'
-                ]);
-            }
-
-            return redirect()->route('notes.index')->with('success', 'Pozisyonlar güncellendi');
-        } catch (Exception $e) {
-            if (request()->expectsJson()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Pozisyon güncellenemedi: ' . $e->getMessage()
-                ], 500);
-            }
-            return redirect()->back()->with('error', 'Pozisyon güncellenemedi')->with('error_message', $e->getMessage());
-        }
-    }
+    
 }

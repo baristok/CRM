@@ -83,13 +83,8 @@ if ($boards->count() > 0) {
                                             </li>
                                             <li><a class="dropdown-item edit-note-btn" href="#"
                                                     data-bs-toggle="modal" data-bs-target="#private-editNoteModal"
-                                                    data-note-id="{{ $note->id }}"
-                                                    data-note-title="{{ $note->title }}"
-                                                    data-note-description="{{ $note->description }}"
-                                                    data-note-due-date="{{ $note->due_date }}"
-                                                    data-note-tags='@json($note->tags)'
-                                                    data-note-progress="{{ $note->progress }}"><i
-                                                        class="ri-edit-2-line align-bottom me-2 text-muted"></i>
+                                                    data-note-id="{{ $note->id }}">
+                                                    <i class="ri-edit-2-line align-bottom me-2 text-muted"></i>
                                                     Edit</a></li>
                                             <li><a class="dropdown-item delete-note-btn" data-bs-toggle="modal"
                                                     data-bs-target="#private-deleteNoteModal"
@@ -103,35 +98,15 @@ if ($boards->count() > 0) {
                                 <p class="text-muted">{{ $note->description }}</p>
                                 <div class="d-flex align-items-center">
                                     <div class="flex-grow-1">
-                                        
-                                        @if($note->tags && $note->tags->count() > 0)
+
+                                        @if ($note->tags && $note->tags->count() > 0)
                                             @foreach ($note->tags as $tag)
-                                                <span class="badge bg-primary-subtle text-primary">{{ $tag->name }}</span>
+                                                <span
+                                                    class="badge bg-primary-subtle text-primary">{{ $tag->name }}</span>
                                             @endforeach
                                         @endif
                                     </div>
-                                    <div class="flex-shrink-0">
-                                        <div class="avatar-group">
-                                            <a href="javascript: void(0);" class="avatar-group-item"
-                                                data-bs-toggle="tooltip" data-bs-trigger="hover"
-                                                data-bs-placement="top" title="Tonya">
-                                                <img src="{{ asset('assets/images/users/avatar-10.jpg') }}"
-                                                    alt="" class="rounded-circle avatar-xxs">
-                                            </a>
-                                            <a href="javascript: void(0);" class="avatar-group-item"
-                                                data-bs-toggle="tooltip" data-bs-trigger="hover"
-                                                data-bs-placement="top" title="Frank">
-                                                <img src="{{ asset('assets/images/users/avatar-3.jpg') }}"
-                                                    alt="" class="rounded-circle avatar-xxs">
-                                            </a>
-                                            <a href="javascript: void(0);" class="avatar-group-item"
-                                                data-bs-toggle="tooltip" data-bs-trigger="hover"
-                                                data-bs-placement="top" title="Herbert">
-                                                <img src="{{ asset('assets/images/users/avatar-2.jpg') }}"
-                                                    alt="" class="rounded-circle avatar-xxs">
-                                            </a>
-                                        </div>
-                                    </div>
+
                                 </div>
                             </div>
                             <!--end card-body-->
@@ -139,26 +114,29 @@ if ($boards->count() > 0) {
                                 <div class="d-flex">
                                     <div class="flex-grow-1">
                                         <span class="text-muted"><i class="ri-time-line align-bottom"></i>
-                                            {{ $note->due_date }}</span>
+                                            {{ $note->due_date ? $note->due_date->format('d-m-Y') : '' }}</span>
                                     </div>
                                     <div class="flex-shrink-0">
-                                        <ul class="link-inline mb-0">
-                                            <li class="list-inline-item">
-                                                <a href="javascript:void(0)" class="text-muted"><i
-                                                        class="ri-eye-line align-bottom"></i>
-                                                    {{ $note->progress }}</a>
-                                            </li>
-                                            <li class="list-inline-item">
-                                                <a href="javascript:void(0)" class="text-muted"><i
-                                                        class="ri-question-answer-line align-bottom"></i>
-                                                    {{ $note->priority }}</a>
-                                            </li>
-                                            <li class="list-inline-item">
-                                                <a href="javascript:void(0)" class="text-muted"><i
-                                                        class="ri-attachment-2 align-bottom"></i>
-                                                    {{ $note->image }}</a>
-                                            </li>
-                                        </ul>
+                                        <div class="d-flex align-items-center gap-2">
+                                            @php
+                                                $progress = $note->progress;
+                                                if ($progress < 30) {
+                                                    $progressColor = 'bg-danger';
+                                                } elseif ($progress < 70) {
+                                                    $progressColor = 'bg-warning';
+                                                } else {
+                                                    $progressColor = 'bg-success';
+                                                }
+                                            @endphp
+                                            <div class="progress"
+                                                style="width: 100px; height: 8px; background-color: #f1f1f1;">
+                                                <div class="progress-bar {{ $progressColor }}" role="progressbar"
+                                                    style="width: {{ $progress }}%;"
+                                                    aria-valuenow="{{ $progress }}" aria-valuemin="0"
+                                                    aria-valuemax="100"></div>
+                                            </div>
+                                            <span class="text-muted small">{{ $progress }}%</span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -361,7 +339,7 @@ if ($boards->count() > 0) {
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content border-0">
             <div class="modal-header p-3 bg-primary-subtle">
-                <h5 class="modal-title" id="private-creatertaskModalLabel">Create New Task</h5>
+                <h5 class="modal-title" id="private-creatertaskModalLabel">{{ __('notes.create_task') }}</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -462,8 +440,7 @@ if ($boards->count() > 0) {
                         <!--end col-->
                         <div class="col-lg-4">
                             <label for="edit-tags" class="form-label">Etiketler</label>
-                            <select class="form-select" id="private-edit-tags" name="tags[]" multiple data-choices
-                                data-choices-removeItem>
+                            <select class="form-select" id="private-edit-tags" name="tags[]" multiple>
                                 @foreach ($tags as $tag)
                                     <option value="{{ $tag->id }}">{{ $tag->name }}</option>
                                 @endforeach
@@ -565,9 +542,10 @@ if ($boards->count() > 0) {
     const csrfToken = "{{ csrf_token() }}";
     let privateCreateChoices = null;
     let privateEditChoices = null;
+    let privateEditPendingTagValues = [];
 
     $(document).ready(function() {
-        // Initialize Choices.js for tags selects if available
+        // Choices.js'i etiketler için başlat
         try {
             if (window.Choices && document.querySelector('#private-tags')) {
                 privateCreateChoices = new Choices('#private-tags', {
@@ -575,17 +553,13 @@ if ($boards->count() > 0) {
                     searchEnabled: true,
                 });
             }
+
+            // DİKKAT: Edit modalındaki select için Choices'i burada başlatmıyoruz.
+            // Seçimler uygulandıktan sonra, modal 'shown' olduğunda başlatacağız.
         } catch (e) {
-            /* no-op */ }
-        try {
-            if (window.Choices && document.querySelector('#private-edit-tags')) {
-                privateEditChoices = new Choices('#private-edit-tags', {
-                    removeItemButton: true,
-                    searchEnabled: true,
-                });
-            }
-        } catch (e) {
-            /* no-op */ }
+            console.error("Choices.js initialization failed:", e);
+        }
+
         $('#private-creatertaskModal').on('show.bs.modal', function(event) {
             var button = $(event.relatedTarget);
             var boardId = button.data('board-id');
@@ -635,77 +609,6 @@ if ($boards->count() > 0) {
             privateDeleteBoard(boardId);
         });
 
-        // Note düzenleme modal açılırken veri doldurma
-        $('#private-editNoteModal').on('show.bs.modal', function(event) {
-            var button = $(event.relatedTarget);
-            var noteId = button.data('note-id');
-            var noteTitle = button.data('note-title');
-            var noteDescription = button.data('note-description');
-            var noteDueDate = button.data('note-due-date');
-            var noteTags = button.data('note-tags');
-            var noteProgress = button.data('note-progress');
-
-            var modal = $(this);
-            modal.find('#private-edit-note-id').val(noteId);
-            modal.find('#private-editProjectName').val(noteTitle);
-            modal.find('#private-edit-task-description').val(noteDescription);
-            modal.find('#private-edit-due-date').val(noteDueDate);
-            modal.find('#private-edit-tasks-progress').val(noteProgress);
-            modal.find('#private-edit-progress-value').text(noteProgress + '%');
-            modal.find('#private-edit-progress-bar').css('width', noteProgress + '%');
-
-            // Choices instance yoksa güvenli şekilde başlat
-            if (!privateEditChoices && window.Choices) {
-                try {
-                    privateEditChoices = new Choices('#private-edit-tags', {
-                        removeItemButton: true,
-                        searchEnabled: true,
-                    });
-                } catch (e) {
-                    /* no-op */ }
-            }
-
-            // Tags için güvenli doldurma (JSON veya virgüllü string destekli)
-            var rawTags = noteTags;
-            var tagsArray = [];
-            if (Array.isArray(rawTags)) {
-                tagsArray = rawTags;
-            } else if (typeof rawTags === 'string' && rawTags.trim() !== '') {
-                try {
-                    if (rawTags.trim().startsWith('[')) {
-                        tagsArray = JSON.parse(rawTags);
-                    } else {
-                        tagsArray = rawTags.split(',');
-                    }
-                } catch (e) {
-                    tagsArray = rawTags.split(',');
-                }
-            }
-
-            const normalized = tagsArray.map(function(tag) {
-                return String(tag).trim().replace(/^\"|\"$/g, '');
-            });
-
-            if (privateEditChoices) {
-                privateEditChoices.removeActiveItems();
-                normalized.forEach(function(val) {
-                    privateEditChoices.setChoiceByValue(val);
-                });
-            } else {
-                modal.find('#private-edit-tags option').prop('selected', false);
-                normalized.forEach(function(value) {
-                    modal.find('#private-edit-tags option[value="' + value + '"]').prop(
-                        'selected', true);
-                });
-                modal.find('#private-edit-tags').trigger('change');
-            }
-        });
-
-        // Note düzenleme form submit
-        $('#private-editNoteForm').on('submit', function(e) {
-            e.preventDefault();
-            privateUpdateNote();
-        });
 
         // Note silme modal açılırken veri doldurma
         $('#private-deleteNoteModal').on('show.bs.modal', function(event) {
@@ -725,6 +628,160 @@ if ($boards->count() > 0) {
             var value = $(this).val();
             $('#private-edit-progress-value').text(value + '%');
             $('#private-edit-progress-bar').css('width', value + '%');
+        });
+
+        // Note düzenleme modal açıldığında verileri AJAX ile çekme
+        $('#private-editNoteModal').on('show.bs.modal', function(event) {
+            var button = $(event.relatedTarget);
+            var noteId = button.data('note-id');
+            var modal = $(this);
+
+            // Formun action URL'ini ve not ID'sini güncelle
+            var updateUrl = "{{ url('notes') }}/" + noteId;
+            modal.find('#private-editNoteForm').attr('action', updateUrl);
+            modal.find('#private-edit-note-id').val(noteId);
+
+            // Not verilerini çekmek için fetch isteği
+            var editUrl = "{{ url('notes') }}/" + noteId + "/edit";
+            fetch(editUrl, {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRF-TOKEN": csrfToken,
+                        "Accept": "application/json",
+                    },
+                }).then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    document.getElementById('private-editProjectName').value = data.title || '';
+                    document.getElementById('private-edit-task-description').value = data.description || '';
+
+                    let dueDateValue = '';
+                    if (data.due_date) {
+                        dueDateValue = new Date(data.due_date).toISOString().split('T')[0];
+                    }
+                    document.getElementById('private-edit-due-date').value = dueDateValue;
+
+                    const progressValue = data.progress || 0;
+                    document.getElementById('private-edit-tasks-progress').value = progressValue;
+                    $('#private-edit-progress-value').text(progressValue + '%');
+                    $('#private-edit-progress-bar').css('width', progressValue + '%');
+
+                    // // Tag'ları seçili yap
+                    // if (privateEditChoices && data.tags) {
+                    //     // Önce mevcut seçimleri temizle
+                    //     privateEditChoices.removeActiveItems();
+                        
+                    //     // Eğer tag'lar varsa onları tek tek seçili yap
+                    //     if (Array.isArray(data.tags) && data.tags.length > 0) {
+                    //         const tagIds = data.tags.map(tag => tag.id.toString());
+                    //         tagIds.forEach(tagId => {
+                    //             privateEditChoices.setChoiceByValue(tagId);
+                    //         });
+                    //     }
+                    // }
+
+
+                    // Tag değerlerini sakla; seçim 'shown' eventinde uygulanacak
+                    privateEditPendingTagValues = (Array.isArray(data.tags) ? data.tags : []).map(t => String(t.id));
+                    
+                    console.log(data);
+                    console.log(data.tags);
+                })
+                .catch(error => {
+                    console.error("Error fetching or processing note data:", error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Hata!',
+                        text: 'Not bilgileri alınırken bir sorun oluştu. Lütfen tekrar deneyin.',
+                    });
+                });
+        });
+
+        // Modal tam açıldığında (DOM görünürken) tag seçimlerini uygula
+        $('#private-editNoteModal').on('shown.bs.modal', function() {
+            const selectElement = document.getElementById('private-edit-tags');
+            if (!selectElement) return;
+
+            const values = Array.isArray(privateEditPendingTagValues) ? privateEditPendingTagValues : [];
+
+            // Eğer daha önce init edildiyse temizle
+            if (privateEditChoices && typeof privateEditChoices.destroy === 'function') {
+                try { privateEditChoices.destroy(); } catch (_) {}
+                privateEditChoices = null;
+            }
+
+            // Native select'i güncelle
+            Array.from(selectElement.options).forEach(option => {
+                option.selected = values.includes(option.value);
+            });
+
+            // Şimdi Choices'i yeniden başlat ve değerleri ver
+            privateEditChoices = new Choices('#private-edit-tags', {
+                removeItemButton: true,
+                searchEnabled: true,
+            });
+            if (values.length) {
+                try {
+                    privateEditChoices.setValueByChoice(values);
+                } catch (e) {
+                    console.warn('setValueByChoice on init failed', e);
+                }
+            }
+
+            // Bir sonraki açılış için temizle
+            // privateEditPendingTagValues = [];
+        });
+
+        // Not güncelleme formu gönderildiğinde
+        $('#private-editNoteForm').on('submit', function(e) {
+            e.preventDefault();
+
+            const url = $(this).attr('action');
+            const formData = new FormData(this);
+            const payload = Object.fromEntries(formData.entries());
+
+            if (privateEditChoices) {
+                payload.tags = privateEditChoices.getValue(true);
+            }
+
+            fetch(url, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken,
+                    'Accept': 'application/json',
+                },
+                body: JSON.stringify(payload)
+            }).then(response => response.json()).then(data => {
+                if (data.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Başarılı!',
+                        text: 'Not başarıyla güncellendi.',
+                    }).then(() => {
+                        $('#private-editNoteModal').modal('hide');
+                        location.reload();
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Hata!',
+                        text: data.message || 'Not güncellenirken bir hata oluştu.',
+                    });
+                }
+            }).catch(error => {
+                console.error('Error updating note:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Bağlantı Hatası!',
+                    text: 'Not güncellenirken bir sunucu hatası oluştu.',
+                });
+            });
         });
     });
 
@@ -1026,170 +1083,6 @@ if ($boards->count() > 0) {
                         <div class="mt-4 pt-2 fs-15">
                             <h4>Hata!</h4>
                             <p class="text-muted mx-4 mb-0">${data.message || 'Board silinemedi'}</p>
-                        </div>
-                    </div>`,
-                    showCancelButton: true,
-                    showConfirmButton: false,
-                    customClass: {
-                        cancelButton: "btn btn-primary w-xs mb-1"
-                    },
-                    cancelButtonText: "Tamam",
-                    buttonsStyling: false,
-                    showCloseButton: true
-                });
-            }
-        } catch (error) {
-            Swal.fire({
-                html: `
-                <div class="mt-3">
-                    <lord-icon src="https://cdn.lordicon.com/tdrtiskw.json" trigger="loop" colors="primary:#f06548,secondary:#f7b84b" style="width:120px;height:120px"></lord-icon>
-                    <div class="mt-4 pt-2 fs-15">
-                        <h4>Bağlantı Hatası!</h4>
-                        <p class="text-muted mx-4 mb-0">Sunucuya bağlanırken bir hata oluştu.</p>
-                    </div>
-                </div>`,
-                showCancelButton: true,
-                showConfirmButton: false,
-                customClass: {
-                    cancelButton: "btn btn-primary w-xs mb-1"
-                },
-                cancelButtonText: "Tamam",
-                buttonsStyling: false,
-                showCloseButton: true
-            });
-        }
-    }
-
-    // Note güncelleme fonksiyonu
-    async function privateUpdateNote() {
-        try {
-            const noteId = $('#private-edit-note-id').val();
-            const response = await fetch("{{ route('notes.updateNote', ':id') }}".replace(':id', noteId), {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-CSRF-TOKEN": csrfToken,
-                    "Accept": "application/json",
-                },
-                body: JSON.stringify({
-                    title: $("#private-editProjectName").val(),
-                    description: $("#private-edit-task-description").val(),
-                    due_date: $("#private-edit-due-date").val(),
-                    tags: $("#private-edit-tags").val(),
-                    progress: $("#private-edit-tasks-progress").val()
-                }),
-            });
-
-            const data = await response.json();
-
-            if (data.success) {
-                Swal.fire({
-                    html: `
-                    <div class="mt-3">
-                        <lord-icon src="https://cdn.lordicon.com/lupuorrc.json" trigger="loop" colors="primary:#0ab39c,secondary:#405189" style="width:120px;height:120px"></lord-icon>
-                        <div class="mt-4 pt-2 fs-15">
-                            <h4>Not Güncellendi!</h4>
-                            <p class="text-muted mx-4 mb-0">Not başarıyla güncellendi.</p>
-                        </div>
-                    </div>`,
-                    showCancelButton: true,
-                    showConfirmButton: false,
-                    customClass: {
-                        cancelButton: "btn btn-primary w-xs mb-1"
-                    },
-                    cancelButtonText: "Tamam",
-                    buttonsStyling: false,
-                    showCloseButton: true
-                }).then(() => {
-                    $('#private-editNoteModal').modal('hide');
-                    location.reload();
-                });
-            } else {
-                Swal.fire({
-                    html: `
-                    <div class="mt-3">
-                        <lord-icon src="https://cdn.lordicon.com/tdrtiskw.json" trigger="loop" colors="primary:#f06548,secondary:#f7b84b" style="width:120px;height:120px"></lord-icon>
-                        <div class="mt-4 pt-2 fs-15">
-                            <h4>Hata!</h4>
-                            <p class="text-muted mx-4 mb-0">${data.message || 'Not güncellenemedi'}</p>
-                        </div>
-                    </div>`,
-                    showCancelButton: true,
-                    showConfirmButton: false,
-                    customClass: {
-                        cancelButton: "btn btn-primary w-xs mb-1"
-                    },
-                    cancelButtonText: "Tamam",
-                    buttonsStyling: false,
-                    showCloseButton: true
-                });
-            }
-        } catch (error) {
-            Swal.fire({
-                html: `
-                <div class="mt-3">
-                    <lord-icon src="https://cdn.lordicon.com/tdrtiskw.json" trigger="loop" colors="primary:#f06548,secondary:#f7b84b" style="width:120px;height:120px"></lord-icon>
-                    <div class="mt-4 pt-2 fs-15">
-                        <h4>Bağlantı Hatası!</h4>
-                        <p class="text-muted mx-4 mb-0">Sunucuya bağlanırken bir hata oluştu.</p>
-                    </div>
-                </div>`,
-                showCancelButton: true,
-                showConfirmButton: false,
-                customClass: {
-                    cancelButton: "btn btn-primary w-xs mb-1"
-                },
-                cancelButtonText: "Tamam",
-                buttonsStyling: false,
-                showCloseButton: true
-            });
-        }
-    }
-
-    // Note silme fonksiyonu
-    async function privateDeleteNote(noteId) {
-        try {
-            const response = await fetch("{{ route('notes.deleteNote', ':id') }}".replace(':id', noteId), {
-                method: "DELETE",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-CSRF-TOKEN": csrfToken,
-                    "Accept": "application/json",
-                },
-            });
-
-            const data = await response.json();
-
-            if (data.success) {
-                Swal.fire({
-                    html: `
-                    <div class="mt-3">
-                        <lord-icon src="https://cdn.lordicon.com/lupuorrc.json" trigger="loop" colors="primary:#0ab39c,secondary:#405189" style="width:120px;height:120px"></lord-icon>
-                        <div class="mt-4 pt-2 fs-15">
-                            <h4>Not Silindi!</h4>
-                            <p class="text-muted mx-4 mb-0">Not başarıyla silindi.</p>
-                        </div>
-                    </div>`,
-                    showCancelButton: true,
-                    showConfirmButton: false,
-                    customClass: {
-                        cancelButton: "btn btn-primary w-xs mb-1"
-                    },
-                    cancelButtonText: "Tamam",
-                    buttonsStyling: false,
-                    showCloseButton: true
-                }).then(() => {
-                    $('#private-deleteNoteModal').modal('hide');
-                    location.reload();
-                });
-            } else {
-                Swal.fire({
-                    html: `
-                    <div class="mt-3">
-                        <lord-icon src="https://cdn.lordicon.com/tdrtiskw.json" trigger="loop" colors="primary:#f06548,secondary:#f7b84b" style="width:120px;height:120px"></lord-icon>
-                        <div class="mt-4 pt-2 fs-15">
-                            <h4>Hata!</h4>
-                            <p class="text-muted mx-4 mb-0">${data.message || 'Not silinemedi'}</p>
                         </div>
                     </div>`,
                     showCancelButton: true,
