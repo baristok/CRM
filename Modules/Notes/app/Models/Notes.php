@@ -23,10 +23,11 @@ class Notes extends Model
         'progress',
         'priority',
         'due_date',
-        'image',    
+        'image',
         // 'tags',
         'user_id',
         'position',
+        // 'slug',
     ];
 
     protected $casts = [
@@ -52,5 +53,4 @@ class Notes extends Model
     {
         return $this->belongsToMany(NotesTags::class, 'tags_notes', 'note_id', 'tag_id');
     }
-    
 }

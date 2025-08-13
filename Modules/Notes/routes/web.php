@@ -12,4 +12,9 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('notes/delete-board/{id}', [NotesController::class, 'deleteBoard'])->name('notes.deleteBoard');
     Route::put('notes/update-note/{id}', [NotesController::class, 'updateNote'])->name('notes.updateNote');
     Route::delete('notes/delete-note/{id}', [NotesController::class, 'deleteNote'])->name('notes.deleteNote');
+    Route::post('notes/storePublicBoard', [NotesController::class, 'storePublicBoard'])->name('notes.storePublicBoard');
+    Route::put('notes/update-public-board/{id}', [NotesController::class, 'updatePublicBoard'])->name('notes.updatePublicBoard');
+    Route::delete('notes/delete-public-board/{id}', [NotesController::class, 'deletePublicBoard'])->name('notes.deletePublicBoard');
+    Route::post('notes/storePublicTask', [NotesController::class, 'storePublicTask'])->name('notes.storePublicTask');
+    Route::delete('notes/delete-public-note/{id}', [NotesController::class, 'deletePublicNote'])->name('notes.deletePublicNote');
 });

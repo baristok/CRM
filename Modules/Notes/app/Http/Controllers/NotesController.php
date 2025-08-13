@@ -27,7 +27,16 @@ class NotesController extends Controller
             }])
             ->get();
 
-        return view('notes::index', compact('boards', 'tags'));
+
+        $publicBoards = NoteBoards::where('type', 'public')
+            ->orderBy('created_at', 'asc')
+            ->with(['notes' => function ($q) {
+                $q->orderBy('position', 'asc');
+                $q->with('tags');
+            }])
+            ->get();
+
+        return view('notes::index', compact('boards', 'tags', 'publicBoards'));
     }
 
     /**
@@ -41,7 +50,42 @@ class NotesController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request) {}
+    public function storePublicBoard(Request $request)
+    {
+        if (Auth::user()->hasPermissionTo('public-notes')) {
+            try {
+                $validated = $request->validate([
+                    'name' => 'required|string|max:255',
+                ]);
+
+                $board = NoteBoards::create([
+                    'name' => $validated['name'],
+                    'type' => 'public',
+                    'user_id' => Auth::user()->id,
+                ]);
+
+                if (request()->expectsJson()) {
+                    return response()->json([
+                        'success' => true,
+                        'message' => 'Board başarıyla oluşturuldu',
+                        'board' => $board
+                    ]);
+                }
+
+                return redirect()->route('notes.index')->with('success', 'Board başarıyla oluşturuldu');
+            } catch (Exception $e) {
+                if (request()->expectsJson()) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Board oluşturulamadı: ' . $e->getMessage()
+                    ], 500);
+                }
+                return redirect()->back()->with('error', 'Board oluşturulamadı')->with('error_message', $e->getMessage());
+            }
+        } else {
+            return redirect()->back()->with('error', 'Yetkiniz yok');
+        }
+    }
 
     public function storePrivateBoard(Request $request)
     {
@@ -73,6 +117,54 @@ class NotesController extends Controller
                 ], 500);
             }
             return redirect()->back()->with('error', 'Board oluşturulamadı')->with('error_message', $e->getMessage());
+        }
+    }
+    public function storePublicTask(Request $request)
+    {
+        if (Auth::user()->hasPermissionTo('public-notes')) {
+        try {
+            // dd($request->all());
+            $validated = $request->validate([
+                'board_id' => 'required|exists:note_boards,id',
+                'user_id' => 'required|exists:users,id',
+                'title' => 'required|string|max:255',
+                'description' => 'nullable|string',
+                'due_date' => 'nullable|date',
+                'tags' => 'nullable|array',
+                'progress' => 'nullable|integer|min:0|max:100',
+            ]);
+            $tags = $validated['tags'] ?? [];
+            $maxPosition = Notes::where('board_id', $validated['board_id'])->max('position') ?? 0;
+            $task = Notes::create([
+                'board_id' => $validated['board_id'],
+                'user_id' => $validated['user_id'],
+                'title' => $validated['title'],
+                'description' => $validated['description'] ?? null,
+                'due_date' => $validated['due_date'] ?? null,
+                'progress' => $validated['progress'] ?? 0,
+                'position' => $maxPosition + 1,
+            ]);
+            $task->tags()->attach($tags);
+
+            if (request()->expectsJson()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Task başarıyla oluşturuldu',
+                    'task' => $task
+                ]);
+            }
+            return redirect()->route('notes.index')->with('success', 'Task başarıyla oluşturuldu');
+        } catch (Exception $e) {
+            if (request()->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Task oluşturulamadı: ' . $e->getMessage()
+                ], 500);
+            }
+            return redirect()->back()->with('error', 'Task oluşturulamadı')->with('error_message', $e->getMessage());
+            }
+        } else {
+            return redirect()->back()->with('error', 'Yetkiniz yok');
         }
     }
 
@@ -152,7 +244,34 @@ class NotesController extends Controller
         // modal kullandığımız için bu kısım şu an aktif olmayabilir.
         return view('notes::edit', compact('note'));
     }
+    public function deletePublicNote($id)
+    {
+        if (Auth::user()->hasPermissionTo('public-notes')) {
+        try {
+            $note = Notes::findOrFail($id);
+            $note->delete();
 
+            if (request()->expectsJson()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Not başarıyla silindi'
+                ]);
+            }
+
+            return redirect()->route('notes.index')->with('success', 'Not başarıyla silindi');
+        } catch (Exception $e) {
+            if (request()->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Not silinemedi: ' . $e->getMessage()
+                ], 500);
+            }
+            return redirect()->back()->with('error', 'Not silinemedi')->with('error_message', $e->getMessage());
+            }
+        } else {
+            return redirect()->back()->with('error', 'Yetkiniz yok');
+        }
+    }
     /**
      * Update the specified resource in storage.
      */
@@ -171,7 +290,7 @@ class NotesController extends Controller
             if ($note->user_id !== Auth::id()) {
                 return response()->json(['success' => false, 'message' => 'Yetkisiz işlem'], 403);
             }
-            
+
             $note->update($validated);
 
             if ($request->has('tags')) {
@@ -242,6 +361,65 @@ class NotesController extends Controller
         }
     }
 
+    public function updatePublicBoard(Request $request, $id)
+    {
+        if (Auth::user()->hasPermissionTo('public-notes')) {
+        try {
+            $validated = $request->validate([
+                'name' => 'required|string|max:255',
+            ]);
+
+            $board = NoteBoards::findOrFail($id);
+            $board->update($validated);
+
+            if (request()->expectsJson()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Board başarıyla güncellendi',
+                    'board' => $board
+                ]);
+            }
+
+            return redirect()->route('notes.index')->with('success', 'Board başarıyla güncellendi');
+        } catch (Exception $e) {
+            if (request()->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Board güncellenemedi: ' . $e->getMessage()
+                ], 500);
+            }
+                return redirect()->back()->with('error', 'Board güncellenemedi')->with('error_message', $e->getMessage());
+            }
+        } else {
+            return redirect()->back()->with('error', 'Yetkiniz yok');
+        }
+    }
+    public function deletePublicBoard($id)
+    {
+        if (Auth::user()->hasPermissionTo('public-notes')) {
+        try {
+            $board = NoteBoards::findOrFail($id);
+            $board->delete();
+            if (request()->expectsJson()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Board başarıyla silindi'
+                ]);
+            }
+            return redirect()->route('notes.index')->with('success', 'Board başarıyla silindi');
+        } catch (Exception $e) {
+            if (request()->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Board silinemedi: ' . $e->getMessage()
+                ], 500);
+            }
+            return redirect()->back()->with('error', 'Board silinemedi')->with('error_message', $e->getMessage());
+            }
+        } else {
+            return redirect()->back()->with('error', 'Yetkiniz yok');
+        }
+    }
     public function deleteBoard($id)
     {
         try {
@@ -291,6 +469,4 @@ class NotesController extends Controller
             return redirect()->back()->with('error', 'Not silinemedi')->with('error_message', $e->getMessage());
         }
     }
-
-    
 }

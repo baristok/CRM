@@ -47,6 +47,9 @@ class RolesAndPermissionsSeeder extends Seeder
             'create-company',
             'edit-company',
             'delete-company',
+
+            //notes izinleri
+            'public-notes',
         ];
 
         foreach ($permissions as $permission) {
@@ -65,7 +68,11 @@ class RolesAndPermissionsSeeder extends Seeder
         // $userRole = Role::create(['name' => 'user']);
         $userRole = Role::firstOrCreate(['name' => 'user','guard_name' => 'web']);
         // $userRole->givePermissionTo(['view-contact']);
-        $userRole->syncPermissions(['view-contact', 'view-company']);
+        $userRole->syncPermissions(['public-notes']);
+
+        //guest rolü
+        $guestRole = Role::firstOrCreate(['name' => 'guest','guard_name' => 'web']);
+        $guestRole->syncPermissions(['']);
         
     }
 }

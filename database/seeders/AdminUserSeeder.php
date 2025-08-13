@@ -14,14 +14,6 @@ class AdminUserSeeder extends Seeder
      */
     public function run(): void
     {
-        //admin kullanıcısını oluştur
-
-        $adminUser = User::firstOrCreate([
-            'name' => 'admin',
-            'email' => 'admin@example.com',
-            'password' => Hash::make('password'),
-        ]);
-
-        $adminUser->assignRole('admin');
+        
     }
 }

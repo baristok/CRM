@@ -32,6 +32,7 @@ if ($boards->count() > 0) {
 }
 ?>
 
+
 <div class="tasks-board mb-3" id="private-kanbanboard">
     @foreach ($boards as $board)
         <div class="tasks-list " data-sortable-group="kanban" data-sortable-animation="150">
@@ -68,11 +69,15 @@ if ($boards->count() > 0) {
                         <div class="card tasks-box" data-note-id="{{ $note->id }}">
                             <div class="card-body">
                                 <div class="d-flex mb-2">
-                                    <div class="flex-grow-1">
+                                    @php
+                                        $customHash = strtoupper(substr(md5($note->id . $note->created_at . $note->title), 0, 8));
+                                    @endphp
+                                    <a href="javascript:void(0)" class="text-muted fw-medium fs-14 flex-grow-1">#{{ $customHash }}</a>
+                                    {{-- <div class="flex-grow-1">
                                         <h6 class="fs-15 mb-0 text-truncate task-title"><a
                                                 href="apps-tasks-details.html" class="d-block">{{ $note->title }}</a>
                                         </h6>
-                                    </div>
+                                    </div> --}}
                                     <div class="flex-shrink-0">
                                         <a href="javascript:void(0);" class="text-muted" id="private-dropdownMenuLink3"
                                             data-bs-toggle="dropdown" aria-expanded="false"><i
@@ -95,6 +100,9 @@ if ($boards->count() > 0) {
                                         </ul>
                                     </div>
                                 </div>
+                                <h6 class="fs-15 mb-0 text-truncate task-title"><a
+                                    href="apps-tasks-details.html" class="d-block" style="min-height: 34px;">{{ $note->title }}</a>
+                            </h6>
                                 <p class="text-muted">{{ $note->description }}</p>
                                 <div class="d-flex align-items-center">
                                     <div class="flex-grow-1">
@@ -157,82 +165,6 @@ if ($boards->count() > 0) {
 </div>
 <!--end task-board-->
 
-<div class="modal fade" id="private-addmemberModal" tabindex="-1" aria-labelledby="private-addmemberModalLabel"
-    aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content border-0">
-            <div class="modal-header p-3 bg-primary-subtle">
-                <h5 class="modal-title" id="private-addmemberModalLabel">Add Member</h5>
-                <button type="button" class="btn-close" id="private-btn-close-member" data-bs-dismiss="modal"
-                    aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form>
-                    <div class="row g-3">
-                        <div class="col-lg-12">
-                            <label for="submissionidInput" class="form-label">Submission ID</label>
-                            <input type="number" class="form-control" id="private-submissionidInput"
-                                placeholder="Submission ID">
-                        </div>
-                        <!--end col-->
-                        <div class="col-lg-12">
-                            <label for="profileimgInput" class="form-label">Profile Images</label>
-                            <input class="form-control" type="file" id="private-profileimgInput">
-                        </div>
-                        <!--end col-->
-                        <div class="col-lg-6">
-                            <label for="firstnameInput" class="form-label">First Name</label>
-                            <input type="text" class="form-control" id="private-firstnameInput"
-                                placeholder="Enter firstname">
-                        </div>
-                        <!--end col-->
-                        <div class="col-lg-6">
-                            <label for="lastnameInput" class="form-label">Last Name</label>
-                            <input type="text" class="form-control" id="private-lastnameInput"
-                                placeholder="Enter lastname">
-                        </div>
-                        <!--end col-->
-                        <div class="col-lg-12">
-                            <label for="designationInput" class="form-label">Designation</label>
-                            <input type="text" class="form-control" id="private-designationInput"
-                                placeholder="Designation">
-                        </div>
-                        <!--end col-->
-                        <div class="col-lg-12">
-                            <label for="titleInput" class="form-label">Title</label>
-                            <input type="text" class="form-control" id="private-titleInput" placeholder="Title">
-                        </div>
-                        <!--end col-->
-                        <div class="col-lg-6">
-                            <label for="numberInput" class="form-label">Phone Number</label>
-                            <input type="text" class="form-control" id="private-numberInput"
-                                placeholder="Phone number">
-                        </div>
-                        <!--end col-->
-                        <div class="col-lg-6">
-                            <label for="joiningdateInput" class="form-label">Joining Date</label>
-                            <input type="text" class="form-control" id="private-joiningdateInput"
-                                data-provider="flatpickr" placeholder="Select date">
-                        </div>
-                        <!--end col-->
-                        <div class="col-lg-12">
-                            <label for="emailInput" class="form-label">Email ID</label>
-                            <input type="email" class="form-control" id="private-emailInput" placeholder="Email">
-                        </div>
-                        <!--end col-->
-                    </div>
-                    <!--end row-->
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-light" data-bs-dismiss="modal"><i
-                        class="ri-close-line align-bottom me-1"></i> Close</button>
-                <button type="button" class="btn btn-primary" id="private-addMember">Add Member</button>
-            </div>
-        </div>
-    </div>
-</div>
-<!--end add member modal-->
 
 <!--add board modal-->
 <div class="modal fade" id="private-createboardModal" tabindex="-1" aria-labelledby="private-createboardModalLabel"
@@ -374,6 +306,7 @@ if ($boards->count() > 0) {
                                 @endforeach
                             </select>
                         </div>
+                        
                         <!--end col-->
                         <div class="col-lg-4">
                             <label for="tasks-progress" class="form-label">Tasks Progress</label>
