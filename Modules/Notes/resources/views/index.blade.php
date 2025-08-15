@@ -46,7 +46,7 @@
                             customClass: {
                                 cancelButton: "btn btn-primary w-xs mb-1"
                             },
-                            cancelButtonText: "Tamam",
+                            cancelButtonText: "{{__('notes.ok')}}",
                             buttonsStyling: false,
                             showCloseButton: true
                         });
@@ -64,7 +64,7 @@
                             customClass: {
                                 cancelButton: "btn btn-success w-xs mb-1"
                             },
-                            cancelButtonText: "Tamam",
+                            cancelButtonText: "{{__('notes.okey')}}",
                             buttonsStyling: false,
                             showCloseButton: true
                         });
@@ -98,13 +98,13 @@
                         <li class="nav-item">
                             <a class="nav-link active" data-bs-toggle="tab" href="#private-notes" role="tab"
                                 aria-selected="true">
-                                <span><i class="ri-lock-line me-2"></i>Private Notes</span>
+                                <span><i class="ri-lock-line me-2"></i>{{__('notes.private_notes')}}</span>
                             </a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" data-bs-toggle="tab" href="#public-notes" role="tab"
                                 aria-selected="false">
-                                <span><i class="ri-global-line me-2"></i>Public Notes</span>
+                                <span><i class="ri-global-line me-2"></i>{{__('notes.public_notes')}}</span>
                             </a>
                         </li>
                     </ul>

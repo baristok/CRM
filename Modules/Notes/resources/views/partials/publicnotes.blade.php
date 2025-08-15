@@ -6,7 +6,7 @@
                 <div class="col-lg-auto">
                     <div class="hstack gap-2">
                         <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#public-createboardModal"><i
-                                class="ri-add-line align-bottom me-1"></i> Create Board</button>
+                                class="ri-add-line align-bottom me-1"></i> {{__('notes.create_board')}}</button>
                     </div>
                 </div>
             @endcan
@@ -14,7 +14,7 @@
             <div class="col-lg-3 col-auto">
                 <div class="search-box">
                     <input type="text" class="form-control search" id="public-search-task-options"
-                        placeholder="Search for project, tasks...">
+                        placeholder="{{__('notes.search_for_project_tasks')}}">
                     <i class="ri-search-line search-icon"></i>
                 </div>
             </div>
@@ -49,9 +49,9 @@
                             <div class="dropdown-menu dropdown-menu-end">
                                 <a class="dropdown-item public-edit-board-btn" href="#" data-bs-toggle="modal"
                                     data-bs-target="#public-editBoardModal" data-board-id="{{ $board->id }}"
-                                    data-board-name="{{ $board->name }}">Düzenle</a>
+                                    data-board-name="{{ $board->name }}">{{__('notes.edit')}}</a>
                                 <a class="dropdown-item public-delete-board-btn" href="#"
-                                    data-board-id="{{ $board->id }}">Sil</a>
+                                    data-board-id="{{ $board->id }}">{{__('notes.delete')}}</a>
                             </div>
                         </div>
                     </div>
@@ -64,34 +64,38 @@
                         <div class="card tasks-box">
                             <div class="card-body">
                                 <div class="d-flex mb-2">
-                                    <div class="flex-grow-1">
-                                        <h6 class="fs-15 mb-0 text-truncate task-title"><a
-                                                href="apps-tasks-details.html" class="d-block">{{ $note->title }}</a>
-                                        </h6>
-                                    </div>
+                                    @php
+                                        $customHash = strtoupper(substr(md5($note->id . $note->created_at . $note->title), 0, 8));
+                                    @endphp
+                                    <a href="javascript:void(0)" class="text-muted fw-medium fs-14 flex-grow-1">#{{ $customHash }}</a>
+                                    
+                                    
                                     <div class="flex-shrink-0">
                                         <a href="javascript:void(0);" class="text-muted" id="public-dropdownMenuLink3"
                                             data-bs-toggle="dropdown" aria-expanded="false"><i
                                                 class="ri-more-fill"></i></a>
                                         <ul class="dropdown-menu" aria-labelledby="public-dropdownMenuLink3">
-                                            <li><a class="dropdown-item" href="apps-tasks-details.html"><i
-                                                        class="ri-eye-fill align-bottom me-2 text-muted"></i> View</a>
+                                            <li><a class="dropdown-item" href="{{ route('notes.noteDetails', $note->uuid) }}"><i
+                                                        class="ri-eye-fill align-bottom me-2 text-muted"></i> {{__('notes.view')}}</a>
                                             </li>
                                             @can('public-notes')
                                                 <li><a class="dropdown-item edit-note-btn" href="#"
                                                         data-bs-toggle="modal" data-bs-target="#public-editNoteModal"
                                                         data-note-id="{{ $note->id }}"><i
                                                             class="ri-edit-2-line align-bottom me-2 text-muted"></i>
-                                                        Edit</a></li>
+                                                        {{__('notes.edit')}}</a></li>
                                                 <li><a class="dropdown-item delete-note-btn" data-bs-toggle="modal"
                                                         data-bs-target="#public-deleteNoteModal"
                                                         data-note-id="{{ $note->id }}"><i
                                                             class="ri-delete-bin-5-line align-bottom me-2 text-muted"></i>
-                                                        Delete</a></li>
+                                                        {{__('notes.delete')}}</a></li>
                                             @endcan
                                         </ul>
                                     </div>
                                 </div>
+                                <h6 class="fs-15 mb-0 text-truncate task-title"><a
+                                    href="{{ route('notes.noteDetails', $note->uuid) }}" class="d-block" style="min-height: 34px;">{{ $note->title }}</a>
+                            </h6>
                                 <p class="text-muted">{{ $note->description }}</p>
                                 <div class="d-flex align-items-center">
                                     <div class="flex-grow-1">
@@ -141,8 +145,7 @@
             <div class="my-3">
                 @can('public-notes')
                     <button class="btn btn-soft-primary w-100" data-bs-toggle="modal"
-                        data-bs-target="#public-creatertaskModal" data-board-id="{{ $board->id }}">Add
-                        More</button>
+                        data-bs-target="#public-creatertaskModal" data-board-id="{{ $board->id }}">{{__('notes.add_more')}}</button>
                 @endcan
             </div>
         </div>
@@ -158,7 +161,7 @@
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content border-0">
             <div class="modal-header p-3 bg-primary-subtle">
-                <h5 class="modal-title" id="public-createboardModalLabel">Add Board</h5>
+                <h5 class="modal-title" id="public-createboardModalLabel">{{__('notes.add_board')}}</h5>
                 <button type="button" class="btn-close" id="public-addBoardBtn-close" data-bs-dismiss="modal"
                     aria-label="Close"></button>
             </div>
@@ -167,15 +170,14 @@
                     @csrf
                     <div class="row">
                         <div class="col-lg-12">
-                            <label for="boardName" class="form-label">Board Name</label>
+                            <label for="boardName" class="form-label">{{__('notes.board_name')}}</label>
                             <input type="text" class="form-control" name="name" id="public-boardName"
-                                placeholder="Enter board name">
+                                placeholder="{{__('notes.enter_board_name')}}">
                         </div>
                         <div class="mt-4">
                             <div class="hstack gap-2 justify-content-end">
-                                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
-                                <button type="submit" class="btn btn-primary" id="public-addNewBoard">Add
-                                    Board</button>
+                                <button type="button" class="btn btn-light" data-bs-dismiss="modal">{{__('notes.close')}}</button>
+                                <button type="submit" class="btn btn-primary" id="public-addNewBoard">{{__('notes.add_board')}}</button>
                             </div>
                         </div>
                     </div>
@@ -192,7 +194,7 @@
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content border-0">
             <div class="modal-header p-3 bg-warning-subtle">
-                <h5 class="modal-title" id="public-editBoardModalLabel">Board Düzenle</h5>
+                <h5 class="modal-title" id="public-editBoardModalLabel">{{__('notes.edit_board')}}</h5>
                 <button type="button" class="btn-close" id="public-editBoardBtn-close" data-bs-dismiss="modal"
                     aria-label="Close"></button>
             </div>
@@ -203,15 +205,14 @@
                     <input type="hidden" id="public-edit-board-id" name="board_id" value="">
                     <div class="row">
                         <div class="col-lg-12">
-                            <label for="editBoardName" class="form-label">Board Adı</label>
+                            <label for="editBoardName" class="form-label">{{__('notes.board_name')}}</label>
                             <input type="text" class="form-control" id="public-editBoardName" name="name"
-                                placeholder="Board adını girin">
+                                placeholder="{{__('notes.enter_board_name')}}">
                         </div>
                         <div class="mt-4">
                             <div class="hstack gap-2 justify-content-end">
-                                <button type="button" class="btn btn-light" data-bs-dismiss="modal">İptal</button>
-                                <button type="submit" class="btn btn-warning" id="public-updateBoard">Board
-                                    Güncelle</button>
+                                <button type="button" class="btn btn-light" data-bs-dismiss="modal">{{__('notes.cancel')}}</button>
+                                <button type="submit" class="btn btn-warning" id="public-updateBoard">{{__('notes.update_board')}}</button>
                             </div>
                         </div>
                     </div>
@@ -228,7 +229,7 @@
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content border-0">
             <div class="modal-header p-3 bg-warning-subtle">
-                <h5 class="modal-title" id="public-editNoteModalLabel">Not Düzenle</h5>
+                <h5 class="modal-title" id="public-editNoteModalLabel">{{__('notes.edit_note')}}</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -238,24 +239,24 @@
                     <input type="hidden" id="public-edit-note-id" name="note_id" value="">
                     <div class="row g-3">
                         <div class="col-lg-12">
-                            <label for="editProjectName" class="form-label">Proje Adı</label>
+                            <label for="editProjectName" class="form-label">{{__('notes.project_name')}}</label>
                             <input type="text" class="form-control" id="public-editProjectName" name="title"
-                                placeholder="Proje adını girin">
+                                placeholder="{{__('notes.enter_project_name')}}">
                         </div>
                         <!--end col-->
                         <div class="col-lg-12">
-                            <label for="edit-task-description" class="form-label">Not Açıklaması</label>
+                            <label for="edit-task-description" class="form-label">{{__('notes.note_description')}}</label>
                             <textarea class="form-control" id="public-edit-task-description" name="description" rows="3"
-                                placeholder="Not açıklaması"></textarea>
+                                placeholder="{{__('notes.enter_note_description')}}"></textarea>
                         </div>
                         <div class="col-lg-4">
-                            <label for="edit-due-date" class="form-label">Son Tarih</label>
+                            <label for="edit-due-date" class="form-label">{{__('notes.due_date')}}</label>
                             <input type="text" class="form-control" id="public-edit-due-date" name="due_date"
-                                format="Y-m-d" data-provider="flatpickr" placeholder="Tarih seçin">
+                                format="Y-m-d" data-provider="flatpickr" placeholder="{{__('notes.select_date')}}">
                         </div>
                         <!--end col-->
                         <div class="col-lg-4">
-                            <label for="edit-tags" class="form-label">Etiketler</label>
+                            <label for="edit-tags" class="form-label">{{__('notes.tags')}}</label>
                             <select class="form-select" id="public-edit-tags" name="tags[]" multiple>
                                 @foreach ($tags as $tag)
                                     <option value="{{ $tag->id }}">{{ $tag->name }}</option>
@@ -264,7 +265,7 @@
                         </div>
                         <!--end col-->
                         <div class="col-lg-4">
-                            <label for="edit-tasks-progress" class="form-label">İlerleme</label>
+                            <label for="edit-tasks-progress" class="form-label">{{__('notes.progress')}}</label>
                             <div class="progress-input-wrapper">
                                 <input type="range" class="form-range" id="public-edit-tasks-progress"
                                     min="0" max="100" value="0" step="5" name="progress">
@@ -280,9 +281,8 @@
                         <!--end col-->
                         <div class="mt-4">
                             <div class="hstack gap-2 justify-content-end">
-                                <button type="button" class="btn btn-light" data-bs-dismiss="modal">İptal</button>
-                                <button type="submit" id="public-updateNote" class="btn btn-warning">Not
-                                    Güncelle</button>
+                                <button type="button" class="btn btn-light" data-bs-dismiss="modal">{{__('notes.cancel')}}</button>
+                                <button type="submit" id="public-updateNote" class="btn btn-warning">{{__('notes.update_note')}}</button>
                             </div>
                         </div>
                         <!--end col-->
@@ -302,7 +302,7 @@
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content border-0">
             <div class="modal-header p-3 bg-primary-subtle">
-                <h5 class="modal-title" id="public-creatertaskModalLabel">{{ __('notes.create_task') }}</h5>
+                <h5 class="modal-title" id="public-creatertaskModalLabel">{{ __('notes.add_note') }}</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -312,24 +312,24 @@
                     <input type="hidden" id="public-user-id" name="user_id" value="{{ Auth::user()->id }}">
                     <div class="row g-3">
                         <div class="col-lg-12">
-                            <label for="projectName" class="form-label">Project Name</label>
+                            <label for="projectName" class="form-label">{{__('notes.project_name')}}</label>
                             <input type="text" class="form-control" id="public-projectName" name="title"
-                                placeholder="Enter project name">
+                                placeholder="{{__('notes.enter_project_name')}}">
                         </div>
                         <!--end col-->
                         <div class="col-lg-12">
-                            <label for="task-description" class="form-label">Task Description</label>
+                            <label for="task-description" class="form-label">{{__('notes.note_description')}}</label>
                             <textarea class="form-control" id="public-task-description" name="description" rows="3"
-                                placeholder="Task description"></textarea>
+                                placeholder="{{__('notes.enter_note_description')}}"></textarea>
                         </div>
                         <div class="col-lg-4">
-                            <label for="due-date" class="form-label">Due Date</label>
+                            <label for="due-date" class="form-label">{{__('notes.due_date')}}</label>
                             <input type="text" class="form-control" id="public-due-date" name="due_date"
-                                format="Y-m-d" data-provider="flatpickr" placeholder="Select date">
+                                format="Y-m-d" data-provider="flatpickr" placeholder="{{__('notes.select_date')}}">
                         </div>
                         <!--end col-->
                         <div class="col-lg-4">
-                            <label for="tags" class="form-label">Tags</label>
+                            <label for="tags" class="form-label">{{__('notes.tags')}}</label>
                             <select class="form-select" id="public-tags" name="tags[]" multiple data-choices
                                 data-choices-removeItem>
                                 @foreach ($tags as $tag)
@@ -339,7 +339,7 @@
                         </div>
                         <!--end col-->
                         <div class="col-lg-4">
-                            <label for="public-tasks-progress" class="form-label">Tasks Progress</label>
+                            <label for="public-tasks-progress" class="form-label">{{__('notes.progress')}}</label>
                             <div class="progress-input-wrapper">
                                 <input type="range" class="form-range" id="public-tasks-progress" min="0"
                                     max="100" value="0" step="5" name="progress">
@@ -354,9 +354,8 @@
                         <!--end col-->
                         <div class="mt-4">
                             <div class="hstack gap-2 justify-content-end">
-                                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
-                                <button type="submit" id="public-addNewTask" class="btn btn-primary">Add
-                                    Task</button>
+                                <button type="button" class="btn btn-light" data-bs-dismiss="modal">{{__('notes.close')}}</button>
+                                <button type="submit" id="public-addNewTask" class="btn btn-primary">{{__('notes.add_note')}}</button>
                             </div>
                         </div>
                         <!--end col-->
@@ -387,15 +386,13 @@
                         <lord-icon src="https://cdn.lordicon.com/gsqxdxog.json" trigger="loop"
                             colors="primary:#f7b84b,secondary:#f06548" style="width:100px;height:100px"></lord-icon>
                         <div class="mt-4 pt-2 fs-15 mx-4 mx-sm-5">
-                            <h4>Emin misiniz?</h4>
-                            <p class="text-muted mx-4 mb-0">Bu notu silmek istediğinizden emin misiniz? Bu işlem geri
-                                alınamaz.</p>
+                            <h4>{{__('notes.are_you_sure')}}</h4>
+                            <p class="text-muted mx-4 mb-0">{{__('notes.are_you_sure_text')}}</p>
                         </div>
                     </div>
                     <div class="d-flex gap-2 justify-content-center mt-4 mb-2">
-                        <button type="button" class="btn w-sm btn-light" data-bs-dismiss="modal">İptal</button>
-                        <button type="submit" class="btn w-sm btn-danger" id="public-delete-note-confirm">Evet,
-                            Sil!</button>
+                        <button type="button" class="btn w-sm btn-light" data-bs-dismiss="modal">{{__('notes.cancel')}}</button>
+                        <button type="submit" class="btn w-sm btn-danger" id="public-delete-note-confirm">{{__('notes.delete')}}</button>
                     </div>
                 </div>
             </form>
@@ -417,15 +414,13 @@
                     <lord-icon src="https://cdn.lordicon.com/gsqxdxog.json" trigger="loop"
                         colors="primary:#f7b84b,secondary:#f06548" style="width:100px;height:100px"></lord-icon>
                     <div class="mt-4 pt-2 fs-15 mx-4 mx-sm-5">
-                        <h4>Emin misiniz?</h4>
-                        <p class="text-muted mx-4 mb-0">Bu board'u silmek istediğinizden emin misiniz? Bu işlem geri
-                            alınamaz.</p>
+                        <h4>{{__('notes.are_you_sure')}}</h4>
+                        <p class="text-muted mx-4 mb-0">{{__('notes.are_you_sure_text')}}</p>
                     </div>
                 </div>
                 <div class="d-flex gap-2 justify-content-center mt-4 mb-2">
-                    <button type="button" class="btn w-sm btn-light" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn w-sm btn-danger" id="public-delete-board-confirm">Evet, Sil!
-                        It!</button>
+                    <button type="button" class="btn w-sm btn-light" data-bs-dismiss="modal">{{__('notes.close')}}</button>
+                    <button type="button" class="btn w-sm btn-danger" id="public-delete-board-confirm">{{__('notes.delete')}}</button>
                 </div>
             </div>
         </div>
@@ -544,8 +539,8 @@
                     console.error("Error fetching or processing note data:", error);
                     Swal.fire({
                         icon: 'error',
-                        title: 'Hata!',
-                        text: 'Not bilgileri alınırken bir sorun oluştu. Lütfen tekrar deneyin.',
+                        title: '{{__('notes.error')}}',
+                        text: '{{__('notes.error_text')}}',
                     });
                 });
         });
@@ -613,8 +608,8 @@
                 if (data.success) {
                     Swal.fire({
                         icon: 'success',
-                        title: 'Başarılı!',
-                        text: 'Not başarıyla güncellendi.',
+                        title: '{{__('notes.success')}}',
+                        text: '{{__('notes.note_updated')}}',
                     }).then(() => {
                         $('#public-editNoteModal').modal('hide');
                         location.reload();
@@ -622,16 +617,16 @@
                 } else {
                     Swal.fire({
                         icon: 'error',
-                        title: 'Hata!',
-                        text: data.message || 'Not güncellenirken bir hata oluştu.',
+                        title: '{{__('notes.error')}}',
+                        text: data.message || '{{__('notes.error_text')}}',
                     });
                 }
             }).catch(error => {
                 console.error('Error updating note:', error);
                 Swal.fire({
                     icon: 'error',
-                    title: 'Bağlantı Hatası!',
-                    text: 'Not güncellenirken bir sunucu hatası oluştu.',
+                    title: '{{__('notes.error')}}',
+                    text: '{{__('notes.error_text')}}',
                 });
             });
         });
@@ -708,8 +703,8 @@ $('#public-deleteNoteForm').on('submit', function(e) {
         if (data.success) {
             Swal.fire({
                 icon: 'success',
-                title: 'Başarılı!',
-                text: 'Not başarıyla silindi.',
+                title: '{{__('notes.success')}}',
+                text: '{{__('notes.note_deleted')}}',
             }).then(() => {
                 $('#public-deleteNoteModal').modal('hide');
                 location.reload();
@@ -717,8 +712,8 @@ $('#public-deleteNoteForm').on('submit', function(e) {
         } else {
             Swal.fire({
                 icon: 'error',
-                title: 'Hata!',
-                text: data.message || 'Not silinemedi.',
+                title: '{{__('notes.error')}}',
+                text: data.message || '{{__('notes.error_text')}}',
             });
         }
     });
@@ -734,8 +729,8 @@ $('#public-deleteNoteForm').on('submit', function(e) {
             <div class="mt-3">
                 <lord-icon src="https://cdn.lordicon.com/gsqxdxog.json" trigger="loop" colors="primary:#f7b84b,secondary:#f06548" style="width:100px;height:100px"></lord-icon>
                 <div class="mt-4 pt-2 fs-15 mx-5">
-                    <h4>Board'u Sil</h4>
-                    <p class="text-muted mx-4 mb-0">Bu board'u silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.</p>
+                    <h4>{{__('notes.delete_board')}}</h4>
+                    <p class="text-muted mx-4 mb-0">{{__('notes.delete_board_text')}}</p>
                 </div>
             </div>`,
                 showCancelButton: true,
@@ -743,8 +738,8 @@ $('#public-deleteNoteForm').on('submit', function(e) {
                     confirmButton: "btn btn-primary w-xs me-2 mb-1",
                     cancelButton: "btn btn-danger w-xs mb-1",
                 },
-                cancelButtonText: "Hayır",
-                confirmButtonText: "Evet, Sil!",
+                cancelButtonText: "{{__('notes.no')}}",
+                confirmButtonText: "{{__('notes.delete')}}",
                 buttonsStyling: false,
                 showCloseButton: true
             }).then((result) => {
@@ -769,13 +764,13 @@ $('#public-deleteNoteForm').on('submit', function(e) {
                         <div class="mt-3">
                             <lord-icon src="https://cdn.lordicon.com/lupuorrc.json" trigger="loop" colors="primary:#0ab39c,secondary:#405189" style="width:120px;height:120px"></lord-icon>
                             <div class="mt-4 pt-2 fs-15">
-                                <h4>Board Silindi!</h4>
-                                <p class="text-muted mx-4 mb-0">Board başarıyla silindi.</p>
+                                <h4>{{__('notes.board_deleted')}}</h4>
+                                <p class="text-muted mx-4 mb-0">{{__('notes.board_deleted_text')}}</p>
                             </div>
                         </div>`,
                                 showCancelButton: true,
                                 showConfirmButton: false,
-                                cancelButtonText: "Tamam",
+                                cancelButtonText: "{{__('notes.ok')}}",
                                 customClass: {
                                     cancelButton: "btn btn-primary w-xs mb-1"
                                 },
@@ -788,13 +783,13 @@ $('#public-deleteNoteForm').on('submit', function(e) {
                         <div class="mt-3">
                             <lord-icon src="https://cdn.lordicon.com/tdrtiskw.json" trigger="loop" colors="primary:#f06548,secondary:#f7b84b" style="width:120px;height:120px"></lord-icon>
                             <div class="mt-4 pt-2 fs-15">
-                                <h4>Hata!</h4>
-                                <p class="text-muted mx-4 mb-0">${data.message || 'Bir hata oluştu.'}</p>
+                                <h4>{{__('notes.error')}}</h4>
+                                <p class="text-muted mx-4 mb-0">${data.message || '{{__('notes.error_text')}}'}</p>
                             </div>
                         </div>`,
                                 showCancelButton: true,
                                 showConfirmButton: false,
-                                cancelButtonText: "Kapat",
+                                cancelButtonText: "{{__('notes.close')}}",
                                 customClass: {
                                     cancelButton: "btn btn-primary w-xs mb-1"
                                 },
@@ -809,13 +804,13 @@ $('#public-deleteNoteForm').on('submit', function(e) {
                     <div class="mt-3">
                         <lord-icon src="https://cdn.lordicon.com/tdrtiskw.json" trigger="loop" colors="primary:#f06548,secondary:#f7b84b" style="width:120px;height:120px"></lord-icon>
                         <div class="mt-4 pt-2 fs-15">
-                            <h4>Hata!</h4>
-                            <p class="text-muted mx-4 mb-0">İstek gönderilirken bir sorun oluştu.</p>
+                            <h4>{{__('notes.error')}}</h4>
+                            <p class="text-muted mx-4 mb-0">{{__('notes.error_text')}}</p>
                         </div>
                     </div>`,
                             showCancelButton: true,
                             showConfirmButton: false,
-                            cancelButtonText: "Kapat",
+                            cancelButtonText: "{{__('notes.close')}}",
                             customClass: {
                                 cancelButton: "btn btn-primary w-xs mb-1"
                             },

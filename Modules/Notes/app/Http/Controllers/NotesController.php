@@ -469,4 +469,20 @@ class NotesController extends Controller
             return redirect()->back()->with('error', 'Not silinemedi')->with('error_message', $e->getMessage());
         }
     }
+
+    public function noteDetails($id)
+    {
+        if(Auth::user()->id == Notes::where('uuid', $id)->first()->user_id){
+            $note = Notes::where('uuid', $id)->firstOrFail();
+            $isPrivate = $note->board->type == 'private';
+            $noteNo = strtoupper(substr(md5($note->id . $note->created_at . $note->title), 0, 8));
+            return view('notes::note-details', compact('note', 'noteNo', 'isPrivate'));
+        }else{
+            return redirect()->back()->with('error', 'Yetkiniz yok');
+        }
+    }
+
+
+
+
 }

@@ -3,7 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-
+use Illuminate\Support\Str;
 return new class extends Migration
 {
     /**
@@ -13,12 +13,13 @@ return new class extends Migration
     {
         Schema::create('notes', function (Blueprint $table) {
             $table->id();
+            $table->uuid('uuid')->unique()->index();
             $table->foreignId('board_id')->constrained('note_boards')->onDelete('cascade');
             $table->string('title');
             $table->text('description');
             $table->integer('progress')->default(0); // 0-100 arası ilerleme durumu
             // $table->enum('priority', ['low', 'medium', 'high', 'critical'])->nullable();
-            $table->string('slug');
+            // $table->string('slug');
             $table->date('due_date')->nullable();
             $table->string('image')->nullable();
             $table->foreignId('user_id')->constrained('users');
