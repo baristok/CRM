@@ -9,6 +9,7 @@ use Modules\Notes\Models\Notes;
 use Illuminate\Support\Facades\Auth;
 use Exception;
 use Modules\Notes\Models\NotesTags;
+use Modules\Notes\Models\NoteComment;
 
 class NotesController extends Controller
 {
@@ -470,18 +471,42 @@ class NotesController extends Controller
         }
     }
 
-    public function noteDetails($id)
-    {
-        if(Auth::user()->id == Notes::where('uuid', $id)->first()->user_id){
-            $note = Notes::where('uuid', $id)->firstOrFail();
-            $isPrivate = $note->board->type == 'private';
-            $noteNo = strtoupper(substr(md5($note->id . $note->created_at . $note->title), 0, 8));
-            return view('notes::note-details', compact('note', 'noteNo', 'isPrivate'));
-        }else{
-            return redirect()->back()->with('error', 'Yetkiniz yok');
-        }
+    public function noteDetails($uuid)
+{
+    $note = Notes::where('uuid', $uuid)
+        ->with(['board', 'user', 'tags', 'comments.user'])
+        ->firstOrFail();
+
+    $isPrivate = $note->board->type === 'private';
+
+    if ($isPrivate && Auth::id() !== $note->user_id) {
+        return redirect()->back()->with('error', 'Yetkiniz yok');
     }
 
+    $noteNo = strtoupper(substr(md5($note->id . $note->created_at . $note->title), 0, 8));
+
+    return view('notes::note-details', compact('note', 'noteNo', 'isPrivate'));
+}
+
+    public function storeComment(Request $request)
+    {
+        $validated = $request->validate([
+            'note_id' => 'required|exists:notes,id',
+            'comment' => 'required|string',
+        ]);
+        $comment = NoteComment::create([
+            'note_id' => $validated['note_id'],
+            'user_id' => Auth::user()->id,
+            'comment' => $validated['comment'],
+        ]);
+        return redirect()->back()->with('success', 'Yorum başarıyla oluşturuldu');
+    }
+    public function deleteComment($id)
+    {
+        $comment = NoteComment::findOrFail($id);
+        $comment->delete();
+        return redirect()->back()->with('success', 'Yorum başarıyla silindi');
+    }
 
 
 

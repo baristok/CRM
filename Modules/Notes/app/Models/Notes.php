@@ -9,6 +9,7 @@ use Modules\Notes\Models\NoteBoards;
 use Illuminate\Support\Str;
 // use Modules\Notes\Database\Factories\NotesFactory;
 use Modules\Notes\Models\NotesTags;
+use Modules\Notes\Models\NoteComment;
 
 class Notes extends Model
 {
@@ -67,6 +68,11 @@ class Notes extends Model
     public function tags()
     {
         return $this->belongsToMany(NotesTags::class, 'tags_notes', 'note_id', 'tag_id');
+    }
+
+    public function comments()
+    {
+        return $this->hasMany(NoteComment::class, 'note_id');
     }
 
 }

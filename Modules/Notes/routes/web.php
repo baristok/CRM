@@ -18,6 +18,8 @@ Route::middleware(['auth'])->group(function () {
     Route::post('notes/storePublicTask', [NotesController::class, 'storePublicTask'])->name('notes.storePublicTask');
     Route::delete('notes/delete-public-note/{id}', [NotesController::class, 'deletePublicNote'])->name('notes.deletePublicNote');
     Route::get('notes/note-details/{uuid}', [NotesController::class, 'noteDetails'])->name('notes.noteDetails');
+    Route::post('notes/store-comment', [NotesController::class, 'storeComment'])->name('notes.storeComment');
+    Route::delete('notes/delete-comment/{id}', [NotesController::class, 'deleteComment'])->name('notes.deleteComment');
 
 
 });

@@ -73,6 +73,6 @@ return[
     'in_progress' => 'Devam Ediyor',
     'completed' => 'Tamamlandı',
     'due_date' => 'Son Tarih',
-    'assigned_to' => 'Notu Atayan',
+    'assigned_to' => 'Not Sahibi',
     'attachments' => 'Ek Dosyalar',
 ];

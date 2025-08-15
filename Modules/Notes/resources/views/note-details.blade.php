@@ -226,7 +226,7 @@
                                 @endif
                                 <li class="nav-item">
                                     <a class="nav-link {{$isPrivate ? 'active' : ''}}" data-bs-toggle="tab" href="#profile-1" role="tab">
-                                        Time Entries
+                                        Activity
                                     </a>
                                 </li>
                             </ul>
@@ -238,15 +238,16 @@
                             <div class="tab-pane {{$isPrivate ? '' : 'active'}}" id="home-1" role="tabpanel">
                                 <h5 class="card-title mb-4">Comments</h5>
                                 <div data-simplebar style="height: 508px;" class="px-3 mx-n3 mb-2">
+                                    @foreach ($note->comments as $comment)
                                     <div class="d-flex mb-4">
                                         <div class="flex-shrink-0">
-                                            <img src="assets/images/users/avatar-7.jpg" alt="" class="avatar-xs rounded-circle" />
+                                            <img src="{{asset('assets/images/users/user-dummy-img.jpg')}}" alt="" class="avatar-xs rounded-circle" />
                                         </div>
                                         <div class="flex-grow-1 ms-3">
-                                            <h5 class="fs-13"><a href="pages-profile.html">Joseph Parker</a> <small class="text-muted">20 Dec 2021 - 05:47AM</small></h5>
-                                            <p class="text-muted">I am getting message from customers that when they place order always get error message .</p>
-                                            <a href="javascript: void(0);" class="badge text-muted bg-light"><i class="mdi mdi-reply"></i> Reply</a>
-                                            <div class="d-flex mt-4">
+                                            <h5 class="fs-13"><a href="pages-profile.html">{{$comment->user->name}}</a> <small class="text-muted">{{$comment->created_at->format('d.m.Y')}}</small></h5>
+                                            <p class="text-muted">{{$comment->comment}}</p>
+                                            {{-- <a href="javascript: void(0);" class="badge text-muted bg-light"><i class="mdi mdi-reply"></i> Reply</a> --}}
+                                            {{-- <div class="d-flex mt-4">
                                                 <div class="flex-shrink-0">
                                                     <img src="assets/images/users/avatar-10.jpg" alt="" class="avatar-xs rounded-circle" />
                                                 </div>
@@ -255,58 +256,22 @@
                                                     <p class="text-muted">Please be sure to check your Spam mailbox to see if your email filters have identified the email from Dell as spam.</p>
                                                     <a href="javascript: void(0);" class="badge text-muted bg-light"><i class="mdi mdi-reply"></i> Reply</a>
                                                 </div>
-                                            </div>
+                                            </div> --}}
                                         </div>
                                     </div>
-                                    <div class="d-flex mb-4">
-                                        <div class="flex-shrink-0">
-                                            <img src="assets/images/users/avatar-8.jpg" alt="" class="avatar-xs rounded-circle" />
-                                        </div>
-                                        <div class="flex-grow-1 ms-3">
-                                            <h5 class="fs-13"><a href="pages-profile.html">Thomas Taylor</a> <small class="text-muted">24 Dec 2021 - 05:20PM</small></h5>
-                                            <p class="text-muted">If you have further questions, please contact Customer Support from the “Action Menu” on your <a href="javascript:void(0);" class="text-decoration-underline">Online Order Support</a>.</p>
-                                            <a href="javascript: void(0);" class="badge text-muted bg-light"><i class="mdi mdi-reply"></i> Reply</a>
-                                        </div>
-                                    </div>
-                                    <div class="d-flex">
-                                        <div class="flex-shrink-0">
-                                            <img src="assets/images/users/avatar-10.jpg" alt="" class="avatar-xs rounded-circle" />
-                                        </div>
-                                        <div class="flex-grow-1 ms-3">
-                                            <h5 class="fs-13"><a href="pages-profile.html">Tonya Noble</a> <small class="text-muted">26 min ago</small></h5>
-                                            <p class="text-muted">Your <a href="javascript:void(0)" class="text-decoration-underline">Online Order Support</a> provides you with the most current status of your order. To help manage your order refer to the “Action Menu” to initiate return, contact Customer Support and more.</p>
-                                            <div class="row g-2 mb-3">
-                                                <div class="col-lg-1 col-sm-2 col-6">
-                                                    <img src="assets/images/small/img-4.jpg" alt="" class="img-fluid rounded">
-                                                </div>
-                                                <div class="col-lg-1 col-sm-2 col-6">
-                                                    <img src="assets/images/small/img-5.jpg" alt="" class="img-fluid rounded">
-                                                </div>
-                                            </div>
-                                            <a href="javascript: void(0);" class="badge text-muted bg-light"><i class="mdi mdi-reply"></i> Reply</a>
-                                            <div class="d-flex mt-4">
-                                                <div class="flex-shrink-0">
-                                                    <img src="assets/images/users/avatar-6.jpg" alt="" class="avatar-xs rounded-circle" />
-                                                </div>
-                                                <div class="flex-grow-1 ms-3">
-                                                    <h5 class="fs-13"><a href="pages-profile.html">Nancy Martino</a> <small class="text-muted">8 sec ago</small></h5>
-                                                    <p class="text-muted">Other shipping methods are available at checkout if you want your purchase delivered faster.</p>
-                                                    <a href="javascript: void(0);" class="badge text-muted bg-light"><i class="mdi mdi-reply"></i> Reply</a>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
+                                    @endforeach
                                 </div>
-                                <form class="mt-4">
+                                <form class="mt-4" action="{{route('notes.storeComment')}}" method="post">
+                                    @csrf
+                                    <input type="hidden" name="note_id" value="{{$note->id}}">
                                     <div class="row g-3">
                                         <div class="col-lg-12">
                                             <label for="exampleFormControlTextarea1" class="form-label">Leave a Comments</label>
-                                            <textarea class="form-control bg-light border-light" id="exampleFormControlTextarea1" rows="3" placeholder="Enter comments"></textarea>
+                                            <textarea class="form-control bg-light border-light" id="exampleFormControlTextarea1" rows="3" placeholder="Enter comments" name="comment"></textarea>
                                         </div>
                                         <!--end col-->
                                         <div class="col-12 text-end">
-                                            <button type="button" class="btn btn-ghost-primary btn-icon waves-effect me-1"><i class="ri-attachment-line fs-16"></i></button>
-                                            <a href="javascript:void(0);" class="btn btn-primary">Post Comments</a>
+                                            <button type="submit" class="btn btn-primary">Post Comments</button>
                                         </div>
                                     </div>
                                     <!--end row-->
@@ -522,134 +487,6 @@
             <!--end col-->
         </div>
         <!--end row-->
-
-        <div class="modal fade" id="inviteMembersModal" tabindex="-1" aria-labelledby="inviteMembersModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content border-0">
-                    <div class="modal-header p-3 ps-4 bg-primary-subtle">
-                        <h5 class="modal-title" id="inviteMembersModalLabel">Team Members</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body p-4">
-                        <div class="search-box mb-3">
-                            <input type="text" class="form-control bg-light border-light" placeholder="Search here...">
-                            <i class="ri-search-line search-icon"></i>
-                        </div>
-
-                        <div class="mb-4 d-flex align-items-center">
-                            <div class="me-2">
-                                <h5 class="mb-0 fs-13">Members :</h5>
-                            </div>
-                            <div class="avatar-group justify-content-center">
-                                <a href="javascript: void(0);" class="avatar-group-item" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" title="Tonya Noble">
-                                    <div class="avatar-xs">
-                                        <img src="assets/images/users/avatar-10.jpg" alt="" class="rounded-circle img-fluid">
-                                    </div>
-                                </a>
-                                <a href="javascript: void(0);" class="avatar-group-item" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" title="Thomas Taylor">
-                                    <div class="avatar-xs">
-                                        <img src="assets/images/users/avatar-8.jpg" alt="" class="rounded-circle img-fluid">
-                                    </div>
-                                </a>
-                                <a href="javascript: void(0);" class="avatar-group-item" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" title="Nancy Martino">
-                                    <div class="avatar-xs">
-                                        <img src="assets/images/users/avatar-2.jpg" alt="" class="rounded-circle img-fluid">
-                                    </div>
-                                </a>
-                            </div>
-                        </div>
-                        <div class="mx-n4 px-4" data-simplebar style="max-height: 225px;">
-                            <div class="vstack gap-3">
-                                <div class="d-flex align-items-center">
-                                    <div class="avatar-xs flex-shrink-0 me-3">
-                                        <img src="assets/images/users/avatar-2.jpg" alt="" class="img-fluid rounded-circle">
-                                    </div>
-                                    <div class="flex-grow-1">
-                                        <h5 class="fs-13 mb-0"><a href="javascript:void(0);" class="text-body d-block">Nancy Martino</a></h5>
-                                    </div>
-                                    <div class="flex-shrink-0">
-                                        <button type="button" class="btn btn-light btn-sm">Add</button>
-                                    </div>
-                                </div>
-                                <!-- end member item -->
-                                <div class="d-flex align-items-center">
-                                    <div class="avatar-xs flex-shrink-0 me-3">
-                                        <div class="avatar-title bg-danger-subtle text-danger rounded-circle">
-                                            HB
-                                        </div>
-                                    </div>
-                                    <div class="flex-grow-1">
-                                        <h5 class="fs-13 mb-0"><a href="javascript:void(0);" class="text-body d-block">Henry Baird</a></h5>
-                                    </div>
-                                    <div class="flex-shrink-0">
-                                        <button type="button" class="btn btn-light btn-sm">Add</button>
-                                    </div>
-                                </div>
-                                <!-- end member item -->
-                                <div class="d-flex align-items-center">
-                                    <div class="avatar-xs flex-shrink-0 me-3">
-                                        <img src="assets/images/users/avatar-3.jpg" alt="" class="img-fluid rounded-circle">
-                                    </div>
-                                    <div class="flex-grow-1">
-                                        <h5 class="fs-13 mb-0"><a href="javascript:void(0);" class="text-body d-block">Frank Hook</a></h5>
-                                    </div>
-                                    <div class="flex-shrink-0">
-                                        <button type="button" class="btn btn-light btn-sm">Add</button>
-                                    </div>
-                                </div>
-                                <!-- end member item -->
-                                <div class="d-flex align-items-center">
-                                    <div class="avatar-xs flex-shrink-0 me-3">
-                                        <img src="assets/images/users/avatar-4.jpg" alt="" class="img-fluid rounded-circle">
-                                    </div>
-                                    <div class="flex-grow-1">
-                                        <h5 class="fs-13 mb-0"><a href="javascript:void(0);" class="text-body d-block">Jennifer Carter</a></h5>
-                                    </div>
-                                    <div class="flex-shrink-0">
-                                        <button type="button" class="btn btn-light btn-sm">Add</button>
-                                    </div>
-                                </div>
-                                <!-- end member item -->
-                                <div class="d-flex align-items-center">
-                                    <div class="avatar-xs flex-shrink-0 me-3">
-                                        <div class="avatar-title bg-success-subtle text-success rounded-circle">
-                                            AC
-                                        </div>
-                                    </div>
-                                    <div class="flex-grow-1">
-                                        <h5 class="fs-13 mb-0"><a href="javascript:void(0);" class="text-body d-block">Alexis Clarke</a></h5>
-                                    </div>
-                                    <div class="flex-shrink-0">
-                                        <button type="button" class="btn btn-light btn-sm">Add</button>
-                                    </div>
-                                </div>
-                                <!-- end member item -->
-                                <div class="d-flex align-items-center">
-                                    <div class="avatar-xs flex-shrink-0 me-3">
-                                        <img src="assets/images/users/avatar-7.jpg" alt="" class="img-fluid rounded-circle">
-                                    </div>
-                                    <div class="flex-grow-1">
-                                        <h5 class="fs-13 mb-0"><a href="javascript:void(0);" class="text-body d-block">Joseph Parker</a></h5>
-                                    </div>
-                                    <div class="flex-shrink-0">
-                                        <button type="button" class="btn btn-light btn-sm">Add</button>
-                                    </div>
-                                </div>
-                                <!-- end member item -->
-                            </div>
-                            <!-- end list -->
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-light w-xs" data-bs-dismiss="modal">Cancel</button>
-                        <button type="button" class="btn btn-primary w-xs">Assigned</button>
-                    </div>
-                </div>
-                <!-- end modal-content -->
-            </div>
-            <!-- modal-dialog -->
-        </div>
-        <!-- end modal -->
 
     </div>
     <!-- container-fluid -->
