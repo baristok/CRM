@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'title' => 'Kişiler',
+    'title' => 'Şirketteki Kişiler',
     'add' => 'Kişi Ekle',
     'edit' => 'Düzenle',
     'delete' => 'Sil',

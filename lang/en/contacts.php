@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'title' => 'Contacts',
+    'title' => 'Contacts in Company',
     'add' => 'Add Contact',
     'edit' => 'Edit',
     'delete' => 'Delete',

@@ -44,6 +44,20 @@ class MenuServiceProvider extends ServiceProvider
                 if (is_array($moduleMenu) && isset($moduleMenu['route'])) {
                     try {
                         $moduleMenu['url'] = route($moduleMenu['route']);
+                        
+                        // Child menüleri de işle
+                        if (isset($moduleMenu['child']) && is_array($moduleMenu['child'])) {
+                            foreach ($moduleMenu['child'] as &$child) {
+                                if (isset($child['route'])) {
+                                    try {
+                                        $child['url'] = route($child['route']);
+                                    } catch (\Exception $e) {
+                                        $child['url'] = '#';
+                                    }
+                                }
+                            }
+                        }
+                        
                         $menus[] = $moduleMenu;
                     } catch (\Exception $e) {
                         // Route bulunamazsa skip et
