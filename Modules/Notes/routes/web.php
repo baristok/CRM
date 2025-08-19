@@ -21,5 +21,10 @@ Route::middleware(['auth'])->group(function () {
     Route::post('notes/store-comment', [NotesController::class, 'storeComment'])->name('notes.storeComment');
     Route::delete('notes/delete-comment/{id}', [NotesController::class, 'deleteComment'])->name('notes.deleteComment');
 
+    // Attachments
+    Route::post('notes/store-attachment', [NotesController::class, 'storeAttachment'])->name('notes.storeAttachment');
+    Route::delete('notes/delete-attachment/{id}', [NotesController::class, 'deleteAttachment'])->name('notes.deleteAttachment');
+    Route::get('notes/download-attachment/{id}', [NotesController::class, 'downloadAttachment'])->name('notes.downloadAttachment');
+
 
 });

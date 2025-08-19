@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\Auth;
 use Exception;
 use Modules\Notes\Models\NotesTags;
 use Modules\Notes\Models\NoteComment;
+use Modules\Notes\Models\NotesAttachment;
+use Illuminate\Support\Facades\Storage;
 
 class NotesController extends Controller
 {
@@ -474,7 +476,9 @@ class NotesController extends Controller
     public function noteDetails($uuid)
 {
     $note = Notes::where('uuid', $uuid)
-        ->with(['board', 'user', 'tags', 'comments.user'])
+        ->with(['board', 'user', 'tags', 'comments.user','attachments' => function ($query) {
+            $query->orderBy('created_at', 'desc');
+        }])
         ->firstOrFail();
 
     $isPrivate = $note->board->type === 'private';
@@ -501,6 +505,8 @@ class NotesController extends Controller
         ]);
         return redirect()->back()->with('success', 'Yorum başarıyla oluşturuldu');
     }
+
+    
     public function deleteComment($id)
     {
         $comment = NoteComment::findOrFail($id);
@@ -510,4 +516,55 @@ class NotesController extends Controller
 
 
 
+    public function listAttachments($noteId)
+    {
+        $attachments = NotesAttachment::where('note_id', $noteId)->get();
+        return response()->json($attachments);
+    }
+
+    public function storeAttachment(Request $request)
+    {
+        $validated = $request->validate([
+            'note_id' => 'required|exists:notes,id',
+            'file' => 'required|file|mimes:pdf,doc,docx,xls,xlsx,ppt,pptx,txt,csv,zip,rar,7z,mp3,mp4,jpg,jpeg,png,gif,svg,webp',
+        ]);
+        $note = Notes::with('board')->findOrFail($validated['note_id']);
+        if (Auth::id() !== $note->user_id) {
+            return redirect()->back()->with('error', 'Yetkiniz yok');
+        }
+
+        $directory = 'attachments/' . ($note->uuid ?? $note->id);
+        $storedPath = $request->file('file')->store($directory, 'local');
+
+        $note->attachments()->create([
+            'original_name' => $request->file('file')->getClientOriginalName(),
+            'file_name' => basename($storedPath),
+            'path' => $storedPath,
+            'size' => $request->file('file')->getSize(),
+        ]);
+        return redirect()->back()->with('success', 'Ek başarıyla yüklendi');
+    }
+
+    public function deleteAttachment($id)
+    {
+        $attachment = NotesAttachment::with('note')->findOrFail($id);
+        if (Auth::id() !== $attachment->note->user_id) {
+            return redirect()->back()->with('error', 'Yetkiniz yok');
+        }
+
+        Storage::disk('local')->delete($attachment->path);
+        $attachment->delete();
+        return redirect()->back()->with('success', 'Ek başarıyla silindi');
+    }
+
+    public function downloadAttachment($id)
+    {
+        $attachment = NotesAttachment::with('note.board')->findOrFail($id);
+        if ($attachment->note->board && $attachment->note->board->type === 'private' && Auth::id() !== $attachment->note->user_id) {
+            abort(403);
+        }
+
+        $absolutePath = Storage::disk('local')->path($attachment->path);
+        return response()->download($absolutePath, $attachment->original_name);
+    }
 }

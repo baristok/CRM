@@ -75,4 +75,9 @@ class Notes extends Model
         return $this->hasMany(NoteComment::class, 'note_id');
     }
 
+    public function attachments()
+    {
+        return $this->hasMany(NotesAttachment::class, 'note_id');
+    }
+
 }
