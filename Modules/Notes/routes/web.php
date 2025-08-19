@@ -20,6 +20,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('notes/note-details/{uuid}', [NotesController::class, 'noteDetails'])->name('notes.noteDetails');
     Route::post('notes/store-comment', [NotesController::class, 'storeComment'])->name('notes.storeComment');
     Route::delete('notes/delete-comment/{id}', [NotesController::class, 'deleteComment'])->name('notes.deleteComment');
+    Route::put('notes/update-comment/{id}', [NotesController::class, 'updateComment'])->name('notes.updateComment');
 
     // Attachments
     Route::post('notes/store-attachment', [NotesController::class, 'storeAttachment'])->name('notes.storeAttachment');

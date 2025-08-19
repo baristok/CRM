@@ -506,6 +506,16 @@ class NotesController extends Controller
         return redirect()->back()->with('success', 'Yorum başarıyla oluşturuldu');
     }
 
+    public function updateComment(Request $request, $id)
+    {
+        $validated = $request->validate([
+            'comment' => 'required|string',
+        ]);
+        $comment = NoteComment::findOrFail($id);
+        $comment->update($validated);
+        return redirect()->back()->with('success', 'Yorum başarıyla güncellendi');
+    }
+
     
     public function deleteComment($id)
     {

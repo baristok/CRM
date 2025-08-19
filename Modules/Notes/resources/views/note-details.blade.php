@@ -323,40 +323,51 @@
                                                         alt="" class="avatar-xs rounded-circle" />
                                                 </div>
                                                 <div class="flex-grow-1 ms-3">
-                                                    <h5 class="fs-13"><a
-                                                            href="pages-profile.html">{{ $comment->user->name }}</a>
-                                                        <small
-                                                            class="text-muted">{{ $comment->created_at->format('d.m.Y') }}</small>
-                                                    </h5>
-                                                    <p class="text-muted">{{ $comment->comment }}</p>
-                                                    {{-- <a href="javascript: void(0);" class="badge text-muted bg-light"><i class="mdi mdi-reply"></i> Reply</a> --}}
-                                                    {{-- <div class="d-flex mt-4">
-                                                <div class="flex-shrink-0">
-                                                    <img src="assets/images/users/avatar-10.jpg" alt="" class="avatar-xs rounded-circle" />
-                                                </div>
-                                                <div class="flex-grow-1 ms-3">
-                                                    <h5 class="fs-13"><a href="pages-profile.html">Tonya Noble</a> <small class="text-muted">22 Dec 2021 - 02:32PM</small></h5>
-                                                    <p class="text-muted">Please be sure to check your Spam mailbox to see if your email filters have identified the email from Dell as spam.</p>
-                                                    <a href="javascript: void(0);" class="badge text-muted bg-light"><i class="mdi mdi-reply"></i> Reply</a>
-                                                </div>
-                                            </div> --}}
+                                                    <div class="d-flex justify-content-between align-items-start">
+                                                        <h5 class="fs-13 mb-1"><a
+                                                                href="pages-profile.html">{{ $comment->user->name }}</a>
+                                                            <small class="text-muted">{{ $comment->created_at->format('d.m.Y') }}</small>
+                                                        </h5>
+                                                        @if (auth()->id() === $comment->user_id || auth()->id() === $note->user_id)
+                                                            <div class="dropdown">
+                                                                <button class="btn btn-icon btn-sm fs-16 text-muted" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                                    <i class="ri-more-fill"></i>
+                                                                </button>
+                                                                <ul class="dropdown-menu dropdown-menu-end">
+                                                                    <li>
+                                                                        <a href="#" class="dropdown-item comment-edit" data-update-url="{{ route('notes.updateComment', $comment->id) }}" data-text="{{ $comment->comment }}">Düzenle</a>
+                                                                    </li>
+                                                                    <li class="dropdown-divider"></li>
+                                                                    <li>
+                                                                        <form method="POST" action="{{ route('notes.deleteComment', $comment->id) }}" class="comment-delete-form d-inline">
+                                                                            @csrf
+                                                                            @method('DELETE')
+                                                                            <button type="submit" class="dropdown-item">Sil</button>
+                                                                        </form>
+                                                                    </li>
+                                                                </ul>
+                                                            </div>
+                                                        @endif
+                                                    </div>
+                                                    <p class="text-muted mb-0">{{ $comment->comment }}</p>
                                                 </div>
                                             </div>
                                         @endforeach
                                     </div>
-                                    <form class="mt-4" action="{{ route('notes.storeComment') }}" method="post">
+                                    <form class="mt-4" id="comment-form" action="{{ route('notes.storeComment') }}" method="post" data-store-url="{{ route('notes.storeComment') }}">
                                         @csrf
                                         <input type="hidden" name="note_id" value="{{ $note->id }}">
                                         <div class="row g-3">
                                             <div class="col-lg-12">
                                                 <label for="exampleFormControlTextarea1" class="form-label">Leave a
                                                     Comments</label>
-                                                <textarea class="form-control bg-light border-light" id="exampleFormControlTextarea1" rows="3"
+                                                <textarea class="form-control bg-light border-light" id="comment-textarea" rows="3"
                                                     placeholder="Enter comments" name="comment"></textarea>
                                             </div>
                                             <!--end col-->
                                             <div class="col-12 text-end">
-                                                <button type="submit" class="btn btn-primary">Post Comments</button>
+                                                <button type="submit" id="comment-submit-btn" class="btn btn-primary">Post Comments</button>
+                                                <button type="button" id="cancel-edit-btn" class="btn btn-soft-secondary ms-1" style="display:none;">İptal</button>
                                             </div>
                                         </div>
                                         <!--end row-->
@@ -576,6 +587,108 @@
                             <div class="mt-4 pt-2 fs-15 mx-5">
                                 <h4>Ek Sil</h4>
                                 <p class="text-muted mx-4 mb-0">\`${fileName}\` ekini silmek istediğine emin misin?</p>
+                            </div>
+                        </div>`,
+                        showCancelButton: true,
+                        customClass: {
+                            confirmButton: "btn btn-primary w-xs me-2 mb-1",
+                            cancelButton: "btn btn-danger w-xs mb-1",
+                        },
+                        cancelButtonText: "Hayır",
+                        confirmButtonText: "Sil",
+                        buttonsStyling: false,
+                        showCloseButton: true
+                    }).then((result) => {
+                        if (!result.isConfirmed) return;
+                        formEl.submit();
+                    });
+                });
+            });
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('comment-form');
+            if (!form) return;
+            const textarea = document.getElementById('comment-textarea');
+            const submitBtn = document.getElementById('comment-submit-btn');
+            const cancelBtn = document.getElementById('cancel-edit-btn');
+            const storeUrl = form.getAttribute('data-store-url');
+            const defaultBtnText = submitBtn ? submitBtn.textContent : '';
+            let methodInput = null;
+
+            function enterEditMode(updateUrl, text) {
+                if (textarea) {
+                    textarea.value = decodeHTMLEntities(text || '').trim();
+                }
+                if (form && updateUrl) {
+                    form.setAttribute('action', updateUrl);
+                }
+                if (!methodInput) {
+                    methodInput = document.createElement('input');
+                    methodInput.type = 'hidden';
+                    methodInput.name = '_method';
+                    methodInput.value = 'PUT';
+                    form.appendChild(methodInput);
+                } else {
+                    methodInput.value = 'PUT';
+                }
+                if (submitBtn) submitBtn.textContent = 'Update Comment';
+                if (cancelBtn) cancelBtn.style.display = 'inline-block';
+                if (textarea) {
+                    textarea.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    textarea.focus();
+                }
+            }
+
+            function exitEditMode() {
+                if (form && storeUrl) form.setAttribute('action', storeUrl);
+                if (methodInput) {
+                    methodInput.remove();
+                    methodInput = null;
+                }
+                if (submitBtn) submitBtn.textContent = defaultBtnText || 'Post Comments';
+                if (cancelBtn) cancelBtn.style.display = 'none';
+                if (textarea) textarea.value = '';
+            }
+
+            function decodeHTMLEntities(str) {
+                const txt = document.createElement('textarea');
+                txt.innerHTML = str;
+                return txt.value;
+            }
+
+            document.querySelectorAll('.comment-edit').forEach(function(editEl) {
+                editEl.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const updateUrl = this.getAttribute('data-update-url');
+                    const text = this.getAttribute('data-text') || '';
+                    enterEditMode(updateUrl, text);
+                });
+            });
+
+            if (cancelBtn) {
+                cancelBtn.addEventListener('click', function() {
+                    exitEditMode();
+                });
+            }
+
+            // Delete confirm for comments
+            document.querySelectorAll('.comment-delete-form').forEach(function(formEl) {
+                formEl.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    const container = formEl.closest('.d-flex.mb-4');
+                    const contentEl = container ? container.querySelector('p.text-muted') : null;
+                    let preview = contentEl ? contentEl.textContent.trim() : '';
+                    if (preview.length > 100) preview = preview.slice(0, 100) + '…';
+
+                    Swal.fire({
+                        html: `
+                        <div class="mt-3">
+                            <lord-icon src="https://cdn.lordicon.com/gsqxdxog.json" trigger="loop" colors="primary:#f7b84b,secondary:#f06548" style="width:100px;height:100px"></lord-icon>
+                            <div class="mt-4 pt-2 fs-15 mx-5">
+                                <h4>Yorumu Sil</h4>
+                                <p class="text-muted mx-4 mb-0">Bu yorumu silmek istediğine emin misin?<br><em>\`${preview}\`</em></p>
                             </div>
                         </div>`,
                         showCancelButton: true,
