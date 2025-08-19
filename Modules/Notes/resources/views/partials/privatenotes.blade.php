@@ -130,7 +130,7 @@ if ($boards->count() > 0) {
                                                 $progress = $note->progress;
                                                 if ($progress < 30) {
                                                     $progressColor = 'bg-danger';
-                                                } elseif ($progress < 70) {
+                                                } elseif ($progress < 80) {
                                                     $progressColor = 'bg-warning';
                                                 } else {
                                                     $progressColor = 'bg-success';

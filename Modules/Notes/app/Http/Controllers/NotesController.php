@@ -534,9 +534,10 @@ class NotesController extends Controller
 
     public function storeAttachment(Request $request)
     {
+        try {
         $validated = $request->validate([
             'note_id' => 'required|exists:notes,id',
-            'file' => 'required|file|mimes:pdf,doc,docx,xls,xlsx,ppt,pptx,txt,csv,zip,rar,7z,mp3,mp4,jpg,jpeg,png,gif,svg,webp',
+            'file' => 'required|file|max:20480|mimes:pdf,doc,docx,xls,xlsx,ppt,pptx,txt,csv,zip,rar,7z,mp3,mp4,jpg,jpeg,png,gif,svg,webp'
         ]);
         $note = Notes::with('board')->findOrFail($validated['note_id']);
         if (Auth::id() !== $note->user_id) {
@@ -553,6 +554,9 @@ class NotesController extends Controller
             'size' => $request->file('file')->getSize(),
         ]);
         return redirect()->back()->with('success', 'Ek başarıyla yüklendi');
+        } catch (Exception $e) {
+            return redirect()->back()->with('error', 'Ek yüklenemedi')->with('error_message', $e->getMessage());
+        }
     }
 
     public function deleteAttachment($id)

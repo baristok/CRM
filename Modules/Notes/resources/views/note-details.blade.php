@@ -7,6 +7,46 @@
 @endsection
 
 @section('content')
+
+{{-- Hata mesajları --}}
+@if (session('error'))
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        Swal.fire({
+            html: '<div class="mt-3"><lord-icon src="https://cdn.lordicon.com/tdrtiskw.json" trigger="loop" colors="primary:#f06548,secondary:#f7b84b" style="width:120px;height:120px"></lord-icon><div class="mt-4 pt-2 fs-15"><h4>{{ session('error') }}</h4><p class="text-muted mx-4 mb-0">{{ session('error_message') }}</p></div></div>',
+            showCancelButton: true,
+            showConfirmButton: false,
+            customClass: {
+                cancelButton: "btn btn-primary w-xs mb-1"
+            },
+            cancelButtonText: "{{ __('leads.okey') }}",
+            buttonsStyling: false,
+            showCloseButton: true
+        });
+    });
+</script>
+@endif
+
+@if (session('success'))
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        Swal.fire({
+            html: '<div class="mt-3"><lord-icon src="https://cdn.lordicon.com/lupuorrc.json" trigger="loop" colors="primary:#25a0e2,secondary:#00bd9d" style="width:120px;height:120px"></lord-icon><div class="mt-4 pt-2 fs-15"><h4>{{ session('success') }}</h4><p class="text-muted mx-4 mb-0">{{ session('success_message') }}</p></div></div>',
+            showCancelButton: true,
+            showConfirmButton: false,
+            customClass: {
+                cancelButton: "btn btn-success w-xs mb-1"
+            },
+            cancelButtonText: "{{ __('leads.okey') }}",
+            buttonsStyling: false,
+            showCloseButton: true
+        });
+    });
+</script>
+@endif
+{{-- Hata mesajları sonu --}}
+
+
     <div class="page-content">
         <div class="container-fluid">
 
@@ -328,7 +368,7 @@
                                                                 href="pages-profile.html">{{ $comment->user->name }}</a>
                                                             <small class="text-muted">{{ $comment->created_at->format('d.m.Y') }}</small>
                                                         </h5>
-                                                        @if (auth()->id() === $comment->user_id || auth()->id() === $note->user_id)
+                                                        @if (auth()->id() === $comment->user_id || auth()->id() === $note->user_id) 
                                                             <div class="dropdown">
                                                                 <button class="btn btn-icon btn-sm fs-16 text-muted" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                                                                     <i class="ri-more-fill"></i>
@@ -388,13 +428,30 @@
                                             </thead>
                                             <tbody>
                                                 @foreach ($note->attachments as $attachment)
+                                                @php
+                                            $ext = strtolower(pathinfo($attachment->file_name, PATHINFO_EXTENSION));
+                                            $icon = 'ri-file-2-line';
+                                            if (in_array($ext, ['zip','rar','7z'])) $icon = 'ri-folder-zip-line';
+                                            elseif (in_array($ext, ['ppt','pptx'])) $icon = 'ri-file-ppt-2-line';
+                                            elseif (in_array($ext, ['xls','xlsx','csv'])) $icon = 'ri-file-excel-2-line';
+                                            elseif (in_array($ext, ['doc','docx'])) $icon = 'ri-file-word-2-line';
+                                            elseif (in_array($ext, ['pdf'])) $icon = 'ri-file-pdf-2-line';
+                                            elseif (in_array($ext, ['jpg','jpeg','png','gif','svg','webp'])) $icon = 'ri-image-2-line';
+                                            elseif (in_array($ext, ['mp4','mov','mkv'])) $icon = 'ri-video-line';
+                                            elseif (in_array($ext, ['mp3','wav','ogg'])) $icon = 'ri-music-2-line';
+
+                                            $size = (int) $attachment->size;
+                                            $units = ['B','KB','MB','GB','TB'];
+                                            $factor = $size > 0 ? floor((strlen($size) - 1) / 3) : 0;
+                                            $human = $size > 0 ? sprintf('%.1f', $size / pow(1024, $factor)) . $units[$factor] : '0B';
+                                        @endphp
                                                     <tr>
                                                         <td>
                                                             <div class="d-flex align-items-center">
                                                                 <div class="avatar-sm">
                                                                     <div
-                                                                        class="avatar-title bg-primary-subtle text-primary rounded fs-20">
-                                                                        <i class="ri-file-zip-fill"></i>
+                                                                        class="avatar-title bg-danger-subtle text-danger rounded fs-20">
+                                                                        <i class="{{ $icon }}"></i>
                                                                     </div>
                                                                 </div>
                                                                 <div class="ms-3 flex-grow-1">
@@ -575,6 +632,10 @@
     </script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+
+
+
+
             document.querySelectorAll('.attachment-delete-form').forEach(function(formEl) {
                 formEl.addEventListener('submit', function(e) {
                     e.preventDefault();
