@@ -58,10 +58,10 @@
                 @endcan
             </div>
             <div data-simplebar class="tasks-wrapper px-3 mx-n3">
-                <div id="public-board-{{ $board->id }}" class="tasks" data-sortable="true"
-                    data-board-id="{{ $board->id }}">
+                <div id="public-board-{{ $board->id }}" class="tasks" @can('public-notes') data-sortable="true" @endcan
+                    data-board-id="{{ $board->id }}" ondragend="onDragEnd(event, {{ $board->id }})">
                     @foreach ($board->notes as $note)
-                        <div class="card tasks-box">
+                        <div class="card tasks-box" data-note-id="{{ $note->id }}" data-position="{{ $note->position }}">
                             <div class="card-body">
                                 <div class="d-flex mb-2">
                                     @php
@@ -96,7 +96,7 @@
                                 <h6 class="fs-15 mb-0 text-truncate task-title"><a
                                     href="{{ route('notes.noteDetails', $note->uuid) }}" class="d-block" style="min-height: 34px;">{{ $note->title }}</a>
                             </h6>
-                                <p class="text-muted">{{ $note->description }}</p>
+                                <p class="text-muted">{{ Str::limit($note->description, 50) }}</p>
                                 <div class="d-flex align-items-center">
                                     <div class="flex-grow-1">
                                         @foreach ($note->tags as $tag)
@@ -821,5 +821,56 @@ $('#public-deleteNoteForm').on('submit', function(e) {
             });
         });
 
+
+
+
+        
+
     });
+    async function onDragEnd(event, boardId) {
+    const noteId = event.target.dataset.noteId;
+    const notePosition = event.target.dataset.position;
+    // console.log(notePosition);
+    
+    // console.log('Taşınan not:', noteId, 'Yeni board:', boardId, 'Position:', notePosition);
+    
+    try {
+        const response = await fetch("{{ route('notes.updateNotePosition') }}", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRF-TOKEN": csrfToken,
+                "Accept": "application/json",
+            },
+            body: JSON.stringify({
+                note_id: noteId,
+                board_id: boardId,
+                position: notePosition
+            }),
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            // Başarılı olduğunda toast notification göster
+            Swal.fire({
+                toast: true,
+                position: 'top-end',
+                icon: 'success',
+                title: '{{__('notes.note_moved')}}',
+                showConfirmButton: false,
+                timer: 2000
+            });
+            
+            // Sayfayı yenile (isteğe bağlı)
+            // location.reload();
+        } else {
+            throw new Error(data.message);
+        }
+    } catch (error) {
+        
+    }
+
+}
+    
 </script>

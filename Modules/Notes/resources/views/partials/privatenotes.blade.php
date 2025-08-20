@@ -4,14 +4,14 @@
             <div class="col-lg-auto">
                 <div class="hstack gap-2">
                     <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#private-createboardModal"><i
-                            class="ri-add-line align-bottom me-1"></i> {{__('notes.add_board')}}</button>
+                            class="ri-add-line align-bottom me-1"></i> {{ __('notes.add_board') }}</button>
                 </div>
             </div>
             <!--end col-->
             <div class="col-lg-3 col-auto">
                 <div class="search-box">
                     <input type="text" class="form-control search" id="private-search-task-options"
-                        placeholder="{{__('notes.search_for_project_tasks')}}">
+                        placeholder="{{ __('notes.search_for_project_tasks') }}">
                     <i class="ri-search-line search-icon"></i>
                 </div>
             </div>
@@ -54,25 +54,29 @@ if ($boards->count() > 0) {
                         <div class="dropdown-menu dropdown-menu-end">
                             <a class="dropdown-item edit-board-btn" href="#" data-bs-toggle="modal"
                                 data-bs-target="#private-editBoardModal" data-board-id="{{ $board->id }}"
-                                data-board-name="{{ $board->name }}">{{__('notes.edit')}}</a>
+                                data-board-name="{{ $board->name }}">{{ __('notes.edit') }}</a>
                             <a class="dropdown-item delete-board-btn" href="#" data-bs-toggle="modal"
                                 data-bs-target="#private-deleteBoardModal" data-board-id="{{ $board->id }}"
-                                data-board-name="{{ $board->name }}">{{__('notes.delete')}}</a>
+                                data-board-name="{{ $board->name }}">{{ __('notes.delete') }}</a>
                         </div>
                     </div>
                 </div>
             </div>
+
             <div data-simplebar class="tasks-wrapper px-3 mx-n3">
                 <div id="private-board-{{ $board->id }}" class="tasks" data-sortable="true"
-                    data-board-id="{{ $board->id }}">
+                    data-board-id="{{ $board->id }}" ondragend="onDragEnd(event, {{ $board->id }})">
                     @foreach ($board->notes as $note)
-                        <div class="card tasks-box" data-note-id="{{ $note->id }}">
+                        <div class="card tasks-box" data-note-id="{{ $note->id }}" data-position="{{ $note->position }}">
                             <div class="card-body">
                                 <div class="d-flex mb-2">
                                     @php
-                                        $customHash = strtoupper(substr(md5($note->id . $note->created_at . $note->title), 0, 8));
+                                        $customHash = strtoupper(
+                                            substr(md5($note->id . $note->created_at . $note->title), 0, 8),
+                                        );
                                     @endphp
-                                    <a href="javascript:void(0)" class="text-muted fw-medium fs-14 flex-grow-1">#{{ $customHash }}</a>
+                                    <a href="javascript:void(0)"
+                                        class="text-muted fw-medium fs-14 flex-grow-1">#{{ $customHash }}</a>
                                     {{-- <div class="flex-grow-1">
                                         <h6 class="fs-15 mb-0 text-truncate task-title"><a
                                                 href="apps-tasks-details.html" class="d-block">{{ $note->title }}</a>
@@ -83,27 +87,30 @@ if ($boards->count() > 0) {
                                             data-bs-toggle="dropdown" aria-expanded="false"><i
                                                 class="ri-more-fill"></i></a>
                                         <ul class="dropdown-menu" aria-labelledby="private-dropdownMenuLink3">
-                                            <li><a class="dropdown-item" href="{{ route('notes.noteDetails', $note->uuid) }}"><i
-                                                        class="ri-eye-fill align-bottom me-2 text-muted"></i> {{__('notes.view')}}</a>
+                                            <li><a class="dropdown-item"
+                                                    href="{{ route('notes.noteDetails', $note->uuid) }}"><i
+                                                        class="ri-eye-fill align-bottom me-2 text-muted"></i>
+                                                    {{ __('notes.view') }}</a>
                                             </li>
                                             <li><a class="dropdown-item edit-note-btn" href="#"
                                                     data-bs-toggle="modal" data-bs-target="#private-editNoteModal"
                                                     data-note-id="{{ $note->id }}">
                                                     <i class="ri-edit-2-line align-bottom me-2 text-muted"></i>
-                                                    {{__('notes.edit')}}</a></li>
+                                                    {{ __('notes.edit') }}</a></li>
                                             <li><a class="dropdown-item delete-note-btn" data-bs-toggle="modal"
                                                     data-bs-target="#private-deleteNoteModal"
                                                     data-note-id="{{ $note->id }}"
                                                     data-note-title="{{ $note->title }}" href="#"><i
                                                         class="ri-delete-bin-5-line align-bottom me-2 text-muted"></i>
-                                                    {{__('notes.delete')}}</a></li>
+                                                    {{ __('notes.delete') }}</a></li>
                                         </ul>
                                     </div>
                                 </div>
                                 <h6 class="fs-15 mb-0 text-truncate task-title"><a
-                                    href="{{ route('notes.noteDetails', $note->uuid) }}" class="d-block" style="min-height: 34px;">{{ $note->title }}</a>
-                            </h6>
-                                <p class="text-muted">{{ $note->description }}</p>
+                                        href="{{ route('notes.noteDetails', $note->uuid) }}" class="d-block"
+                                        style="min-height: 34px;">{{ $note->title }}</a>
+                                </h6>
+                                <p class="text-muted">{{ Str::limit($note->description, 50) }}</p>
                                 <div class="d-flex align-items-center">
                                     <div class="flex-grow-1">
 
@@ -156,7 +163,8 @@ if ($boards->count() > 0) {
             </div>
             <div class="my-3">
                 <button class="btn btn-soft-primary w-100" data-bs-toggle="modal"
-                    data-bs-target="#private-creatertaskModal" data-board-id="{{ $board->id }}">{{__('notes.add_more')}}</button>
+                    data-bs-target="#private-creatertaskModal"
+                    data-board-id="{{ $board->id }}">{{ __('notes.add_more') }}</button>
             </div>
         </div>
     @endforeach
@@ -172,7 +180,7 @@ if ($boards->count() > 0) {
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content border-0">
             <div class="modal-header p-3 bg-primary-subtle">
-                <h5 class="modal-title" id="private-createboardModalLabel">{{__('notes.add_board')}}</h5>
+                <h5 class="modal-title" id="private-createboardModalLabel">{{ __('notes.add_board') }}</h5>
                 <button type="button" class="btn-close" id="private-addBoardBtn-close" data-bs-dismiss="modal"
                     aria-label="Close"></button>
             </div>
@@ -183,12 +191,14 @@ if ($boards->count() > 0) {
                         <div class="col-lg-12">
                             <label for="boardName" class="form-label">Board Name</label>
                             <input type="text" class="form-control" id="private-boardName" name="name"
-                                placeholder="{{__('notes.enter_board_name')}}">
+                                placeholder="{{ __('notes.enter_board_name') }}">
                         </div>
                         <div class="mt-4">
                             <div class="hstack gap-2 justify-content-end">
-                                <button type="button" class="btn btn-light" data-bs-dismiss="modal">{{__('notes.close')}}</button>
-                                <button type="submit" class="btn btn-primary" id="private-addNewBoard">{{__('notes.add_board')}}</button>
+                                <button type="button" class="btn btn-light"
+                                    data-bs-dismiss="modal">{{ __('notes.close') }}</button>
+                                <button type="submit" class="btn btn-primary"
+                                    id="private-addNewBoard">{{ __('notes.add_board') }}</button>
                             </div>
                         </div>
                     </div>
@@ -205,7 +215,7 @@ if ($boards->count() > 0) {
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content border-0">
             <div class="modal-header p-3 bg-warning-subtle">
-                <h5 class="modal-title" id="private-editBoardModalLabel">{{__('notes.edit_board')}}</h5>
+                <h5 class="modal-title" id="private-editBoardModalLabel">{{ __('notes.edit_board') }}</h5>
                 <button type="button" class="btn-close" id="private-editBoardBtn-close" data-bs-dismiss="modal"
                     aria-label="Close"></button>
             </div>
@@ -218,12 +228,14 @@ if ($boards->count() > 0) {
                         <div class="col-lg-12">
                             <label for="editBoardName" class="form-label">Board Adı</label>
                             <input type="text" class="form-control" id="private-editBoardName" name="name"
-                                placeholder="{{__('notes.enter_board_name')}}">
+                                placeholder="{{ __('notes.enter_board_name') }}">
                         </div>
                         <div class="mt-4">
                             <div class="hstack gap-2 justify-content-end">
-                                <button type="button" class="btn btn-light" data-bs-dismiss="modal">{{__('notes.cancel')}}</button>
-                                <button type="submit" class="btn btn-warning" id="private-updateBoard">{{__('notes.update_board')}}</button>
+                                <button type="button" class="btn btn-light"
+                                    data-bs-dismiss="modal">{{ __('notes.cancel') }}</button>
+                                <button type="submit" class="btn btn-warning"
+                                    id="private-updateBoard">{{ __('notes.update_board') }}</button>
                             </div>
                         </div>
                     </div>
@@ -247,13 +259,15 @@ if ($boards->count() > 0) {
                     <lord-icon src="https://cdn.lordicon.com/gsqxdxog.json" trigger="loop"
                         colors="primary:#f7b84b,secondary:#f06548" style="width:100px;height:100px"></lord-icon>
                     <div class="mt-4 pt-2 fs-15 mx-4 mx-sm-5">
-                        <h4>{{__('notes.are_you_sure')}}</h4>
-                        <p class="text-muted mx-4 mb-0">{{__('notes.delete_board_text')}}</p>
+                        <h4>{{ __('notes.are_you_sure') }}</h4>
+                        <p class="text-muted mx-4 mb-0">{{ __('notes.delete_board_text') }}</p>
                     </div>
                 </div>
                 <div class="d-flex gap-2 justify-content-center mt-4 mb-2">
-                    <button type="button" class="btn w-sm btn-light" data-bs-dismiss="modal">{{__('notes.cancel')}}</button>
-                    <button type="button" class="btn w-sm btn-danger" id="private-delete-board-confirm">{{__('notes.delete')}}</button>
+                    <button type="button" class="btn w-sm btn-light"
+                        data-bs-dismiss="modal">{{ __('notes.cancel') }}</button>
+                    <button type="button" class="btn w-sm btn-danger"
+                        id="private-delete-board-confirm">{{ __('notes.delete') }}</button>
                 </div>
             </div>
         </div>
@@ -277,24 +291,26 @@ if ($boards->count() > 0) {
                     <input type="hidden" id="private-user-id" name="user_id" value="{{ Auth::user()->id }}">
                     <div class="row g-3">
                         <div class="col-lg-12">
-                            <label for="projectName" class="form-label">{{__('notes.project_name')}}</label>
+                            <label for="projectName" class="form-label">{{ __('notes.project_name') }}</label>
                             <input type="text" class="form-control" id="private-projectName" name="title"
-                                placeholder="{{__('notes.enter_project_name')}}">
+                                placeholder="{{ __('notes.enter_project_name') }}">
                         </div>
                         <!--end col-->
                         <div class="col-lg-12">
-                            <label for="task-description" class="form-label">{{__('notes.note_description')}}</label>
+                            <label for="task-description"
+                                class="form-label">{{ __('notes.note_description') }}</label>
                             <textarea class="form-control" id="private-task-description" name="description" rows="3"
-                                placeholder="{{__('notes.enter_note_description')}}"></textarea>
+                                placeholder="{{ __('notes.enter_note_description') }}"></textarea>
                         </div>
                         <div class="col-lg-4">
-                            <label for="due-date" class="form-label">{{__('notes.due_date')}}</label>
+                            <label for="due-date" class="form-label">{{ __('notes.due_date') }}</label>
                             <input type="text" class="form-control" id="private-due-date" name="due_date"
-                                format="Y-m-d" data-provider="flatpickr" placeholder="{{__('notes.select_date')}}">
+                                format="Y-m-d" data-provider="flatpickr"
+                                placeholder="{{ __('notes.select_date') }}">
                         </div>
                         <!--end col-->
                         <div class="col-lg-4">
-                            <label for="tags" class="form-label">{{__('notes.tags')}}</label>
+                            <label for="tags" class="form-label">{{ __('notes.tags') }}</label>
                             <select class="form-select" id="private-tags" name="tags[]" multiple data-choices
                                 data-choices-removeItem>
                                 @foreach ($tags as $tag)
@@ -302,10 +318,10 @@ if ($boards->count() > 0) {
                                 @endforeach
                             </select>
                         </div>
-                        
+
                         <!--end col-->
                         <div class="col-lg-4">
-                            <label for="tasks-progress" class="form-label">{{__('notes.progress')}}</label>
+                            <label for="tasks-progress" class="form-label">{{ __('notes.progress') }}</label>
                             <div class="progress-input-wrapper">
                                 <input type="range" class="form-range" id="private-tasks-progress" min="0"
                                     max="100" value="0" step="5" name="progress">
@@ -320,8 +336,10 @@ if ($boards->count() > 0) {
                         <!--end col-->
                         <div class="mt-4">
                             <div class="hstack gap-2 justify-content-end">
-                                <button type="button" class="btn btn-light" data-bs-dismiss="modal">{{__('notes.close')}}</button>
-                                <button type="submit" id="private-addNewTask" class="btn btn-primary">{{__('notes.add_note')}}</button>
+                                <button type="button" class="btn btn-light"
+                                    data-bs-dismiss="modal">{{ __('notes.close') }}</button>
+                                <button type="submit" id="private-addNewTask"
+                                    class="btn btn-primary">{{ __('notes.add_note') }}</button>
                             </div>
                         </div>
                         <!--end col-->
@@ -340,7 +358,7 @@ if ($boards->count() > 0) {
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content border-0">
             <div class="modal-header p-3 bg-warning-subtle">
-                <h5 class="modal-title" id="private-editNoteModalLabel">{{__('notes.edit_note')}}</h5>
+                <h5 class="modal-title" id="private-editNoteModalLabel">{{ __('notes.edit_note') }}</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -350,24 +368,26 @@ if ($boards->count() > 0) {
                     <input type="hidden" id="private-edit-note-id" name="note_id" value="">
                     <div class="row g-3">
                         <div class="col-lg-12">
-                            <label for="editProjectName" class="form-label">{{__('notes.project_name')}}</label>
+                            <label for="editProjectName" class="form-label">{{ __('notes.project_name') }}</label>
                             <input type="text" class="form-control" id="private-editProjectName" name="title"
-                                placeholder="{{__('notes.enter_project_name')}}">
+                                placeholder="{{ __('notes.enter_project_name') }}">
                         </div>
                         <!--end col-->
                         <div class="col-lg-12">
-                            <label for="edit-task-description" class="form-label">{{__('notes.note_description')}}</label>
+                            <label for="edit-task-description"
+                                class="form-label">{{ __('notes.note_description') }}</label>
                             <textarea class="form-control" id="private-edit-task-description" name="description" rows="3"
-                                placeholder="{{__('notes.enter_note_description')}}"></textarea>
+                                placeholder="{{ __('notes.enter_note_description') }}"></textarea>
                         </div>
                         <div class="col-lg-4">
-                            <label for="edit-due-date" class="form-label">{{__('notes.due_date')}}</label>
+                            <label for="edit-due-date" class="form-label">{{ __('notes.due_date') }}</label>
                             <input type="text" class="form-control" id="private-edit-due-date" name="due_date"
-                                format="Y-m-d" data-provider="flatpickr" placeholder="{{__('notes.select_date')}}">
+                                format="Y-m-d" data-provider="flatpickr"
+                                placeholder="{{ __('notes.select_date') }}">
                         </div>
                         <!--end col-->
                         <div class="col-lg-4">
-                            <label for="edit-tags" class="form-label">{{__('notes.tags')}}</label>
+                            <label for="edit-tags" class="form-label">{{ __('notes.tags') }}</label>
                             <select class="form-select" id="private-edit-tags" name="tags[]" multiple>
                                 @foreach ($tags as $tag)
                                     <option value="{{ $tag->id }}">{{ $tag->name }}</option>
@@ -376,7 +396,7 @@ if ($boards->count() > 0) {
                         </div>
                         <!--end col-->
                         <div class="col-lg-4">
-                            <label for="edit-tasks-progress" class="form-label">{{__('notes.progress')}}</label>
+                            <label for="edit-tasks-progress" class="form-label">{{ __('notes.progress') }}</label>
                             <div class="progress-input-wrapper">
                                 <input type="range" class="form-range" id="private-edit-tasks-progress"
                                     min="0" max="100" value="0" step="5" name="progress">
@@ -392,8 +412,10 @@ if ($boards->count() > 0) {
                         <!--end col-->
                         <div class="mt-4">
                             <div class="hstack gap-2 justify-content-end">
-                                <button type="button" class="btn btn-light" data-bs-dismiss="modal">{{__('notes.cancel')}}</button>
-                                <button type="submit" id="private-updateNote" class="btn btn-warning">{{__('notes.update_note')}}</button>
+                                <button type="button" class="btn btn-light"
+                                    data-bs-dismiss="modal">{{ __('notes.cancel') }}</button>
+                                <button type="submit" id="private-updateNote"
+                                    class="btn btn-warning">{{ __('notes.update_note') }}</button>
                             </div>
                         </div>
                         <!--end col-->
@@ -419,13 +441,15 @@ if ($boards->count() > 0) {
                     <lord-icon src="https://cdn.lordicon.com/gsqxdxog.json" trigger="loop"
                         colors="primary:#f7b84b,secondary:#f06548" style="width:100px;height:100px"></lord-icon>
                     <div class="mt-4 pt-2 fs-15 mx-4 mx-sm-5">
-                        <h4>{{__('notes.are_you_sure')}}</h4>
-                        <p class="text-muted mx-4 mb-0">{{__('notes.are_you_sure_text')}}</p>
+                        <h4>{{ __('notes.are_you_sure') }}</h4>
+                        <p class="text-muted mx-4 mb-0">{{ __('notes.are_you_sure_text') }}</p>
                     </div>
                 </div>
                 <div class="d-flex gap-2 justify-content-center mt-4 mb-2">
-                    <button type="button" class="btn w-sm btn-light" data-bs-dismiss="modal">{{__('notes.cancel')}}</button>
-                    <button type="button" class="btn w-sm btn-danger" id="private-delete-note-confirm">{{__('notes.delete')}}</button>
+                    <button type="button" class="btn w-sm btn-light"
+                        data-bs-dismiss="modal">{{ __('notes.cancel') }}</button>
+                    <button type="button" class="btn w-sm btn-danger"
+                        id="private-delete-note-confirm">{{ __('notes.delete') }}</button>
                 </div>
             </div>
         </div>
@@ -445,13 +469,15 @@ if ($boards->count() > 0) {
                     <lord-icon src="https://cdn.lordicon.com/gsqxdxog.json" trigger="loop"
                         colors="primary:#f7b84b,secondary:#f06548" style="width:100px;height:100px"></lord-icon>
                     <div class="mt-4 pt-2 fs-15 mx-4 mx-sm-5">
-                        <h4>{{__('notes.are_you_sure')}}</h4>
-                        <p class="text-muted mx-4 mb-0">{{__('notes.are_you_sure_text')}}</p>
+                        <h4>{{ __('notes.are_you_sure') }}</h4>
+                        <p class="text-muted mx-4 mb-0">{{ __('notes.are_you_sure_text') }}</p>
                     </div>
                 </div>
                 <div class="d-flex gap-2 justify-content-center mt-4 mb-2">
-                    <button type="button" class="btn w-sm btn-light" data-bs-dismiss="modal">{{__('notes.close')}}</button>
-                    <button type="button" class="btn w-sm btn-danger" id="private-delete-record">{{__('notes.delete')}}</button>
+                    <button type="button" class="btn w-sm btn-light"
+                        data-bs-dismiss="modal">{{ __('notes.close') }}</button>
+                    <button type="button" class="btn w-sm btn-danger"
+                        id="private-delete-record">{{ __('notes.delete') }}</button>
                 </div>
             </div>
         </div>
@@ -576,13 +602,14 @@ if ($boards->count() > 0) {
                     },
                 }).then(response => {
                     if (!response.ok) {
-                        throw new Error('{{__('notes.error')}}');
+                        throw new Error('{{ __('notes.error') }}');
                     }
                     return response.json();
                 })
                 .then(data => {
                     document.getElementById('private-editProjectName').value = data.title || '';
-                    document.getElementById('private-edit-task-description').value = data.description || '';
+                    document.getElementById('private-edit-task-description').value = data
+                        .description || '';
 
                     let dueDateValue = '';
                     if (data.due_date) {
@@ -599,7 +626,7 @@ if ($boards->count() > 0) {
                     // if (privateEditChoices && data.tags) {
                     //     // Önce mevcut seçimleri temizle
                     //     privateEditChoices.removeActiveItems();
-                        
+
                     //     // Eğer tag'lar varsa onları tek tek seçili yap
                     //     if (Array.isArray(data.tags) && data.tags.length > 0) {
                     //         const tagIds = data.tags.map(tag => tag.id.toString());
@@ -611,8 +638,9 @@ if ($boards->count() > 0) {
 
 
                     // Tag değerlerini sakla; seçim 'shown' eventinde uygulanacak
-                    privateEditPendingTagValues = (Array.isArray(data.tags) ? data.tags : []).map(t => String(t.id));
-                    
+                    privateEditPendingTagValues = (Array.isArray(data.tags) ? data.tags : []).map(
+                        t => String(t.id));
+
                     console.log(data);
                     console.log(data.tags);
                 })
@@ -620,8 +648,8 @@ if ($boards->count() > 0) {
                     console.error("Error fetching or processing note data:", error);
                     Swal.fire({
                         icon: 'error',
-                        title: '{{__('notes.error')}}',
-                        text: '{{__('notes.error_text')}}',
+                        title: '{{ __('notes.error') }}',
+                        text: '{{ __('notes.error_text') }}',
                     });
                 });
         });
@@ -631,11 +659,14 @@ if ($boards->count() > 0) {
             const selectElement = document.getElementById('private-edit-tags');
             if (!selectElement) return;
 
-            const values = Array.isArray(privateEditPendingTagValues) ? privateEditPendingTagValues : [];
+            const values = Array.isArray(privateEditPendingTagValues) ? privateEditPendingTagValues :
+        [];
 
             // Eğer daha önce init edildiyse temizle
             if (privateEditChoices && typeof privateEditChoices.destroy === 'function') {
-                try { privateEditChoices.destroy(); } catch (_) {}
+                try {
+                    privateEditChoices.destroy();
+                } catch (_) {}
                 privateEditChoices = null;
             }
 
@@ -685,8 +716,8 @@ if ($boards->count() > 0) {
                 if (data.success) {
                     Swal.fire({
                         icon: 'success',
-                        title: '{{__('notes.success')}}',
-                        text: '{{__('notes.note_updated')}}',
+                        title: '{{ __('notes.success') }}',
+                        text: '{{ __('notes.note_updated') }}',
                     }).then(() => {
                         $('#private-editNoteModal').modal('hide');
                         location.reload();
@@ -694,16 +725,16 @@ if ($boards->count() > 0) {
                 } else {
                     Swal.fire({
                         icon: 'error',
-                        title: '{{__('notes.error')}}',
-                        text: data.message || '{{__('notes.error_text')}}',
+                        title: '{{ __('notes.error') }}',
+                        text: data.message || '{{ __('notes.error_text') }}',
                     });
                 }
             }).catch(error => {
                 console.error('Error updating note:', error);
                 Swal.fire({
                     icon: 'error',
-                    title: '{{__('notes.error')}}',
-                    text: '{{__('notes.error_text')}}',
+                    title: '{{ __('notes.error') }}',
+                    text: '{{ __('notes.error_text') }}',
                 });
             });
         });
@@ -732,8 +763,8 @@ if ($boards->count() > 0) {
                     <div class="mt-3">
                         <lord-icon src="https://cdn.lordicon.com/lupuorrc.json" trigger="loop" colors="primary:#0ab39c,secondary:#405189" style="width:120px;height:120px"></lord-icon>
                         <div class="mt-4 pt-2 fs-15">
-                            <h4>{{__('notes.board_created')}}</h4>
-                            <p class="text-muted mx-4 mb-0">{{__('notes.board_created_text')}}</p>
+                            <h4>{{ __('notes.board_created') }}</h4>
+                            <p class="text-muted mx-4 mb-0">{{ __('notes.board_created_text') }}</p>
                         </div>
                     </div>`,
                     showCancelButton: true,
@@ -741,7 +772,7 @@ if ($boards->count() > 0) {
                     customClass: {
                         cancelButton: "btn btn-primary w-xs mb-1"
                     },
-                    cancelButtonText: "{{__('notes.ok')}}",
+                    cancelButtonText: "{{ __('notes.ok') }}",
                     buttonsStyling: false,
                     showCloseButton: true
                 }).then(() => {
@@ -755,8 +786,8 @@ if ($boards->count() > 0) {
                     <div class="mt-3">
                         <lord-icon src="https://cdn.lordicon.com/tdrtiskw.json" trigger="loop" colors="primary:#f06548,secondary:#f7b84b" style="width:120px;height:120px"></lord-icon>
                         <div class="mt-4 pt-2 fs-15">
-                            <h4>{{__('notes.error')}}</h4>
-                            <p class="text-muted mx-4 mb-0">${data.message || '{{__('notes.error_text')}}'}</p>
+                            <h4>{{ __('notes.error') }}</h4>
+                            <p class="text-muted mx-4 mb-0">${data.message || '{{ __('notes.error_text') }}'}</p>
                         </div>
                     </div>`,
                     showCancelButton: true,
@@ -764,7 +795,7 @@ if ($boards->count() > 0) {
                     customClass: {
                         cancelButton: "btn btn-primary w-xs mb-1"
                     },
-                    cancelButtonText: "{{__('notes.ok')}}",
+                    cancelButtonText: "{{ __('notes.ok') }}",
                     buttonsStyling: false,
                     showCloseButton: true
                 });
@@ -775,8 +806,8 @@ if ($boards->count() > 0) {
                 <div class="mt-3">
                     <lord-icon src="https://cdn.lordicon.com/tdrtiskw.json" trigger="loop" colors="primary:#f06548,secondary:#f7b84b" style="width:120px;height:120px"></lord-icon>
                     <div class="mt-4 pt-2 fs-15">
-                        <h4>{{__('notes.error')}}</h4>
-                        <p class="text-muted mx-4 mb-0">{{__('notes.error_text')}}</p>
+                        <h4>{{ __('notes.error') }}</h4>
+                        <p class="text-muted mx-4 mb-0">{{ __('notes.error_text') }}</p>
                     </div>
                 </div>`,
                 showCancelButton: true,
@@ -784,7 +815,7 @@ if ($boards->count() > 0) {
                 customClass: {
                     cancelButton: "btn btn-primary w-xs mb-1"
                 },
-                cancelButtonText: "{{__('notes.ok')}}",
+                cancelButtonText: "{{ __('notes.ok') }}",
                 buttonsStyling: false,
                 showCloseButton: true
             });
@@ -821,8 +852,8 @@ if ($boards->count() > 0) {
                     <div class="mt-3">
                         <lord-icon src="https://cdn.lordicon.com/lupuorrc.json" trigger="loop" colors="primary:#0ab39c,secondary:#405189" style="width:120px;height:120px"></lord-icon>
                         <div class="mt-4 pt-2 fs-15">
-                            <h4>{{__('notes.task_created')}}</h4>
-                            <p class="text-muted mx-4 mb-0">{{__('notes.task_created_text')}}</p>
+                            <h4>{{ __('notes.task_created') }}</h4>
+                            <p class="text-muted mx-4 mb-0">{{ __('notes.task_created_text') }}</p>
                         </div>
                     </div>`,
                     showCancelButton: true,
@@ -830,7 +861,7 @@ if ($boards->count() > 0) {
                     customClass: {
                         cancelButton: "btn btn-primary w-xs mb-1"
                     },
-                    cancelButtonText: "{{__('notes.ok')}}",
+                    cancelButtonText: "{{ __('notes.ok') }}",
                     buttonsStyling: false,
                     showCloseButton: true
                 }).then(() => {
@@ -844,8 +875,8 @@ if ($boards->count() > 0) {
                     <div class="mt-3">
                         <lord-icon src="https://cdn.lordicon.com/tdrtiskw.json" trigger="loop" colors="primary:#f06548,secondary:#f7b84b" style="width:120px;height:120px"></lord-icon>
                         <div class="mt-4 pt-2 fs-15">
-                            <h4>{{__('notes.error')}}</h4>
-                            <p class="text-muted mx-4 mb-0">${data.message || '{{__('notes.error_text')}}'}</p>
+                            <h4>{{ __('notes.error') }}</h4>
+                            <p class="text-muted mx-4 mb-0">${data.message || '{{ __('notes.error_text') }}'}</p>
                         </div>
                     </div>`,
                     showCancelButton: true,
@@ -853,7 +884,7 @@ if ($boards->count() > 0) {
                     customClass: {
                         cancelButton: "btn btn-primary w-xs mb-1"
                     },
-                    cancelButtonText: "{{__('notes.ok')}}",
+                    cancelButtonText: "{{ __('notes.ok') }}",
                     buttonsStyling: false,
                     showCloseButton: true
                 });
@@ -864,8 +895,8 @@ if ($boards->count() > 0) {
                 <div class="mt-3">
                     <lord-icon src="https://cdn.lordicon.com/tdrtiskw.json" trigger="loop" colors="primary:#f06548,secondary:#f7b84b" style="width:120px;height:120px"></lord-icon>
                     <div class="mt-4 pt-2 fs-15">
-                        <h4>{{__('notes.error')}}</h4>
-                        <p class="text-muted mx-4 mb-0">{{__('notes.error_text')}}</p>
+                        <h4>{{ __('notes.error') }}</h4>
+                        <p class="text-muted mx-4 mb-0">{{ __('notes.error_text') }}</p>
                     </div>
                 </div>`,
                 showCancelButton: true,
@@ -873,7 +904,7 @@ if ($boards->count() > 0) {
                 customClass: {
                     cancelButton: "btn btn-primary w-xs mb-1"
                 },
-                cancelButtonText: "{{__('notes.ok')}}",
+                cancelButtonText: "{{ __('notes.ok') }}",
                 buttonsStyling: false,
                 showCloseButton: true
             });
@@ -905,8 +936,8 @@ if ($boards->count() > 0) {
                     <div class="mt-3">
                         <lord-icon src="https://cdn.lordicon.com/lupuorrc.json" trigger="loop" colors="primary:#0ab39c,secondary:#405189" style="width:120px;height:120px"></lord-icon>
                         <div class="mt-4 pt-2 fs-15">
-                            <h4>{{__('notes.board_updated')}}</h4>
-                            <p class="text-muted mx-4 mb-0">{{__('notes.board_updated_text')}}</p>
+                            <h4>{{ __('notes.board_updated') }}</h4>
+                            <p class="text-muted mx-4 mb-0">{{ __('notes.board_updated_text') }}</p>
                         </div>
                     </div>`,
                     showCancelButton: true,
@@ -914,7 +945,7 @@ if ($boards->count() > 0) {
                     customClass: {
                         cancelButton: "btn btn-primary w-xs mb-1"
                     },
-                    cancelButtonText: "{{__('notes.ok')}}",
+                    cancelButtonText: "{{ __('notes.ok') }}",
                     buttonsStyling: false,
                     showCloseButton: true
                 }).then(() => {
@@ -927,8 +958,8 @@ if ($boards->count() > 0) {
                     <div class="mt-3">
                         <lord-icon src="https://cdn.lordicon.com/tdrtiskw.json" trigger="loop" colors="primary:#f06548,secondary:#f7b84b" style="width:120px;height:120px"></lord-icon>
                         <div class="mt-4 pt-2 fs-15">
-                            <h4>{{__('notes.error')}}</h4>
-                            <p class="text-muted mx-4 mb-0">${data.message || '{{__('notes.error_text')}}'}</p>
+                            <h4>{{ __('notes.error') }}</h4>
+                            <p class="text-muted mx-4 mb-0">${data.message || '{{ __('notes.error_text') }}'}</p>
                         </div>
                     </div>`,
                     showCancelButton: true,
@@ -936,7 +967,7 @@ if ($boards->count() > 0) {
                     customClass: {
                         cancelButton: "btn btn-primary w-xs mb-1"
                     },
-                    cancelButtonText: "{{__('notes.ok')}}",
+                    cancelButtonText: "{{ __('notes.ok') }}",
                     buttonsStyling: false,
                     showCloseButton: true
                 });
@@ -947,8 +978,8 @@ if ($boards->count() > 0) {
                 <div class="mt-3">
                     <lord-icon src="https://cdn.lordicon.com/tdrtiskw.json" trigger="loop" colors="primary:#f06548,secondary:#f7b84b" style="width:120px;height:120px"></lord-icon>
                     <div class="mt-4 pt-2 fs-15">
-                        <h4>{{__('notes.error')}}</h4>
-                        <p class="text-muted mx-4 mb-0">{{__('notes.error_text')}}</p>
+                        <h4>{{ __('notes.error') }}</h4>
+                        <p class="text-muted mx-4 mb-0">{{ __('notes.error_text') }}</p>
                     </div>
                 </div>`,
                 showCancelButton: true,
@@ -956,7 +987,7 @@ if ($boards->count() > 0) {
                 customClass: {
                     cancelButton: "btn btn-primary w-xs mb-1"
                 },
-                cancelButtonText: "{{__('notes.ok')}}",
+                cancelButtonText: "{{ __('notes.ok') }}",
                 buttonsStyling: false,
                 showCloseButton: true
             });
@@ -983,8 +1014,8 @@ if ($boards->count() > 0) {
                     <div class="mt-3">
                         <lord-icon src="https://cdn.lordicon.com/lupuorrc.json" trigger="loop" colors="primary:#0ab39c,secondary:#405189" style="width:120px;height:120px"></lord-icon>
                         <div class="mt-4 pt-2 fs-15">
-                            <h4>{{__('notes.board_deleted')}}</h4>
-                            <p class="text-muted mx-4 mb-0">{{__('notes.board_deleted_text')}}</p>
+                            <h4>{{ __('notes.board_deleted') }}</h4>
+                            <p class="text-muted mx-4 mb-0">{{ __('notes.board_deleted_text') }}</p>
                         </div>
                     </div>`,
                     showCancelButton: true,
@@ -992,7 +1023,7 @@ if ($boards->count() > 0) {
                     customClass: {
                         cancelButton: "btn btn-primary w-xs mb-1"
                     },
-                    cancelButtonText: "{{__('notes.ok')}}",
+                    cancelButtonText: "{{ __('notes.ok') }}",
                     buttonsStyling: false,
                     showCloseButton: true
                 }).then(() => {
@@ -1005,8 +1036,8 @@ if ($boards->count() > 0) {
                     <div class="mt-3">
                         <lord-icon src="https://cdn.lordicon.com/tdrtiskw.json" trigger="loop" colors="primary:#f06548,secondary:#f7b84b" style="width:120px;height:120px"></lord-icon>
                         <div class="mt-4 pt-2 fs-15">
-                            <h4>{{__('notes.error')}}</h4>
-                            <p class="text-muted mx-4 mb-0">${data.message || '{{__('notes.error_text')}}'}</p>
+                            <h4>{{ __('notes.error') }}</h4>
+                            <p class="text-muted mx-4 mb-0">${data.message || '{{ __('notes.error_text') }}'}</p>
                         </div>
                     </div>`,
                     showCancelButton: true,
@@ -1014,7 +1045,7 @@ if ($boards->count() > 0) {
                     customClass: {
                         cancelButton: "btn btn-primary w-xs mb-1"
                     },
-                    cancelButtonText: "{{__('notes.ok')}}",
+                    cancelButtonText: "{{ __('notes.ok') }}",
                     buttonsStyling: false,
                     showCloseButton: true
                 });
@@ -1025,8 +1056,8 @@ if ($boards->count() > 0) {
                 <div class="mt-3">
                     <lord-icon src="https://cdn.lordicon.com/tdrtiskw.json" trigger="loop" colors="primary:#f06548,secondary:#f7b84b" style="width:120px;height:120px"></lord-icon>
                     <div class="mt-4 pt-2 fs-15">
-                        <h4>{{__('notes.error')}}</h4>
-                        <p class="text-muted mx-4 mb-0">{{__('notes.error_text')}}</p>
+                        <h4>{{ __('notes.error') }}</h4>
+                        <p class="text-muted mx-4 mb-0">{{ __('notes.error_text') }}</p>
                     </div>
                 </div>`,
                 showCancelButton: true,
@@ -1034,10 +1065,65 @@ if ($boards->count() > 0) {
                 customClass: {
                     cancelButton: "btn btn-primary w-xs mb-1"
                 },
-                cancelButtonText: "{{__('notes.ok')}}",
+                cancelButtonText: "{{ __('notes.ok') }}",
                 buttonsStyling: false,
                 showCloseButton: true
             });
         }
     }
+    
+
+    async function onDragEnd(event, boardId) {
+    const noteId = event.target.dataset.noteId;
+    const notePosition = event.target.dataset.position;
+    // console.log(notePosition);
+    
+    // console.log('Taşınan not:', noteId, 'Yeni board:', boardId, 'Position:', notePosition);
+    
+    try {
+        const response = await fetch("{{ route('notes.updateNotePosition') }}", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRF-TOKEN": csrfToken,
+                "Accept": "application/json",
+            },
+            body: JSON.stringify({
+                note_id: noteId,
+                board_id: boardId,
+                position: notePosition
+            }),
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            // Başarılı olduğunda toast notification göster
+            Swal.fire({
+                toast: true,
+                position: 'top-end',
+                icon: 'success',
+                title: '{{__('notes.note_moved')}}',
+                showConfirmButton: false,
+                timer: 2000
+            });
+            
+            // Sayfayı yenile (isteğe bağlı)
+            // location.reload();
+        } else {
+            throw new Error(data.message);
+        }
+    } catch (error) {
+        console.error('Position update error:', error);
+        
+        // Hata durumunda kullanıcıyı bilgilendir
+        Swal.fire({
+            icon: 'error',
+            title: '{{__('notes.note_moved_error')}}',
+            timer: 2000
+        }).then(() => {
+            location.reload(); // Hata durumunda sayfayı yenile
+        });
+    }
+}
 </script>

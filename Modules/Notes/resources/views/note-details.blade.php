@@ -8,43 +8,43 @@
 
 @section('content')
 
-{{-- Hata mesajları --}}
-@if (session('error'))
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        Swal.fire({
-            html: '<div class="mt-3"><lord-icon src="https://cdn.lordicon.com/tdrtiskw.json" trigger="loop" colors="primary:#f06548,secondary:#f7b84b" style="width:120px;height:120px"></lord-icon><div class="mt-4 pt-2 fs-15"><h4>{{ session('error') }}</h4><p class="text-muted mx-4 mb-0">{{ session('error_message') }}</p></div></div>',
-            showCancelButton: true,
-            showConfirmButton: false,
-            customClass: {
-                cancelButton: "btn btn-primary w-xs mb-1"
-            },
-            cancelButtonText: "{{ __('leads.okey') }}",
-            buttonsStyling: false,
-            showCloseButton: true
-        });
-    });
-</script>
-@endif
+    {{-- Hata mesajları --}}
+    @if (session('error'))
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                Swal.fire({
+                    html: '<div class="mt-3"><lord-icon src="https://cdn.lordicon.com/tdrtiskw.json" trigger="loop" colors="primary:#f06548,secondary:#f7b84b" style="width:120px;height:120px"></lord-icon><div class="mt-4 pt-2 fs-15"><h4>{{ session('error') }}</h4><p class="text-muted mx-4 mb-0">{{ session('error_message') }}</p></div></div>',
+                    showCancelButton: true,
+                    showConfirmButton: false,
+                    customClass: {
+                        cancelButton: "btn btn-primary w-xs mb-1"
+                    },
+                    cancelButtonText: "{{ __('leads.okey') }}",
+                    buttonsStyling: false,
+                    showCloseButton: true
+                });
+            });
+        </script>
+    @endif
 
-@if (session('success'))
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        Swal.fire({
-            html: '<div class="mt-3"><lord-icon src="https://cdn.lordicon.com/lupuorrc.json" trigger="loop" colors="primary:#25a0e2,secondary:#00bd9d" style="width:120px;height:120px"></lord-icon><div class="mt-4 pt-2 fs-15"><h4>{{ session('success') }}</h4><p class="text-muted mx-4 mb-0">{{ session('success_message') }}</p></div></div>',
-            showCancelButton: true,
-            showConfirmButton: false,
-            customClass: {
-                cancelButton: "btn btn-success w-xs mb-1"
-            },
-            cancelButtonText: "{{ __('leads.okey') }}",
-            buttonsStyling: false,
-            showCloseButton: true
-        });
-    });
-</script>
-@endif
-{{-- Hata mesajları sonu --}}
+    @if (session('success'))
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                Swal.fire({
+                    html: '<div class="mt-3"><lord-icon src="https://cdn.lordicon.com/lupuorrc.json" trigger="loop" colors="primary:#25a0e2,secondary:#00bd9d" style="width:120px;height:120px"></lord-icon><div class="mt-4 pt-2 fs-15"><h4>{{ session('success') }}</h4><p class="text-muted mx-4 mb-0">{{ session('success_message') }}</p></div></div>',
+                    showCancelButton: true,
+                    showConfirmButton: false,
+                    customClass: {
+                        cancelButton: "btn btn-success w-xs mb-1"
+                    },
+                    cancelButtonText: "{{ __('leads.okey') }}",
+                    buttonsStyling: false,
+                    showCloseButton: true
+                });
+            });
+        </script>
+    @endif
+    {{-- Hata mesajları sonu --}}
 
 
     <div class="page-content">
@@ -81,7 +81,8 @@
                             <h5 class="fs-14 mb-4">{{ $note->title }}</h5>
                             <div class="hstack gap-2 justify-content-center">
                                 <button class="btn btn-secondary btn-sm" disabled><i
-                                        class="ri-time-line align-bottom me-1"></i> Geçen Süre</button>
+                                        class="ri-time-line align-bottom me-1"></i>
+                                    {{ __('notes.time_tracking') }}</button>
                             </div>
                         </div>
                     </div>
@@ -110,22 +111,99 @@
                                             <td>{{ $note->title }}</td>
                                         </tr>
                                         <tr>
-                                            <td class="fw-medium">Priority</td>
-                                            <td><span class="badge bg-danger-subtle text-danger">High</span></td>
+                                            <td class="fw-medium">{{ __('notes.priority') }}</td>
+                                            <td>
+                                                @if (auth()->id() === $note->user_id)
+                                                    <span class="badge {{ $note->priority_badge_class }}"
+                                                        id="priority-badge" style="cursor:pointer;"
+                                                        onclick="enablePriorityEdit()">
+                                                        {{ $note->priority_label }}
+                                                    </span>
+
+                                                    <form id="priority-edit-form"
+                                                        action="{{ route('notes.updatePriority', $note->id) }}"
+                                                        method="POST" style="display:none; margin-top:5px;">
+                                                        @csrf
+                                                        @method('PUT')
+
+                                                        <div class="btn-group">
+                                                            <button type="button" class="btn btn-light btn-sm">
+                                                                {{ $note->priority_label }}
+                                                            </button>
+                                                            <button type="button"
+                                                                class="btn btn-light btn-sm dropdown-toggle dropdown-toggle-split"
+                                                                data-bs-toggle="dropdown" aria-expanded="false"></button>
+
+                                                            <ul class="dropdown-menu">
+                                                                <li>
+                                                                    <button type="submit" name="priority" value="low"
+                                                                        @class(['dropdown-item', 'active' => $note->priority === 'low'])
+                                                                        aria-current="{{ $note->priority === 'low' ? 'true' : 'false' }}">
+                                                                        {{ __('notes.low') }}
+                                                                    </button>
+                                                                </li>
+                                                                <li>
+                                                                    <button type="submit" name="priority" value="medium"
+                                                                        @class(['dropdown-item', 'active' => $note->priority === 'medium'])
+                                                                        aria-current="{{ $note->priority === 'medium' ? 'true' : 'false' }}">
+                                                                        {{ __('notes.medium') }}
+                                                                    </button>
+                                                                </li>
+                                                                <li>
+                                                                    <button type="submit" name="priority" value="high"
+                                                                        @class(['dropdown-item', 'active' => $note->priority === 'high'])
+                                                                        aria-current="{{ $note->priority === 'high' ? 'true' : 'false' }}">
+                                                                        {{ __('notes.high') }}
+                                                                    </button>
+                                                                </li>
+                                                                <li>
+                                                                    <button type="submit" name="priority" value="critical"
+                                                                        @class(['dropdown-item', 'active' => $note->priority === 'critical'])
+                                                                        aria-current="{{ $note->priority === 'critical' ? 'true' : 'false' }}">
+                                                                        {{ __('notes.critical') }}
+                                                                    </button>
+                                                                </li>
+                                                            </ul>
+                                                        </div>
+
+                                                        <button type="button"
+                                                            class="btn btn-outline-primary btn-icon btn-sm waves-effect waves-light"
+                                                            onclick="cancelPriorityEdit()"><i
+                                                                class="ri-refresh-line"></i></button>
+                                                    </form>
+
+                                                    <script>
+                                                        function enablePriorityEdit() {
+                                                            document.getElementById('priority-badge').style.display = 'none';
+                                                            document.getElementById('priority-edit-form').style.display = 'inline-block';
+                                                        }
+
+                                                        function cancelPriorityEdit() {
+                                                            document.getElementById('priority-edit-form').style.display = 'none';
+                                                            document.getElementById('priority-badge').style.display = 'inline-block';
+                                                        }
+                                                    </script>
+                                                @else
+                                                    <span class="badge {{ $note->priority_badge_class }}">
+                                                        {{ $note->priority_label }}
+                                                    </span>
+                                                @endif
+                                            </td>
                                         </tr>
                                         <tr>
                                             <td class="fw-medium">{{ __('notes.status') }}</td>
                                             @if ($note->progress == 0)
                                                 <td><span
-                                                        class="badge bg-secondary-subtle text-secondary">{{ __('notes.not_started') }}</span>
+                                                        class="badge border border-secondary text-secondary">{{ __('notes.not_started') }}</span>
                                                 </td>
                                             @elseif ($note->progress == 100)
+                                                1
                                                 <td><span
-                                                        class="badge bg-success-subtle text-success">{{ __('notes.completed') }}</span>
+                                                        class="badge border border-success text-success">{{ __('notes.completed') }}</span>
                                                 </td>
                                             @else
                                                 <td><span
-                                                        class="badge bg-warning-subtle text-warning">{{ __('notes.in_progress') }}</span>
+                                                        class="badge border border-warning text-warning">{{ __('notes.in_progress') }}</span>
                                                 </td>
                                             @endif
                                         </tr>
@@ -182,7 +260,8 @@
                             <h5 class="card-title mb-3">{{ __('notes.attachments') }}</h5>
                             <div class="vstack gap-2">
                                 @if (!$isPrivate)
-                                    <form action="{{ route('notes.storeAttachment') }}" method="POST" enctype="multipart/form-data" class="mb-2 d-flex align-items-center gap-2">
+                                    <form action="{{ route('notes.storeAttachment') }}" method="POST"
+                                        enctype="multipart/form-data" class="mb-2 d-flex align-items-center gap-2">
                                         @csrf
                                         <input type="hidden" name="note_id" value="{{ $note->id }}">
                                         <input type="file" name="file" class="form-control" required>
@@ -193,19 +272,31 @@
                                         @php
                                             $ext = strtolower(pathinfo($attachment->file_name, PATHINFO_EXTENSION));
                                             $icon = 'ri-file-2-line';
-                                            if (in_array($ext, ['zip','rar','7z'])) $icon = 'ri-folder-zip-line';
-                                            elseif (in_array($ext, ['ppt','pptx'])) $icon = 'ri-file-ppt-2-line';
-                                            elseif (in_array($ext, ['xls','xlsx','csv'])) $icon = 'ri-file-excel-2-line';
-                                            elseif (in_array($ext, ['doc','docx'])) $icon = 'ri-file-word-2-line';
-                                            elseif (in_array($ext, ['pdf'])) $icon = 'ri-file-pdf-2-line';
-                                            elseif (in_array($ext, ['jpg','jpeg','png','gif','svg','webp'])) $icon = 'ri-image-2-line';
-                                            elseif (in_array($ext, ['mp4','mov','mkv'])) $icon = 'ri-video-line';
-                                            elseif (in_array($ext, ['mp3','wav','ogg'])) $icon = 'ri-music-2-line';
+                                            if (in_array($ext, ['zip', 'rar', '7z'])) {
+                                                $icon = 'ri-folder-zip-line';
+                                            } elseif (in_array($ext, ['ppt', 'pptx'])) {
+                                                $icon = 'ri-file-ppt-2-line';
+                                            } elseif (in_array($ext, ['xls', 'xlsx', 'csv'])) {
+                                                $icon = 'ri-file-excel-2-line';
+                                            } elseif (in_array($ext, ['doc', 'docx'])) {
+                                                $icon = 'ri-file-word-2-line';
+                                            } elseif (in_array($ext, ['pdf'])) {
+                                                $icon = 'ri-file-pdf-2-line';
+                                            } elseif (in_array($ext, ['jpg', 'jpeg', 'png', 'gif', 'svg', 'webp'])) {
+                                                $icon = 'ri-image-2-line';
+                                            } elseif (in_array($ext, ['mp4', 'mov', 'mkv'])) {
+                                                $icon = 'ri-video-line';
+                                            } elseif (in_array($ext, ['mp3', 'wav', 'ogg'])) {
+                                                $icon = 'ri-music-2-line';
+                                            }
 
                                             $size = (int) $attachment->size;
-                                            $units = ['B','KB','MB','GB','TB'];
+                                            $units = ['B', 'KB', 'MB', 'GB', 'TB'];
                                             $factor = $size > 0 ? floor((strlen($size) - 1) / 3) : 0;
-                                            $human = $size > 0 ? sprintf('%.1f', $size / pow(1024, $factor)) . $units[$factor] : '0B';
+                                            $human =
+                                                $size > 0
+                                                    ? sprintf('%.1f', $size / pow(1024, $factor)) . $units[$factor]
+                                                    : '0B';
                                         @endphp
 
                                         <div class="border rounded border-dashed p-2">
@@ -219,7 +310,8 @@
                                                 </div>
                                                 <div class="flex-grow-1 overflow-hidden">
                                                     <h5 class="fs-13 mb-1">
-                                                        <a href="{{ route('notes.downloadAttachment', $attachment->id) }}" class="text-body text-truncate d-block" title="Download">
+                                                        <a href="{{ route('notes.downloadAttachment', $attachment->id) }}"
+                                                            class="text-body text-truncate d-block" title="Download">
                                                             {{ $attachment->original_name }}
                                                         </a>
                                                     </h5>
@@ -227,14 +319,20 @@
                                                 </div>
                                                 <div class="flex-shrink-0 ms-2">
                                                     <div class="d-flex gap-1">
-                                                        <a href="{{ route('notes.downloadAttachment', $attachment->id) }}" class="btn btn-icon text-muted btn-sm fs-18" title="Download">
+                                                        <a href="{{ route('notes.downloadAttachment', $attachment->id) }}"
+                                                            class="btn btn-icon text-muted btn-sm fs-18" title="Download">
                                                             <i class="ri-download-2-line"></i>
                                                         </a>
                                                         @if (auth()->user()->id == $note->user_id)
-                                                            <form method="POST" action="{{ route('notes.deleteAttachment', $attachment->id) }}" class="attachment-delete-form d-inline" data-name="{{ $attachment->original_name }}">
+                                                            <form method="POST"
+                                                                action="{{ route('notes.deleteAttachment', $attachment->id) }}"
+                                                                class="attachment-delete-form d-inline"
+                                                                data-name="{{ $attachment->original_name }}">
                                                                 @csrf
                                                                 @method('DELETE')
-                                                                <button type="submit" class="btn btn-icon text-muted btn-sm fs-18" title="Delete">
+                                                                <button type="submit"
+                                                                    class="btn btn-icon text-muted btn-sm fs-18"
+                                                                    title="Delete">
                                                                     <i class="ri-delete-bin-fill"></i>
                                                                 </button>
                                                             </form>
@@ -312,7 +410,8 @@
                                     <h6 class="mb-3 fw-semibold text-uppercase">{{ __('notes.note_tags') }}</h6>
                                     <div class="hstack flex-wrap gap-2 fs-15">
                                         @foreach ($note->tags as $tag)
-                                            <div class="badge fw-medium bg-primary-subtle text-primary">{{ $tag->name }}
+                                            <div class="badge fw-medium bg-primary-subtle text-primary">
+                                                {{ $tag->name }}
                                             </div>
                                         @endforeach
                                     </div>
@@ -366,23 +465,32 @@
                                                     <div class="d-flex justify-content-between align-items-start">
                                                         <h5 class="fs-13 mb-1"><a
                                                                 href="pages-profile.html">{{ $comment->user->name }}</a>
-                                                            <small class="text-muted">{{ $comment->created_at->format('d.m.Y') }}</small>
+                                                            <small
+                                                                class="text-muted">{{ $comment->created_at->format('d.m.Y') }}</small>
                                                         </h5>
-                                                        @if (auth()->id() === $comment->user_id || auth()->id() === $note->user_id) 
+                                                        @if (auth()->id() === $comment->user_id || auth()->id() === $note->user_id)
                                                             <div class="dropdown">
-                                                                <button class="btn btn-icon btn-sm fs-16 text-muted" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                                <button class="btn btn-icon btn-sm fs-16 text-muted"
+                                                                    type="button" data-bs-toggle="dropdown"
+                                                                    aria-expanded="false">
                                                                     <i class="ri-more-fill"></i>
                                                                 </button>
                                                                 <ul class="dropdown-menu dropdown-menu-end">
                                                                     <li>
-                                                                        <a href="#" class="dropdown-item comment-edit" data-update-url="{{ route('notes.updateComment', $comment->id) }}" data-text="{{ $comment->comment }}">Düzenle</a>
+                                                                        <a href="#"
+                                                                            class="dropdown-item comment-edit"
+                                                                            data-update-url="{{ route('notes.updateComment', $comment->id) }}"
+                                                                            data-text="{{ $comment->comment }}">Düzenle</a>
                                                                     </li>
                                                                     <li class="dropdown-divider"></li>
                                                                     <li>
-                                                                        <form method="POST" action="{{ route('notes.deleteComment', $comment->id) }}" class="comment-delete-form d-inline">
+                                                                        <form method="POST"
+                                                                            action="{{ route('notes.deleteComment', $comment->id) }}"
+                                                                            class="comment-delete-form d-inline">
                                                                             @csrf
                                                                             @method('DELETE')
-                                                                            <button type="submit" class="dropdown-item">Sil</button>
+                                                                            <button type="submit"
+                                                                                class="dropdown-item">Sil</button>
                                                                         </form>
                                                                     </li>
                                                                 </ul>
@@ -394,7 +502,8 @@
                                             </div>
                                         @endforeach
                                     </div>
-                                    <form class="mt-4" id="comment-form" action="{{ route('notes.storeComment') }}" method="post" data-store-url="{{ route('notes.storeComment') }}">
+                                    <form class="mt-4" id="comment-form" action="{{ route('notes.storeComment') }}"
+                                        method="post" data-store-url="{{ route('notes.storeComment') }}">
                                         @csrf
                                         <input type="hidden" name="note_id" value="{{ $note->id }}">
                                         <div class="row g-3">
@@ -406,8 +515,11 @@
                                             </div>
                                             <!--end col-->
                                             <div class="col-12 text-end">
-                                                <button type="submit" id="comment-submit-btn" class="btn btn-primary">Post Comments</button>
-                                                <button type="button" id="cancel-edit-btn" class="btn btn-soft-secondary ms-1" style="display:none;">İptal</button>
+                                                <button type="submit" id="comment-submit-btn"
+                                                    class="btn btn-primary">Post Comments</button>
+                                                <button type="button" id="cancel-edit-btn"
+                                                    class="btn btn-soft-secondary ms-1"
+                                                    style="display:none;">İptal</button>
                                             </div>
                                         </div>
                                         <!--end row-->
@@ -428,23 +540,40 @@
                                             </thead>
                                             <tbody>
                                                 @foreach ($note->attachments as $attachment)
-                                                @php
-                                            $ext = strtolower(pathinfo($attachment->file_name, PATHINFO_EXTENSION));
-                                            $icon = 'ri-file-2-line';
-                                            if (in_array($ext, ['zip','rar','7z'])) $icon = 'ri-folder-zip-line';
-                                            elseif (in_array($ext, ['ppt','pptx'])) $icon = 'ri-file-ppt-2-line';
-                                            elseif (in_array($ext, ['xls','xlsx','csv'])) $icon = 'ri-file-excel-2-line';
-                                            elseif (in_array($ext, ['doc','docx'])) $icon = 'ri-file-word-2-line';
-                                            elseif (in_array($ext, ['pdf'])) $icon = 'ri-file-pdf-2-line';
-                                            elseif (in_array($ext, ['jpg','jpeg','png','gif','svg','webp'])) $icon = 'ri-image-2-line';
-                                            elseif (in_array($ext, ['mp4','mov','mkv'])) $icon = 'ri-video-line';
-                                            elseif (in_array($ext, ['mp3','wav','ogg'])) $icon = 'ri-music-2-line';
+                                                    @php
+                                                        $ext = strtolower(
+                                                            pathinfo($attachment->file_name, PATHINFO_EXTENSION),
+                                                        );
+                                                        $icon = 'ri-file-2-line';
+                                                        if (in_array($ext, ['zip', 'rar', '7z'])) {
+                                                            $icon = 'ri-folder-zip-line';
+                                                        } elseif (in_array($ext, ['ppt', 'pptx'])) {
+                                                            $icon = 'ri-file-ppt-2-line';
+                                                        } elseif (in_array($ext, ['xls', 'xlsx', 'csv'])) {
+                                                            $icon = 'ri-file-excel-2-line';
+                                                        } elseif (in_array($ext, ['doc', 'docx'])) {
+                                                            $icon = 'ri-file-word-2-line';
+                                                        } elseif (in_array($ext, ['pdf'])) {
+                                                            $icon = 'ri-file-pdf-2-line';
+                                                        } elseif (
+                                                            in_array($ext, ['jpg', 'jpeg', 'png', 'gif', 'svg', 'webp'])
+                                                        ) {
+                                                            $icon = 'ri-image-2-line';
+                                                        } elseif (in_array($ext, ['mp4', 'mov', 'mkv'])) {
+                                                            $icon = 'ri-video-line';
+                                                        } elseif (in_array($ext, ['mp3', 'wav', 'ogg'])) {
+                                                            $icon = 'ri-music-2-line';
+                                                        }
 
-                                            $size = (int) $attachment->size;
-                                            $units = ['B','KB','MB','GB','TB'];
-                                            $factor = $size > 0 ? floor((strlen($size) - 1) / 3) : 0;
-                                            $human = $size > 0 ? sprintf('%.1f', $size / pow(1024, $factor)) . $units[$factor] : '0B';
-                                        @endphp
+                                                        $size = (int) $attachment->size;
+                                                        $units = ['B', 'KB', 'MB', 'GB', 'TB'];
+                                                        $factor = $size > 0 ? floor((strlen($size) - 1) / 3) : 0;
+                                                        $human =
+                                                            $size > 0
+                                                                ? sprintf('%.1f', $size / pow(1024, $factor)) .
+                                                                    $units[$factor]
+                                                                : '0B';
+                                                    @endphp
                                                     <tr>
                                                         <td>
                                                             <div class="d-flex align-items-center">
@@ -483,12 +612,17 @@
                                                                     </li>
                                                                     <li class="dropdown-divider"></li>
                                                                     @if (auth()->user()->id == $note->user_id)
-                                                                        <form action="{{ route('notes.deleteAttachment', $attachment->id) }}" method="POST" class="attachment-delete-form d-inline" data-name="{{ $attachment->original_name }}">
+                                                                        <form
+                                                                            action="{{ route('notes.deleteAttachment', $attachment->id) }}"
+                                                                            method="POST"
+                                                                            class="attachment-delete-form d-inline"
+                                                                            data-name="{{ $attachment->original_name }}">
                                                                             @csrf
                                                                             @method('DELETE')
-                                                                            <li><button type="submit" class="dropdown-item"><i
-                                                                                    class="ri-delete-bin-5-line me-2 align-middle text-muted"></i>Delete</button>
-                                                                        </li>
+                                                                            <li><button type="submit"
+                                                                                    class="dropdown-item"><i
+                                                                                        class="ri-delete-bin-5-line me-2 align-middle text-muted"></i>Delete</button>
+                                                                            </li>
                                                                     @endif
                                                                 </ul>
                                                             </div>
@@ -697,7 +831,10 @@
                 if (submitBtn) submitBtn.textContent = 'Update Comment';
                 if (cancelBtn) cancelBtn.style.display = 'inline-block';
                 if (textarea) {
-                    textarea.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    textarea.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'center'
+                    });
                     textarea.focus();
                 }
             }

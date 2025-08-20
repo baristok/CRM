@@ -17,9 +17,9 @@ return new class extends Migration
             $table->string('name');
             $table->string('email');
             $table->string('phone');
-            $table->string('company_name')->nullable();
             $table->string('designation')->nullable();
             $table->string('lead_score')->nullable();
+            $table->foreignId('company_id')->constrained('companies')->onDelete('cascade');
             // $table->string('tags')->nullable();
             $table->string('last_contacted_at')->nullable()->default(null);
             $table->softDeletes();
@@ -34,4 +34,5 @@ return new class extends Migration
     {
         Schema::dropIfExists('contacts');
     }
+    
 };

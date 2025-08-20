@@ -538,7 +538,17 @@ class NotesController extends Controller
         $validated = $request->validate([
             'note_id' => 'required|exists:notes,id',
             'file' => 'required|file|max:20480|mimes:pdf,doc,docx,xls,xlsx,ppt,pptx,txt,csv,zip,rar,7z,mp3,mp4,jpg,jpeg,png,gif,svg,webp'
+        ], [
+            'note_id.required' => 'Not seçilmedi!',
+            'note_id.exists' => 'Seçilen not bulunamadı!',
+            'file.required' => 'Dosya seçilmedi!',
+            'file.file' => 'Yüklenen dosya geçerli değil!',
+            'file.max' => 'Dosya boyutu en fazla 20MB olabilir!',
+            'file.mimes' => 'Dosya türü desteklenmiyor! (pdf, doc, docx, xls, xlsx, ppt, pptx, txt, csv, zip, rar, 7z, mp3, mp4, jpg, jpeg, png, gif, svg, webp)',
         ]);
+
+        
+
         $note = Notes::with('board')->findOrFail($validated['note_id']);
         if (Auth::id() !== $note->user_id) {
             return redirect()->back()->with('error', 'Yetkiniz yok');
@@ -580,5 +590,65 @@ class NotesController extends Controller
 
         $absolutePath = Storage::disk('local')->path($attachment->path);
         return response()->download($absolutePath, $attachment->original_name);
+    }
+
+    public function updateNotePosition(Request $request)
+    {
+
+        try {
+            $validated = $request->validate([
+                'note_id' => 'required|exists:notes,id',
+                'board_id' => 'required|exists:note_boards,id',
+                'position' => 'required|integer',
+            ]);
+            $note = Notes::findOrFail($validated['note_id']);
+            if($note->user_id !== Auth::id()) {
+                return response()->json(['success' => false, 'message' => 'Yetkiniz yok'], 403);
+            }
+
+            //eski board id yi tut
+            $oldBoardId = $note->board_id;
+
+            if($oldBoardId !== $validated['board_id']) {
+                // Yeni board'daki en yüksek position'ı bul
+            $maxPosition = Notes::where('board_id', $validated['board_id'])->max('position') ?? 0;
+            $newPosition = $maxPosition + 1;
+            } else {
+                $newPosition = $validated['position'] ?? ($note->position ?? 0);
+            }
+            $note->update([
+                'board_id' => $validated['board_id'],
+                'position' => $newPosition,
+            ]);
+
+            // Eski board'daki diğer notların position'larını düzenle
+        if ($oldBoardId != $validated['board_id']) {
+            Notes::where('board_id', $oldBoardId)
+                ->where('position', '>', $note->position)
+                ->decrement('position');
+        }
+        return response()->json(['success' => true, 'message' => 'Not başarıyla güncellendi']);
+        } catch (Exception $e) {   
+            return response()->json(['success' => false, 'message' => 'Not güncellenemedi: ' . $e->getMessage()], 500);
+        }
+    }
+
+
+    public function updatePriority(Request $request, $id)
+    {
+        $note = Notes::findOrFail($id);
+        if (Auth::id() !== $note->user_id) {
+            return redirect()->back()->with('error', 'Yetkiniz yok');
+        }   
+        try {
+        $validated = $request->validate([
+            'priority' => 'required|string|in:low,medium,high,critical',
+        ]);
+        $note = Notes::findOrFail($id);
+        $note->update($validated);
+        return redirect()->back()->with('success', 'Öncelik başarıyla güncellendi');
+        } catch (Exception $e) {
+            return redirect()->back()->with('error', 'Öncelik güncellenemedi')->with('error_message', $e->getMessage());
+        }
     }
 }

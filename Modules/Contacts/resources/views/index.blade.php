@@ -395,12 +395,14 @@
                                                     </div>
                                                     <div class="col-lg-12">
                                                         <div>
-                                                            <label for="company_name-field"
+                                                            <label for="company_id-field"
                                                                 class="form-label">{{ __('contacts.company_name') }}</label>
-                                                            <input type="text" name="company_name"
-                                                                id="company_name-field" class="form-control"
-                                                                placeholder="{{ __('contacts.enter_company_name') }}"
-                                                                required />
+                                                            <select name="company_id" id="company_id-field" class="form-control" data-choices data-choices-search-false>
+                                                                <option value="">{{ __('contacts.select_company') }}</option>
+                                                                @foreach($companies as $company)
+                                                                    <option value="{{ $company['id'] }}">{{ $company['name'] }}</option>
+                                                                @endforeach
+                                                            </select>
                                                         </div>
                                                     </div>
                                                     <div class="col-lg-12">
@@ -586,7 +588,7 @@ document.getElementById('sortOrderBtn').addEventListener('click', function(e) {
         });
 
 
-        // Choices.js instance’ı globalde tutuyoruz
+        // Choices.js instance'ları globalde tutuyoruz
         const tagInputField = new Choices("#taginput-choices", {
             removeItemButton: true,
             searchEnabled: true,
@@ -594,6 +596,16 @@ document.getElementById('sortOrderBtn').addEventListener('click', function(e) {
             searchFloor: 1,
             placeholder: true,
             placeholderValue: '{{ __('contacts.select_tag') }}',
+            noResultsText: '{{ __('contacts.no_results') }}',
+            itemSelectText: '{{ __('contacts.select_item') }}'
+        });
+
+        const companyInputField = new Choices("#company_id-field", {
+            searchEnabled: true,
+            searchChoices: true,
+            searchFloor: 1,
+            placeholder: true,
+            placeholderValue: '{{ __('contacts.select_company') }}',
             noResultsText: '{{ __('contacts.no_results') }}',
             itemSelectText: '{{ __('contacts.select_item') }}'
         });
@@ -619,7 +631,7 @@ document.getElementById('sortOrderBtn').addEventListener('click', function(e) {
                 .then(data => {
                     // Form alanlarını doldur
                     document.getElementById('name-field').value = data.name || '';
-                    document.getElementById('company_name-field').value = data.company_name || '';
+                    document.getElementById('company_id-field').value = data.company_id || '';
                     document.getElementById('designation-field').value = data.designation || '';
                     document.getElementById('email_id-field').value = data.email || '';
                     document.getElementById('phone-field').value = data.phone || '';
@@ -636,6 +648,9 @@ document.getElementById('sortOrderBtn').addEventListener('click', function(e) {
                             tagInputField.setChoiceByValue(String(tagId));
                         });
                     }
+
+                    // Company dropdown'ını güncelle
+                    companyInputField.setChoiceByValue(String(data.company_id || ''));
 
                     // Modalı göster
                     new bootstrap.Modal(document.getElementById('showModal')).show();
@@ -681,6 +696,7 @@ document.getElementById('sortOrderBtn').addEventListener('click', function(e) {
             document.getElementById('contactForm').action = "{{ route('contacts.store') }}";
             document.getElementById('customer-img').src = "assets/images/users/user-dummy-img.jpg";
             tagInputField.removeActiveItems();
+            companyInputField.setChoiceByValue('');
         }
 
         // Detay paneli & görüntüle tuşu davranışı

@@ -27,6 +27,7 @@ return [
     'enter_name' => 'Enter name',
     'company_name' => 'Company Name',
     'enter_company_name' => 'Enter company name',
+    'select_company' => 'Select company',
     'designation' => 'Designation',
     'enter_designation' => 'Enter designation',
     'enter_email' => 'Enter email',

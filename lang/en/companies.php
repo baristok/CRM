@@ -70,6 +70,8 @@ return [
     'required_columns' => 'Required Columns',
     'optional_columns' => 'Optional Columns',
     'upload_and_import' => 'Upload and Import',
+    'employees' => 'Employees',
+    'list_employees' => 'List Employees',
 ];
 
 

@@ -49,6 +49,8 @@ return [
     'board_updated_text' => 'Board updated successfully.',
 
 
+    'okey' => 'Okey',
+
 
 
 
@@ -57,4 +59,5 @@ return [
 
     // note-details.blade.php
     'note_details' => 'Note Details',
+
 ];

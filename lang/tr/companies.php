@@ -75,6 +75,8 @@ return [
     'required_columns' => 'Zorunlu Sütunlar',
     'optional_columns' => 'İsteğe Bağlı Sütunlar',
     'upload_and_import' => 'Yükle ve İçe Aktar',
+    'employees' => 'Çalışanlar',
+    'list_employees' => 'Çalışanları Listele',
 ];  
 
 

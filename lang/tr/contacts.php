@@ -27,6 +27,7 @@ return [
     'enter_name' => 'İsim girin',
     'company_name' => 'Şirket Adı',
     'enter_company_name' => 'Şirket adı girin',
+    'select_company' => 'Şirket seçin',
     'designation' => 'Pozisyon',
     'enter_designation' => 'Pozisyon girin',
     'enter_email' => 'E-posta girin',

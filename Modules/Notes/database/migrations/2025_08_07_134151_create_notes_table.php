@@ -18,8 +18,7 @@ return new class extends Migration
             $table->string('title');
             $table->text('description');
             $table->integer('progress')->default(0); // 0-100 arası ilerleme durumu
-            // $table->enum('priority', ['low', 'medium', 'high', 'critical'])->nullable();
-            // $table->string('slug');
+            $table->enum('priority', ['low', 'medium', 'high', 'critical'])->default('medium');
             $table->date('due_date')->nullable();
             $table->string('image')->nullable();
             $table->foreignId('user_id')->constrained('users');

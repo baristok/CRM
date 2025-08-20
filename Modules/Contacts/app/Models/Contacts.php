@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Laravel\Scout\Searchable;
 use Modules\Contacts\Database\Factories\ContactsFactory;
+use App\Contracts\CompanyServiceInterface;
 
 class Contacts extends Model
 {
@@ -24,6 +25,7 @@ class Contacts extends Model
         'designation',
         'lead_score',
         // 'tags',   //pivot tablosu için kaldırıldı
+        'company_id',
         'image',
     ];
 
@@ -32,6 +34,28 @@ class Contacts extends Model
         return ContactsFactory::new();
     }
 
+    public function company()
+    {
+        if (!$this->company_id) {
+            return null;
+        }
+        
+        $companyService = app(CompanyServiceInterface::class);
+        return $companyService->getCompanyById($this->company_id);
+    }
+    
+    /**
+     * Sadece şirket adını getirir (performans için)
+     */
+    public function getCompanyNameAttribute()
+    {
+        if (!$this->company_id) {
+            return null;
+        }
+        
+        $companyService = app(CompanyServiceInterface::class);
+        return $companyService->getCompanyNameById($this->company_id);
+    }
 
     // pivot tablosu için: contact_id ve tag_id ile ilişkilendirme yapıyoruz.
     public function tags()

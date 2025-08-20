@@ -29,7 +29,6 @@ class Notes extends Model
         // 'tags',
         'user_id',
         'position',
-        // 'slug',
     ];
 
     protected $casts = [
@@ -53,7 +52,26 @@ class Notes extends Model
         });
     }
 
+    public function getPriorityLabelAttribute()
+    {
+        return match ($this->priority) {
+            'low' => __('notes.low'),
+            'medium' => __('notes.medium'),
+            'high' => __('notes.high'),
+            'critical' => __('notes.critical'),
+        };
+    }
 
+    public function getPriorityBadgeClassAttribute()
+{
+    return match ($this->priority) {
+        'low' => 'bg-success-subtle text-success',
+        'medium' => 'bg-warning-subtle text-warning', 
+        'high' => 'bg-danger-subtle text-danger',
+        'critical' => 'badge-gradient-danger',
+        default => 'bg-secondary-subtle text-secondary'
+    };
+}
 
     public function board()
     {

@@ -3,6 +3,7 @@
 namespace Modules\Contacts\Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Modules\Companies\Models\Companies;
 
 class ContactsFactory extends Factory
 {
@@ -20,7 +21,8 @@ class ContactsFactory extends Factory
             'name' => $this->faker->name(),
             'email' => $this->faker->email(),
             'phone' => $this->faker->phoneNumber(),
-            'company_name' => $this->faker->company(),
+            // Barış, eğer company_id'yi rastgele var olan şirketlerden almak istiyorsan şöyle yapabilirsin:
+            'company_id' => Companies::inRandomOrder()->first()?->id ?? 1,
             'designation' => $this->faker->jobTitle(),
             'lead_score' => $this->faker->numberBetween(1, 100),
             // 'created_at' => $this->faker->dateTimeBetween('-1 year', 'now'),

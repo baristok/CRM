@@ -11,6 +11,7 @@ use Maatwebsite\Excel\Facades\Excel;
 use Modules\Contacts\Exports\ContactsExport;
 use Modules\Contacts\Imports\ContactsImport;
 use Modules\Contacts\Models\Tags;
+use App\Contracts\CompanyServiceInterface;
 
 class ContactsController extends Controller
 {
@@ -18,33 +19,73 @@ class ContactsController extends Controller
      * Display a listing of the resource.
      */
     
-    public function index(Request $request)
+    public function index(Request $request, CompanyServiceInterface $companyService)
     {
         $query = $request->get('search');
         $sortBy = $request->get('sort_by', 'name');
         $sortOrder = $request->get('sort_order', 'asc');
+        $companyId = $request->get('company_id'); // Şirket filtresi eklendi
         
         //whitelist sort_by ve sort_order
         $sortBy = in_array($sortBy, ['name', 'company_name', 'lead_score', 'created_at']) ? $sortBy : 'name';
         $sortOrder = in_array($sortOrder, ['asc', 'desc']) ? $sortOrder : 'asc';
         
+        // Base query oluştur
+        $contactsQuery = Contacts::query();
+        
+        // Şirket filtresi varsa uygula
+        if ($companyId) {
+            $contactsQuery->where('company_id', $companyId);
+        }
+        
         if ($query) {
-            // Scout ile arama + sorting
-            $contacts = Contacts::search($query)->orderBy($sortBy, $sortOrder)->paginate(10);
+            // Scout ile arama + sorting + company filter
+            if ($companyId) {
+                // Scout ile arama yaparken company filter uygulanamıyor, normal query kullanacağız
+                $contacts = $contactsQuery->where(function($q) use ($query) {
+                    $q->where('name', 'LIKE', "%{$query}%")
+                      ->orWhere('email', 'LIKE', "%{$query}%")
+                      ->orWhere('phone', 'LIKE', "%{$query}%")
+                      ->orWhere('designation', 'LIKE', "%{$query}%");
+                })->orderBy($sortBy, $sortOrder)->paginate(10);
+            } else {
+                // Scout ile arama + sorting (company filter olmadan)
+                $contacts = Contacts::search($query)->orderBy($sortBy, $sortOrder)->paginate(10);
+            }
         } else {
             // Normal listeleme
-            $contacts = Contacts::orderBy($sortBy, $sortOrder)->paginate(10);
+            $contacts = $contactsQuery->orderBy($sortBy, $sortOrder)->paginate(10);
         }
+        
         $contacts->appends(request()->query());
         $tags = Tags::all();
-        return view('contacts::index', compact('contacts', 'tags', 'query', 'sortBy', 'sortOrder'));
+        $companies = $companyService->getAllCompanies();
+        
+        // Seçili şirket bilgisini view'e gönder
+        $selectedCompany = null;
+        if ($companyId) {
+            $selectedCompany = $companyService->getCompanyById($companyId);
+        }
+        
+        return view('contacts::index', compact('contacts', 'tags', 'companies', 'query', 'sortBy', 'sortOrder', 'companyId', 'selectedCompany'));
     }
 
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(CompanyServiceInterface $companyService)
     {
+        $companies = $companyService->getAllCompanies();
+        $tags = Tags::all();
+        return view('contacts::create', compact('companies', 'tags'));
+    }
+    
+    /**
+     * Company listesini JSON olarak döndürür (AJAX için)
+     */
+    public function getCompanies(CompanyServiceInterface $companyService)
+    {
+        return response()->json($companyService->getAllCompanies());
     }
 
     /**
@@ -57,13 +98,13 @@ class ContactsController extends Controller
                 'name' => 'required|string|max:255',
                 'email' => 'required|email|max:255',
                 'phone' => 'required|string|max:20',
-                'company_name' => 'required|string|max:255',
+                'company_id' => 'required|integer|exists:companies,id',
                 'designation' => 'required|string|max:255',
                 'lead_score' => 'required|integer',
                 'tags' => 'nullable|array',    //tags array olarak geliyor.
             ]);
 
-            $tags = $validated['tags'];
+            $tags = $validated['tags'] ?? [];
             unset($validated['tags']);
             
             $contact = Contacts::create($validated);
@@ -86,13 +127,18 @@ class ContactsController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit($id)
+    public function edit($id, CompanyServiceInterface $companyService)
     {
         $contact = Contacts::with('tags')->findOrFail($id);
         $contactData = $contact->toArray();
         
         // Etiketleri ID değerleriyle birlikte ekleyelim
         $contactData['tag_ids'] = $contact->tags->pluck('id')->toArray();
+        
+        // Company bilgisini de ekleyelim
+        if ($contact->company_id) {
+            $contactData['company_info'] = $companyService->getCompanyById($contact->company_id);
+        }
         
         return response()->json($contactData);
     }
@@ -107,7 +153,7 @@ class ContactsController extends Controller
                 'name' => 'required|string|max:255',
                 'email' => 'required|email|max:255',
                 'phone' => 'required|string|max:20',
-                'company_name' => 'required|string|max:255',
+                'company_id' => 'required|integer|exists:companies,id',
                 'designation' => 'required|string|max:255',
                 'lead_score' => 'required|integer',
                 'tags' => 'nullable|array',

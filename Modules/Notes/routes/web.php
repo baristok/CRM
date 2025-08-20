@@ -7,7 +7,7 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('notes', NotesController::class)->names('notes');
     Route::post('notes/storePrivateBoard', [NotesController::class, 'storePrivateBoard'])->name('notes.storePrivateBoard');
     Route::post('notes/storePrivateTask', [NotesController::class, 'storePrivateTask'])->name('notes.storePrivateTask');
-    Route::post('notes/updatePosition', [NotesController::class, 'updatePosition'])->name('notes.updatePosition');
+    Route::post('notes/updateNotePosition', [NotesController::class, 'updateNotePosition'])->name('notes.updateNotePosition');
     Route::put('notes/{id}/updatePrivateBoard', [NotesController::class, 'updatePrivateBoard'])->name('notes.updatePrivateBoard');
     Route::delete('notes/delete-board/{id}', [NotesController::class, 'deleteBoard'])->name('notes.deleteBoard');
     Route::put('notes/update-note/{id}', [NotesController::class, 'updateNote'])->name('notes.updateNote');
@@ -26,6 +26,8 @@ Route::middleware(['auth'])->group(function () {
     Route::post('notes/store-attachment', [NotesController::class, 'storeAttachment'])->name('notes.storeAttachment');
     Route::delete('notes/delete-attachment/{id}', [NotesController::class, 'deleteAttachment'])->name('notes.deleteAttachment');
     Route::get('notes/download-attachment/{id}', [NotesController::class, 'downloadAttachment'])->name('notes.downloadAttachment');
-
+    
+    // Priority
+    Route::put('notes/update-priority/{id}', [NotesController::class, 'updatePriority'])->name('notes.updatePriority');
 
 });

@@ -48,8 +48,9 @@ return[
     'board_updated' => 'Kategori Güncellendi!',
     'board_updated_text' => 'Kategori başarıyla güncellendi.',
 
-
-
+    'okey' => 'Tamam',
+    'note_moved' => 'Not başarıyla taşındı',
+    'note_moved_error' => 'Not taşınamadı. Lütfen daha sonra tekrar deneyiniz.',
 
 
 
@@ -75,4 +76,10 @@ return[
     'due_date' => 'Son Tarih',
     'assigned_to' => 'Not Sahibi',
     'attachments' => 'Ek Dosyalar',
+    'time_tracking' => 'Bu Not Üzerinde Geçen Süre',
+    'priority' => 'Öncelik',
+    'critical' => 'Kritik',
+    'high' => 'Yüksek',
+    'medium' => 'Orta',
+    'low' => 'Düşük',
 ];

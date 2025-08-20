@@ -36,6 +36,12 @@ class CompaniesServiceProvider extends ServiceProvider
     {
         $this->app->register(EventServiceProvider::class);
         $this->app->register(RouteServiceProvider::class);
+        
+        // Interface binding - Company Service
+        $this->app->bind(
+            \App\Contracts\CompanyServiceInterface::class,
+            \Modules\Companies\Services\CompanyService::class
+        );
     }
 
     /**

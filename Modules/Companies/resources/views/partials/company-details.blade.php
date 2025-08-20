@@ -88,6 +88,17 @@
                     <td class="fw-medium" scope="row">{{ __('companies.since') }}</td>
                     <td>{{ $company->since }}</td>
                 </tr>
+                <tr>
+                    <td class="fw-medium" scope="row">{{ __('companies.employees') }}</td>
+                    <td>
+                        <a href="{{ url('/contacts?company_id=' . $company->id) }}" 
+                           class="btn btn-sm btn-outline-primary" 
+                           target="_blank">
+                            <i class="ri-team-line align-bottom me-1"></i>
+                            {{ __('companies.list_employees') }}
+                        </a>
+                    </td>
+                </tr>
             </tbody>
         </table>
     </div>
