@@ -7,14 +7,6 @@
                             class="ri-add-line align-bottom me-1"></i> {{ __('notes.add_board') }}</button>
                 </div>
             </div>
-            <!--end col-->
-            <div class="col-lg-3 col-auto">
-                <div class="search-box">
-                    <input type="text" class="form-control search" id="private-search-task-options"
-                        placeholder="{{ __('notes.search_for_project_tasks') }}">
-                    <i class="ri-search-line search-icon"></i>
-                </div>
-            </div>
 
             <!--end col-->
         </div>

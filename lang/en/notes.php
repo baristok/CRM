@@ -50,6 +50,8 @@ return [
 
 
     'okey' => 'Okey',
+    'note_moved' => 'Note moved successfully',
+    'note_moved_error' => 'Note could not be moved. Please try again later.',
 
 
 
@@ -59,5 +61,23 @@ return [
 
     // note-details.blade.php
     'note_details' => 'Note Details',
-
+    'notes' => 'Notes',
+    'time_tracking' => 'Time Tracking',
+    'note' => 'Note',
+    'note_tags' => 'Note Tags',
+    'note_no' => 'Note No',
+    'note_title' => 'Note Title',
+    'status' => 'Status',
+    'not_started' => 'Not Started',
+    'in_progress' => 'In Progress',
+    'completed' => 'Completed',
+    'due_date' => 'Due Date',
+    'assigned_to' => 'Assigned To',
+    'attachments' => 'Attachments',
+    'time_tracking' => 'Time Tracking',
+    'priority' => 'Priority',
+    'critical' => 'Critical',
+    'high' => 'High',
+    'medium' => 'Medium',
+    'low' => 'Low',
 ];

@@ -41,7 +41,6 @@ class NotesController extends Controller
 
         return view('notes::index', compact('boards', 'tags', 'publicBoards'));
     }
-
     /**
      * Show the form for creating a new resource.
      */

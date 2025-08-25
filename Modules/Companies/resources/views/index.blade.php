@@ -1,6 +1,6 @@
 @extends('layouts.index')
 
-@section('title', __('companies.title') . ' | CRM Barış Tok')
+@section('title', __('companies.title'))
 
 @section('css')
 

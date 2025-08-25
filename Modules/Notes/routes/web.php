@@ -29,5 +29,4 @@ Route::middleware(['auth'])->group(function () {
     
     // Priority
     Route::put('notes/update-priority/{id}', [NotesController::class, 'updatePriority'])->name('notes.updatePriority');
-
 });

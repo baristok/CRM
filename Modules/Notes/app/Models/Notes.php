@@ -98,4 +98,11 @@ class Notes extends Model
         return $this->hasMany(NotesAttachment::class, 'note_id');
     }
 
+    public function toSearchableArray() : array
+    {
+        return [
+            'title' => $this->title,
+            'description' => $this->description,
+        ];
+    }
 }

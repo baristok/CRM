@@ -13,7 +13,7 @@ return new class extends Migration
         Schema::create('contacts_tags', function (Blueprint $table) {
             $table->id();
             $table->foreignId('contact_id')->constrained('contacts');
-            $table->foreignId('tag_id')->constrained('tags');
+            $table->foreignId('tag_id')->constrained('tags_contacts');
             $table->timestamps();
             
             // Aynı kişiye aynı etiketin birden fazla kez eklenmesini önlemek için

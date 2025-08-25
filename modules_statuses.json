@@ -2,5 +2,6 @@
     "Contacts": true,
     "Companies": true,
     "Leads": true,
-    "Notes": true
+    "Notes": true,
+    "Deals": true
 }
