@@ -4,7 +4,8 @@ namespace Modules\Deals\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-
+use Modules\Deals\Models\Deal;
+use Modules\Deals\Models\DealsTitle;
 class DealsController extends Controller
 {
     /**
@@ -12,7 +13,11 @@ class DealsController extends Controller
      */
     public function index()
     {
-        return view('deals::index');
+        $deals = Deal::all();
+        $dealsTitle = DealsTitle::all();
+        $defaultTitles = DealsTitle::where('default_title', true)->get();
+        $userTitles = DealsTitle::where('default_title', false)->get();
+        return view('deals::index', compact('deals', 'dealsTitle', 'defaultTitles', 'userTitles'));
     }
 
     /**

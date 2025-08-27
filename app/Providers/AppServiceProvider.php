@@ -12,7 +12,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->bind(\App\Contracts\CompanyServiceInterface::class, \Modules\Companies\Services\CompanyService::class);
+        $this->app->bind(\App\Contracts\ContactServiceInterface::class, \Modules\Contacts\Services\ContactService::class);
     }
 
     /**

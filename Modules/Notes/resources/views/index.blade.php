@@ -36,42 +36,42 @@
 
 @section('content')
 
-@if (session('error'))
-                <script>
-                    document.addEventListener('DOMContentLoaded', function() {
-                        Swal.fire({
-                            html: '<div class="mt-3"><lord-icon src="https://cdn.lordicon.com/tdrtiskw.json" trigger="loop" colors="primary:#f06548,secondary:#f7b84b" style="width:120px;height:120px"></lord-icon><div class="mt-4 pt-2 fs-15"><h4>{{ session('error') }}</h4><p class="text-muted mx-4 mb-0">{{ session('error_message') }}</p></div></div>',
-                            showCancelButton: true,
-                            showConfirmButton: false,
-                            customClass: {
-                                cancelButton: "btn btn-primary w-xs mb-1"
-                            },
-                            cancelButtonText: "{{__('notes.ok')}}",
-                            buttonsStyling: false,
-                            showCloseButton: true
-                        });
-                    });
-                </script>
-            @endif
+    @if (session('error'))
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                Swal.fire({
+                    html: '<div class="mt-3"><lord-icon src="https://cdn.lordicon.com/tdrtiskw.json" trigger="loop" colors="primary:#f06548,secondary:#f7b84b" style="width:120px;height:120px"></lord-icon><div class="mt-4 pt-2 fs-15"><h4>{{ session('error') }}</h4><p class="text-muted mx-4 mb-0">{{ session('error_message') }}</p></div></div>',
+                    showCancelButton: true,
+                    showConfirmButton: false,
+                    customClass: {
+                        cancelButton: "btn btn-primary w-xs mb-1"
+                    },
+                    cancelButtonText: "{{ __('notes.ok') }}",
+                    buttonsStyling: false,
+                    showCloseButton: true
+                });
+            });
+        </script>
+    @endif
 
-            @if (session('success'))
-                <script>
-                    document.addEventListener('DOMContentLoaded', function() {
-                        Swal.fire({
-                            html: '<div class="mt-3"><lord-icon src="https://cdn.lordicon.com/lupuorrc.json" trigger="loop" colors="primary:#25a0e2,secondary:#00bd9d" style="width:120px;height:120px"></lord-icon><div class="mt-4 pt-2 fs-15"><h4>{{ session('success') }}</h4><p class="text-muted mx-4 mb-0">{{ session('success_message') }}</p></div></div>',
-                            showCancelButton: true,
-                            showConfirmButton: false,
-                            customClass: {
-                                cancelButton: "btn btn-success w-xs mb-1"
-                            },
-                            cancelButtonText: "{{__('notes.okey')}}",
-                            buttonsStyling: false,
-                            showCloseButton: true
-                        });
-                    });
-                </script>
-            @endif
-            {{-- Hata mesajları sonu --}}
+    @if (session('success'))
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                Swal.fire({
+                    html: '<div class="mt-3"><lord-icon src="https://cdn.lordicon.com/lupuorrc.json" trigger="loop" colors="primary:#25a0e2,secondary:#00bd9d" style="width:120px;height:120px"></lord-icon><div class="mt-4 pt-2 fs-15"><h4>{{ session('success') }}</h4><p class="text-muted mx-4 mb-0">{{ session('success_message') }}</p></div></div>',
+                    showCancelButton: true,
+                    showConfirmButton: false,
+                    customClass: {
+                        cancelButton: "btn btn-success w-xs mb-1"
+                    },
+                    cancelButtonText: "{{ __('notes.okey') }}",
+                    buttonsStyling: false,
+                    showCloseButton: true
+                });
+            });
+        </script>
+    @endif
+    {{-- Hata mesajları sonu --}}
     <div class="page-content">
         <div class="container-fluid">
             <!-- start page title -->
@@ -98,13 +98,13 @@
                         <li class="nav-item">
                             <a class="nav-link active" data-bs-toggle="tab" href="#private-notes" role="tab"
                                 aria-selected="true">
-                                <span><i class="ri-lock-line me-2"></i>{{__('notes.private_notes')}}</span>
+                                <span><i class="ri-lock-line me-2"></i>{{ __('notes.private_notes') }}</span>
                             </a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" data-bs-toggle="tab" href="#public-notes" role="tab"
                                 aria-selected="false">
-                                <span><i class="ri-global-line me-2"></i>{{__('notes.public_notes')}}</span>
+                                <span><i class="ri-global-line me-2"></i>{{ __('notes.public_notes') }}</span>
                             </a>
                         </li>
                     </ul>
@@ -162,5 +162,5 @@
         });
     </script>
 
-    
+
 @endsection
