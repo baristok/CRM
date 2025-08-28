@@ -11,3 +11,4 @@ CHANGELOG.md export-ignore
 .styleci.yml export-ignore
 
 public/assets/** linguist-detectable=false
+public/assets/libs/** linguist-detectable=false
