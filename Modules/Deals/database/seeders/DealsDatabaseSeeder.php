@@ -13,6 +13,7 @@ class DealsDatabaseSeeder extends Seeder
     {
         $this->call([
             DealsTitleSeeder::class,
+            DealSeeder::class,
         ]);
     }
 }
