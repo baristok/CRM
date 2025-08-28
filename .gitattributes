@@ -10,5 +10,4 @@
 CHANGELOG.md export-ignore
 .styleci.yml export-ignore
 
-# Devre dışı bırakılan asset dosyaları
 public/assets/** linguist-detectable=false
