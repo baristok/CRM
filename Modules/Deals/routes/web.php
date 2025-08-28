@@ -5,5 +5,5 @@ use Modules\Deals\Http\Controllers\DealsController;
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('deals', DealsController::class)->names('deals');
-    Route::post('deals/updateDealPosition', [DealsController::class, 'updateDealPosition'])->name('deals.updateDealPosition');
+    Route::post('deals/update-position', [DealsController::class, 'updatePosition'])->name('deals.updatePosition');
 });

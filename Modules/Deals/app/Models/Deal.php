@@ -34,6 +34,13 @@ class Deal extends Model
         return $contactService->getContactById($this->contact_id);
     }
 
+
+
+    public function dealsTitle()
+    {
+        return $this->belongsTo(DealsTitle::class, 'deals_title_id');
+    }
+
     // protected static function newFactory(): DealFactory
     // {
     //     // return DealFactory::new();

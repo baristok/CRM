@@ -160,7 +160,8 @@
                             <div class="card">
                                 <a class="card-body {{ $dealsTitle->title_badge_class }}" data-bs-toggle="collapse"
                                     href="#{{ Str::slug($dealsTitle->name, '_') }}" role="button" aria-expanded="true"
-                                    aria-controls="{{ Str::slug($dealsTitle->name, '_') }}">
+                                    aria-controls="{{ Str::slug($dealsTitle->name, '_') }}"
+                                    >
                                     <h5 class="card-title text-uppercase fw-semibold mb-1 fs-15">
                                         {{ $dealsTitle->title }}
                                     </h5>
@@ -170,10 +171,11 @@
                                 </a>
 
                                 <div class="card-body deals-list">
-                                    <div class="collapse show" id="{{ Str::slug($dealsTitle->name, '_') }}">
+                                    <div class="collapse show" id="{{ Str::slug($dealsTitle->name, '_') }}"
+                                        data-deals-title-id="{{ $dealsTitle->id }}">
                                         @foreach ($deals as $deal)
                                             @if ($deal->deals_title_id == $dealsTitle->id)
-                                                <div class="card mb-1 ribbon-box ribbon-fill ribbon-sm deal-item">
+                                                <div class="card mb-1 ribbon-box ribbon-fill ribbon-sm deal-item" data-deal-id="{{ $deal->id }}" data-position="{{ $loop->index }}">
 
 
                                                     @if ($dealsTitle->name == 'Proposal Sent')
@@ -479,6 +481,14 @@
                                 onEnd: function(evt) {
                                     removeNoDealImage();
                                     updateDealsCounters();
+                                    
+                                    // onDragEnd fonksiyonunu çağır
+                                    if (evt.item && evt.to) {
+                                        var dealsTitleId = evt.to.getAttribute('data-deals-title-id');
+                                        if (dealsTitleId) {
+                                            onDragEnd(evt, dealsTitleId);
+                                        }
+                                    }
                                 }
                             });
                             dealsSortableInstances.push(sortable);
@@ -522,5 +532,82 @@
                 document.addEventListener('DOMContentLoaded', function() {
                     initializeDealsKanban();
                 });
+
+
+
+                function onDragEnd(event, dealsTitleId) {
+                    // SortableJS event objesi kullanarak deal bilgilerini al
+                    if (event.item) {
+                        var dealId = event.item.dataset.dealId;
+                        var position = event.newIndex; // SortableJS'in yeni position bilgisi
+                        var oldPosition = event.oldIndex; // Eski position bilgisi
+                        var fromColumn = event.from.getAttribute('data-deals-title-id');
+                        var toColumn = dealsTitleId;
+
+                        console.log("dealId: ", dealId)
+                        console.log("position: ", position)
+                        console.log("oldPosition: ", oldPosition)
+                        console.log("fromColumn: ", fromColumn)
+                        console.log("toColumn: ", toColumn)
+
+
+                        
+
+                                                  // AJAX isteği ile backend'e deal'ın yeni pozisyonunu gönder
+                          updateDealPosition(dealId, toColumn, position);
+                      }
+                  }
+
+                // Deal pozisyonunu backend'e güncelleyen fonksiyon
+                function updateDealPosition(dealId, newTitleId, newPosition) {
+                    fetch('/deals/update-position', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        },
+                        body: JSON.stringify({
+                            deal_id: dealId,
+                            deals_title_id: newTitleId,
+                            position: newPosition
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Başarı toast notification
+                            Swal.fire({
+                                toast: true,
+                                position: 'top-end',
+                                icon: 'success',
+                                title: 'Deal pozisyonu güncellendi!',
+                                showConfirmButton: false,
+                                timer: 3000,
+                                timerProgressBar: true
+                            });
+                        } else {
+                            // Hata alert'i
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Hata!',
+                                text: data.message || 'Deal pozisyonu güncellenirken hata oluştu',
+                                showConfirmButton: true
+                            });
+                            location.reload();
+                        }
+                    })
+                    .catch(error => {
+                        console.error('AJAX hatası:', error);
+                        // Network hatası alert'i
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Bağlantı Hatası!',
+                            text: 'Sunucuyla bağlantı kurulamadı. Sayfa yeniden yüklenecek.',
+                            showConfirmButton: true
+                        }).then(() => {
+                            location.reload();
+                        });
+                    });
+                }
             </script>
         @endsection

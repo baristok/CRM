@@ -91,7 +91,7 @@ class DealsController extends Controller
     /**
      * Update deal position and deals_title_id
      */
-    public function updateDealPosition(Request $request)
+    public function updatePosition(Request $request)
     {
         try {
             $validated = $request->validate([
