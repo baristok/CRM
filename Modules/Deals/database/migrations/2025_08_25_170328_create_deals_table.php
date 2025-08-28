@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('description')->nullable();
             $table->foreignId('contact_id')->constrained('contacts');
             $table->foreignId('deals_title_id')->constrained('deals_titles');
+            $table->integer('position')->default(0);
             $table->timestamps();
         });
     }

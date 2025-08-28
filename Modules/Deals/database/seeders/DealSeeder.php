@@ -139,7 +139,22 @@ class DealSeeder extends Seeder
             ],
         ];
 
+        // Her deals_title için pozisyon sayacı
+        $positionCounters = [];
+
         foreach ($deals as $deal) {
+            $dealsTitleId = $deal['deals_title_id'];
+            
+            // Bu deals_title için pozisyon sayacını başlat veya artır
+            if (!isset($positionCounters[$dealsTitleId])) {
+                // Bu deals_title'da mevcut en yüksek pozisyonu bul
+                $maxPosition = Deal::where('deals_title_id', $dealsTitleId)->max('position') ?? 0;
+                $positionCounters[$dealsTitleId] = $maxPosition;
+            }
+            
+            $positionCounters[$dealsTitleId]++;
+            $deal['position'] = $positionCounters[$dealsTitleId];
+
             Deal::updateOrCreate(
                 ['title' => $deal['title']],
                 $deal

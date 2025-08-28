@@ -609,7 +609,7 @@ class NotesController extends Controller
             $oldBoardId = $note->board_id;
 
             if($oldBoardId !== $validated['board_id']) {
-                // Yeni board'daki en yüksek position'ı bul
+                // Yeni titledeki en yüksek pozisyonu bul    
             $maxPosition = Notes::where('board_id', $validated['board_id'])->max('position') ?? 0;
             $newPosition = $maxPosition + 1;
             } else {

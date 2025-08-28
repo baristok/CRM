@@ -20,7 +20,8 @@ class Deal extends Model
         'due_date',
         'description',
         'contact_id',
-        'deals_title_id'
+        'deals_title_id',
+        'position'
     ];
 
     public function contact()

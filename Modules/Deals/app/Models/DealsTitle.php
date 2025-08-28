@@ -24,27 +24,27 @@ class DealsTitle extends Model
     // }
 
     public function getTitleAttribute()
-{
-    return match ($this->id) {
-        1 => __('deals.need_to_contact'),
-        2 => __('deals.contact_initiated'),
-        3 => __('deals.needs_identified'),
-        4 => __('deals.meeting_arranged'),
-        5 => __('deals.offer_accepted'),
-        default => $this->name // Eğer default title değilse name'i döndür
-    };
-}
+    {
+        return match ($this->id) {
+            1 => __('deals.need_to_contact'),
+            2 => __('deals.contact_initiated'),
+            3 => __('deals.needs_identified'),
+            4 => __('deals.meeting_arranged'),
+            5 => __('deals.offer_accepted'),
+            default => $this->name // Eğer default title değilse name'i döndür
+        };
+    }
 
-public function getTitleBadgeClassAttribute()
-{
-    return match ($this->id) {
-        1 => 'bg-danger-subtle',
-        2 => 'bg-success-subtle',
-        3 => 'bg-warning-subtle',
-        4 => 'bg-info-subtle',
-        5 => 'bg-primary-subtle',
-        default => 'bg-dark-subtle'
-    };
-}
+    public function getTitleBadgeClassAttribute()
+    {
+        return match ($this->id) {
+            1 => 'bg-danger-subtle',
+            2 => 'bg-success-subtle',
+            3 => 'bg-warning-subtle',
+            4 => 'bg-info-subtle',
+            5 => 'bg-primary-subtle',
+            default => 'bg-dark-subtle'
+        };
+    }
 
 }

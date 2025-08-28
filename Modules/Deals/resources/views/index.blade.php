@@ -43,12 +43,12 @@
             max-width: 280px;
             flex: 0 0 280px;
         }
-        
+
         .deal-column .card {
             border: none;
             background: transparent;
         }
-        
+
         .deal-column .card-body {
             border: none;
             padding: 1rem;
@@ -128,10 +128,9 @@
                 <div class="card-body">
                     <div class="row g-3">
                         <div class="col-md-3">
-                            <div class="search-box">
-                                <input type="text" class="form-control search" placeholder="Search for deals..." />
-                                <i class="ri-search-line search-icon"></i>
-                            </div>
+                            <button data-bs-toggle="modal" data-bs-target="#adddeals" class="btn btn-primary">
+                                <i class="ri-add-fill align-bottom me-1"></i> {{ __('deals.add') }}
+                            </button>
                         </div>
                         <!--end col-->
                         <div class="col-md-auto ms-auto">
@@ -144,30 +143,6 @@
                                         <option value="Company">Company</option>
                                         <option value="Date">Date</option>
                                     </select>
-                                </div>
-                                <button data-bs-toggle="modal" data-bs-target="#adddeals" class="btn btn-primary">
-                                    <i class="ri-add-fill align-bottom me-1"></i> {{ __('deals.add') }}
-                                </button>
-                                <div class="dropdown">
-                                    <button class="btn btn-soft-secondary btn-icon fs-14" type="button"
-                                        id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-                                        <i class="ri-settings-4-line"></i>
-                                    </button>
-                                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                                        <li><a class="dropdown-item" href="#">Copy</a></li>
-                                        <li>
-                                            <a class="dropdown-item" href="#">Move to pipline</a>
-                                        </li>
-                                        <li>
-                                            <a class="dropdown-item" href="#">Add to exceptions</a>
-                                        </li>
-                                        <li>
-                                            <a class="dropdown-item" href="#">Switch to common form view</a>
-                                        </li>
-                                        <li>
-                                            <a class="dropdown-item" href="#">Reset form view to default</a>
-                                        </li>
-                                    </ul>
                                 </div>
                             </div>
                         </div>
@@ -195,13 +170,27 @@
                                 </a>
 
                                 <div class="card-body deals-list">
-                                        <div class="collapse show" id="{{ Str::slug($dealsTitle->name, '_') }}">
+                                    <div class="collapse show" id="{{ Str::slug($dealsTitle->name, '_') }}">
                                         @foreach ($deals as $deal)
                                             @if ($deal->deals_title_id == $dealsTitle->id)
                                                 <div class="card mb-1 ribbon-box ribbon-fill ribbon-sm deal-item">
-                                                    <div class="ribbon ribbon-primary">
-                                                        <i class="ri-briefcase-line"></i>
-                                                    </div>
+
+
+                                                    @if ($dealsTitle->name == 'Proposal Sent')
+                                                        <div class="ribbon ribbon-primary">
+                                                            <i class="ri-briefcase-line"></i>
+                                                        </div>
+                                                    {{-- Geçmiş tarihli deal'lar için kırmızı ribbon --}}
+                                                    @elseif ($deal->due_date && $deal->due_date < now()->startOfDay())
+                                                        <div class="ribbon ribbon-danger">
+                                                            <i class="ri-alarm-warning-line"></i>
+                                                        </div>
+                                                    {{-- 1 hafta kala olan deal'lar için turuncu ribbon --}}
+                                                    @elseif ($deal->due_date && $deal->due_date <= now()->addDays(7) && $deal->due_date >= now()->startOfDay())
+                                                        <div class="ribbon ribbon-warning">
+                                                            <i class="ri-time-line"></i>
+                                                        </div>
+                                                    @endif
 
                                                     <div class="card-body">
                                                         <a class="d-flex align-items-center" data-bs-toggle="collapse"
