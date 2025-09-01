@@ -14,7 +14,7 @@ class ContactsExport implements FromCollection, WithHeadings, WithMapping
      */
     public function collection()
     {
-        return Contacts::all();
+        return Contacts::with('tags')->get();
     }
 
     /**
@@ -49,10 +49,10 @@ class ContactsExport implements FromCollection, WithHeadings, WithMapping
             $row->name,
             $row->email,
             $row->phone,
-            $row->company_name,
+            $row->company_name, // Accessor kullanır (getCompanyNameAttribute)
             $row->designation,
             $row->lead_score,
-            $row->tags,
+            $row->tags->pluck('name')->implode(', '), // Tags ilişkisinden adları alır
             $row->last_contacted_at,
             $row->created_at,
             $row->updated_at,

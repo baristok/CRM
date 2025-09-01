@@ -21,7 +21,6 @@ class Contacts extends Model
         'name',
         'email',
         'phone',
-        'company_name',
         'designation',
         'lead_score',
         // 'tags',   //pivot tablosu için kaldırıldı
@@ -73,7 +72,6 @@ class Contacts extends Model
             'name' => $this->name,
             'email' => $this->email,
             'phone' => $this->phone,
-            'company_name' => $this->company_name,
             'designation' => $this->designation,
         ];
     }

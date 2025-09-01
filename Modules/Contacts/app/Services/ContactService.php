@@ -23,7 +23,6 @@ class ContactService implements ContactServiceInterface
             'name' => $contact->name,
             'email' => $contact->email,
             'phone' => $contact->phone,
-            'company_name' => $contact->company_name,
             'designation' => $contact->designation,
             'lead_score' => $contact->lead_score,
             'company_id' => $contact->company_id,
@@ -36,7 +35,7 @@ class ContactService implements ContactServiceInterface
      */
     public function getAllContacts(): array
     {
-        return Contacts::select('id', 'company_name', 'contact_email')
+        return Contacts::select('id', 'name', 'email', 'company_id')
             ->orderBy('name')
             ->get()
             ->toArray();

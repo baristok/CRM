@@ -27,11 +27,11 @@ class ContactsController extends Controller
         $companyId = $request->get('company_id'); // Şirket filtresi eklendi
         
         //whitelist sort_by ve sort_order
-        $sortBy = in_array($sortBy, ['name', 'company_name', 'lead_score', 'created_at']) ? $sortBy : 'name';
+        $sortBy = in_array($sortBy, ['name', 'lead_score', 'created_at']) ? $sortBy : 'name';
         $sortOrder = in_array($sortOrder, ['asc', 'desc']) ? $sortOrder : 'asc';
         
-        // Base query oluştur
-        $contactsQuery = Contacts::query();
+        // Base query oluştur - tags ilişkisini eager load et
+        $contactsQuery = Contacts::with('tags');
         
         // Şirket filtresi varsa uygula
         if ($companyId) {
@@ -50,7 +50,9 @@ class ContactsController extends Controller
                 })->orderBy($sortBy, $sortOrder)->paginate(10);
             } else {
                 // Scout ile arama + sorting (company filter olmadan)
-                $contacts = Contacts::search($query)->orderBy($sortBy, $sortOrder)->paginate(10);
+                $contacts = Contacts::search($query)->query(function ($builder) {
+                    $builder->with('tags');
+                })->orderBy($sortBy, $sortOrder)->paginate(10);
             }
         } else {
             // Normal listeleme

@@ -52,4 +52,13 @@ class CompanyService implements CompanyServiceInterface
         $company = Companies::find($companyId);
         return $company ? $company->name : null;
     }
+
+    /**
+     * Şirket adına göre şirket ID'sini getirir
+     */
+    public function getCompanyIdByName(string $companyName): ?int
+    {
+        $company = Companies::where('name', $companyName)->first();
+        return $company ? $company->id : null;
+    }
 }

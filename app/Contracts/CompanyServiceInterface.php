@@ -18,4 +18,9 @@ interface CompanyServiceInterface
      * Şirket ID'sine göre şirket adını getirir
      */
     public function getCompanyNameById(int $companyId): ?string;
+
+    /**
+     * Şirket adına göre şirket ID'sini getirir
+     */
+    public function getCompanyIdByName(string $companyName): ?int;
 }
