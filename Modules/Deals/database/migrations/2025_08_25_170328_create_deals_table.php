@@ -22,6 +22,8 @@ return new class extends Migration
             $table->enum('owner_type', ['contact', 'company']);
             $table->foreignId('deals_title_id')->constrained('deals_titles');
             $table->integer('position')->default(0);
+            $table->string('email');
+            $table->string('phone')->nullable();
             $table->timestamps();
         });
     }

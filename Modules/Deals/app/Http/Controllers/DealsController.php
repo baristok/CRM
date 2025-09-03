@@ -70,6 +70,8 @@ class DealsController extends Controller
             'owner_type' => $owner_type,
             'deals_title_id' => $validated['deals_title_id'],
             'position' => $maxPosition + 1,
+            'email' => $validated['email'],
+            'phone' => $validated['phone'],
         ]);
 
             return redirect()->route('deals.index')->with('success', 'Deal başarıyla oluşturuldu');
@@ -91,18 +93,115 @@ class DealsController extends Controller
      */
     public function edit($id)
     {
-        return view('deals::edit');
+        try {
+            $deal = Deal::findOrFail($id);
+            
+            // AJAX isteği kontrolü - JSON response döndür
+            if (request()->expectsJson() || request()->ajax()) {
+                return response()->json([
+                    'success' => true,
+                    'deal' => $deal
+                ]);
+            }
+            
+            // Normal request için - JSON response with success wrapper
+            return response()->json([
+                'success' => true,
+                'deal' => $deal
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Deal bulunamadı: ' . $e->getMessage()
+            ], 404);
+        }
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, $id) {}
+    public function update(Request $request, $id)
+    {
+        try {
+            $owner_type = explode(':', $request->owner_id)[0];
+            $owner_id = (int) explode(':', $request->owner_id)[1];
+
+            $validated = $request->validate([
+                'title' => 'required|string|max:255',
+                'value' => 'required|numeric',
+                'currency' => 'required|string|in:TRY,USD',
+                'due_date' => 'nullable|date',
+                'email' => 'required|email',
+                'phone' => 'nullable|string',
+                'description' => 'nullable|string',
+                'owner_id' => 'required|string', // company:1 veya contact:2 formatı
+                'deals_title_id' => 'required|exists:deals_titles,id'
+            ]);
+
+            $deal = Deal::findOrFail($id);
+            $deal->update([
+                'title' => $validated['title'],
+                'value' => $validated['value'],
+                'currency' => $validated['currency'],
+                'due_date' => $validated['due_date'],
+                'description' => $validated['description'],
+                'owner_id' => $owner_id,
+                'owner_type' => $owner_type,
+                'deals_title_id' => $validated['deals_title_id'],
+            ]);
+
+            // AJAX request için JSON response döndür
+            if (request()->expectsJson() || request()->ajax()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Deal başarıyla güncellendi',
+                    'deal' => $deal
+                ]);
+            }
+            
+            return redirect()->route('deals.index')->with('success', 'Deal başarıyla güncellendi');
+        } catch (Exception $e) {
+            // AJAX request için JSON error response döndür
+            if (request()->expectsJson() || request()->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Deal güncellenemedi: ' . $e->getMessage()
+                ], 422);
+            }
+            
+            return redirect()->back()->with('error', 'Deal güncellenemedi')->with('error_message', $e->getMessage());
+        }
+    }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy($id) {}
+    public function destroy($id) {
+        try {
+            $deal = Deal::findOrFail($id);
+            $deal->delete();
+            
+            // AJAX request için JSON response döndür
+            if (request()->expectsJson() || request()->ajax()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Deal başarıyla silindi'
+                ]);
+            }
+            
+            return redirect()->route('deals.index')->with('success', 'Deal başarıyla silindi');
+        } catch (Exception $e) {
+            // AJAX request için JSON error response döndür
+            if (request()->expectsJson() || request()->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Deal silinemedi: ' . $e->getMessage()
+                ], 422);
+            }
+            
+            return redirect()->back()->with('error', 'Deal silinemedi')->with('error_message', $e->getMessage());
+        }
+    }
 
     /**
      * Update deal position and deals_title_id

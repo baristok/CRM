@@ -30,11 +30,12 @@ return[
     'deal_owner' => 'Sözleşme Kiminle (Kişi veya Şirket)',
     'email' => 'Email',
     'please_write_a_email' => 'Email yazın.',
-    'contact' => 'Kişi',
+    'contact' => 'İletişim',
     'please_enter_contact_number' => 'Kişi numarasını yazın.',
     'description' => 'Açıklama',
     'please_enter_contact_description' => 'Açıklama yazın.',
     'save' => 'Kaydet',
     'close' => 'Kapat',
     'edit_deal' => 'Sözleşme Düzenle',
+    'deals' => 'Sözleşmeler',
 ];

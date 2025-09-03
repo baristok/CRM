@@ -23,7 +23,9 @@ class Deal extends Model
         'owner_id',
         'owner_type',
         'deals_title_id',
-        'position'
+        'position',
+        'email',
+        'phone',
     ];
 
     /**

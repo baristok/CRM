@@ -165,7 +165,7 @@
                                         {{ $title->title }}
                                     </h5>
                                     <p class="text-muted mb-0">
-                                        $0 <span class="fw-medium deal-count-badge">0 Deals</span>
+                                        <span class="deal-total-value">₺0</span> <span class="fw-medium deal-count-badge">0 {{ __('deals.deals') }}</span>
                                     </p>
                                 </a>
 
@@ -208,7 +208,12 @@
                                                                     {{ $deal->title ?? 'Untitled Deal' }}
                                                                 </h6>
                                                                 <p class="text-muted mb-0">
-                                                                    ${{ number_format($deal->value ?? 0) }} -
+                                                                    @if ($deal->currency == 'TRY')
+                                                                    <i class="bx bx-lira"></i> {{ number_format($deal->value ?? 0) }} ({{ $deal->currency }}) 
+                                                                    @else
+                                                                        <i class="bx bx-dollar"></i> {{ number_format($deal->value ?? 0) }} ({{ $deal->currency }}) 
+                                                                    @endif
+                                                                    -
                                                                     {{ $deal->created_at ? $deal->created_at->format('d M, Y') : 'N/A' }}
                                                                 </p>
                                                             </div>
@@ -252,12 +257,14 @@
                                                                     </button>
                                                                     <ul class="dropdown-menu dropdown-menu-end">
                                                                         <li><a class="dropdown-item" href="#"
-                                                                                data-bs-toggle="modal" data-bs-target="#editDealModal"
+                                                                                data-bs-toggle="modal"
+                                                                                data-bs-target="#editDealModal"
                                                                                 onclick="editDeal({{ $deal->id }})"><i
                                                                                     class="ri-pencil-fill align-bottom me-2 text-muted"></i>Düzenle</a>
                                                                         </li>
                                                                         <li><a class="dropdown-item" href="#"
-                                                                                data-bs-toggle="modal" data-bs-target="#addNoteModal"
+                                                                                data-bs-toggle="modal"
+                                                                                data-bs-target="#addNoteModal"
                                                                                 onclick="addNote({{ $deal->id }})"><i
                                                                                     class=" ri-sticky-note-fill align-bottom me-2 text-muted"></i>Not
                                                                                 Ekle</a></li>
@@ -496,8 +503,9 @@
                                     <div class="modal-body">
                                         <input type="hidden" id="editDealId" name="deal_id" />
                                         <div class="mb-3">
-                                            <label for="editDeatType" class="form-label">{{ __('deals.deal_type') }}</label>
-                                            <select class="form-select" id="editDeatType" data-choices
+                                            <label for="editDeatType"
+                                                class="form-label">{{ __('deals.deal_type') }}</label>
+                                            <select class="form-select" id="editDeatType"
                                                 aria-label="Default select example" required name="deals_title_id">
                                                 <option selected disabled value="">
                                                     {{ __('deals.select_a_deal_type') }}</option>
@@ -519,11 +527,12 @@
                                             </div>
                                         </div>
                                         <div class="mb-3">
-                                            <label for="editDealValue" class="form-label">{{ __('deals.value') }} </label>
+                                            <label for="editDealValue" class="form-label">{{ __('deals.value') }}
+                                            </label>
                                             <div class="input-group">
-                                                <input type="number" class="form-control" id="editDealValue" name="value"
-                                                    step="0.01" placeholder="{{ __('deals.please_write_a_value') }}"
-                                                    required />
+                                                <input type="number" class="form-control" id="editDealValue"
+                                                    name="value" step="0.01"
+                                                    placeholder="{{ __('deals.please_write_a_value') }}" required />
                                                 <select class="form-select" id="editDealCurrency" name="currency"
                                                     style="max-width: 100px;" required>
                                                     <option value="TRY">₺ TRY</option>
@@ -537,8 +546,8 @@
                                         <div class="mb-3">
                                             <label for="editDealOwner"
                                                 class="form-label">{{ __('deals.deal_owner') }}</label>
-                                            <select class="form-select" id="editDealOwner" name="owner_id" data-choices
-                                                data-choices-search-true aria-label="Default select example" required>
+                                            <select class="form-select" id="editDealOwner" name="owner_id"
+                                                aria-label="Default select example" required>
                                                 <option selected disabled value="">
                                                     {{ __('deals.please_write_an_deals_owner_name') }}</option>
                                                 @foreach ($companies as $company)
@@ -559,7 +568,8 @@
                                         </div>
 
                                         <div class="mb-3">
-                                            <label for="editDueDate" class="form-label">{{ __('deals.due_date') }}</label>
+                                            <label for="editDueDate"
+                                                class="form-label">{{ __('deals.due_date') }}</label>
                                             <input type="text" class="form-control" id="editDueDate"
                                                 data-provider="flatpickr"
                                                 placeholder="{{ __('deals.please_select_a_date') }}" required
@@ -636,6 +646,10 @@
             <script>
                 // Global variables for Deals Kanban
                 var dealsSortableInstances = [];
+
+                // Edit modal Choices.js instances
+                var editDealTypeChoices = null;
+                var editDealOwnerChoices = null;
 
                 // Dinamik olarak task list başlıklarını al
                 function getDealsTaskLists() {
@@ -740,11 +754,74 @@
                     dealColumns.forEach(function(column) {
                         var dealsContainer = column.querySelector('.deals-list');
                         var badge = column.querySelector('.deal-count-badge');
+                        var totalValueSpan = column.querySelector('.deal-total-value');
+                        
                         if (dealsContainer && badge) {
                             var dealCount = dealsContainer.querySelectorAll('.deal-item').length;
-                            badge.textContent = dealCount;
+                            badge.textContent = dealCount + ' {{ __("deals.deals") }}';
+                        }
+                        
+                        // Para birimi hesaplama
+                        if (dealsContainer && totalValueSpan) {
+                            updateDealTotalValue(dealsContainer, totalValueSpan);
                         }
                     });
+                }
+
+                // Para birimi toplamını hesapla ve göster
+                function updateDealTotalValue(dealsContainer, totalValueSpan) {
+                    var deals = dealsContainer.querySelectorAll('.deal-item');
+                    var tryTotal = 0;
+                    var usdTotal = 0;
+                    
+                    deals.forEach(function(deal) {
+                        // Deal'ın para birimi ve değerini al
+                        var dealValueElement = deal.querySelector('.flex-grow-1 .text-muted');
+                        if (dealValueElement) {
+                            var dealText = dealValueElement.textContent;
+                            
+                            // TRY para birimi kontrolü
+                            if (dealText.includes('TRY')) {
+                                var tryMatch = dealText.match(/([\d,]+)\s*\(TRY\)/);
+                                if (tryMatch) {
+                                    var value = parseFloat(tryMatch[1].replace(/,/g, ''));
+                                    if (!isNaN(value)) {
+                                        tryTotal += value;
+                                    }
+                                }
+                            }
+                            
+                            // USD para birimi kontrolü
+                            if (dealText.includes('USD')) {
+                                var usdMatch = dealText.match(/([\d,]+)\s*\(USD\)/);
+                                if (usdMatch) {
+                                    var value = parseFloat(usdMatch[1].replace(/,/g, ''));
+                                    if (!isNaN(value)) {
+                                        usdTotal += value;
+                                    }
+                                }
+                            }
+                        }
+                    });
+                    
+                    // Sonucu göster
+                    var resultText = '';
+                    if (tryTotal > 0 && usdTotal > 0) {
+                        resultText = '<i class="bx bx-lira"></i>' + formatNumber(tryTotal) + ' + <i class="bx bx-dollar"></i>' + formatNumber(usdTotal);
+                    } else if (tryTotal > 0) {
+                        resultText = '<i class="bx bx-lira"></i>' + formatNumber(tryTotal);
+                    } else if (usdTotal > 0) {
+                        resultText = '<i class="bx bx-dollar"></i>' + formatNumber(usdTotal);
+                    } else {
+                        resultText = '₺0';
+                    }
+                    
+                    totalValueSpan.innerHTML = resultText;
+                }
+
+                // Sayı formatla (virgül ekle)
+                function formatNumber(num) {
+                    return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
                 }
 
                 // Email ve telefon otomatik doldurma fonksiyonu
@@ -785,6 +862,7 @@
                     }
                 });
 
+
                 // Edit Deal fonksiyonu
                 function editDeal(dealId) {
                     // AJAX ile deal bilgilerini getir
@@ -793,7 +871,7 @@
                         .then(data => {
                             if (data.success) {
                                 const deal = data.deal;
-                                
+
                                 // Form field'larını doldur
                                 document.getElementById('editDealId').value = deal.id;
                                 document.getElementById('editDealTitle').value = deal.title || '';
@@ -802,49 +880,222 @@
                                 document.getElementById('editContactNumber').value = deal.phone || '';
                                 document.getElementById('editContactDescription').value = deal.description || '';
                                 document.getElementById('editDueDate').value = deal.due_date || '';
-                                
-                                // Select field'ları set et
-                                if (deal.deals_title_id) {
-                                    document.getElementById('editDeatType').value = deal.deals_title_id;
-                                }
-                                
+
+                                // Currency field (normal select)
                                 if (deal.currency) {
                                     document.getElementById('editDealCurrency').value = deal.currency;
                                 }
-                                
-                                // Owner bilgisini set et
-                                if (deal.owner_type && deal.owner_id) {
-                                    const ownerValue = `${deal.owner_type}:${deal.owner_id}`;
-                                    document.getElementById('editDealOwner').value = ownerValue;
-                                }
-                                
+
+                                // Değerler modal açıldığında set edilecek
+
                                 // Form action'ını güncelle
                                 document.getElementById('edit-deals-form').action = `/deals/${deal.id}`;
-                                
+
                                 // Modal'ı aç
                                 const editModal = new bootstrap.Modal(document.getElementById('editDealModal'));
                                 editModal.show();
+
+                                // Modal tam açıldığında Choices.js'i başlat ve değerleri set et
+                                document.getElementById('editDealModal').addEventListener('shown.bs.modal', function() {
+                                    // Önce native select'leri güncelle
+                                    if (deal.deals_title_id) {
+                                        document.getElementById('editDeatType').value = deal.deals_title_id;
+                                    }
+
+                                    if (deal.owner_type && deal.owner_id) {
+                                        const ownerValue = `${deal.owner_type}:${deal.owner_id}`;
+                                        document.getElementById('editDealOwner').value = ownerValue;
+                                    }
+
+                                    // Şimdi Choices.js'i başlat
+                                    editDealTypeChoices = new Choices('#editDeatType', {
+                                        searchEnabled: true,
+                                        removeItemButton: false,
+                                        shouldSort: false
+                                    });
+
+                                    editDealOwnerChoices = new Choices('#editDealOwner', {
+                                        searchEnabled: true,
+                                        searchChoices: true,
+                                        searchFloor: 1,
+                                        shouldSort: false
+                                    });
+                                }, {
+                                    once: true
+                                }); // once: true ile sadece bir kez çalışır
                             } else {
                                 Swal.fire({
-                                    html: `
-                                    <div class="mt-3">
-                                        <lord-icon
+                                    title: 'Hata!',
+                                    text: 'Deal bilgileri getirilemedi!',
+                                    icon: 'error',
+                                    confirmButtonClass: 'btn btn-primary w-xs mt-2',
+                                    buttonsStyling: false
+                                });
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            alert('Bir hata oluştu!');
+                        });
+                }
+
+                // Delete Deal fonksiyonu
+                function deleteDeal(dealId) {
+                    Swal.fire({
+                        title: 'Emin misiniz?',
+                        text: 'Bu sözleşmeyi silmek istediğinize emin misiniz?',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonText: 'Evet, sil',
+                        cancelButtonText: 'Vazgeç',
+                        buttonsStyling: false,
+                        customClass: {
+                            confirmButton: 'btn btn-danger w-xs me-2',
+                            cancelButton: 'btn btn-secondary w-xs'
+                        }
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            fetch(`/deals/${dealId}`, {
+                                    method: 'DELETE',
+                                    headers: {
+                                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute(
+                                            'content'),
+                                        'Accept': 'application/json',
+                                        'X-Requested-With': 'XMLHttpRequest'
+                                    },
+                                })
+                                .then(response => response.json())
+                                .then(data => {
+                                    if (data.success) {
+                                        Swal.fire({
+                                            html: `
+                                        <div class="mt-3">
+                                          <lord-icon
+                                            src="https://cdn.lordicon.com/lupuorrc.json"
+                                            trigger="loop"
+                                            colors="primary:#0ab39c,secondary:#405189"
+                                            style="width:120px;height:120px">
+                                          </lord-icon>
+                                          <div class="mt-4 pt-2 fs-15">
+                                            <h4>Sözleşme Silindi</h4>
+                                            <p class="text-muted mx-4 mb-0">Seçilen sözleşme başarıyla silindi.</p>
+                                          </div>
+                                        </div>`,
+                                            showCancelButton: true,
+                                            showConfirmButton: false,
+                                            customClass: {
+                                                cancelButton: 'btn btn-primary w-xs mb-1'
+                                            },
+                                            cancelButtonText: 'Geri Dön',
+                                            buttonsStyling: false,
+                                            showCloseButton: true
+                                        }).then(() => window.location.reload());
+                                    } else {
+                                        Swal.fire({
+                                            html: `
+                                        <div class="mt-3">
+                                          <lord-icon
                                             src="https://cdn.lordicon.com/tdrtiskw.json"
                                             trigger="loop"
                                             colors="primary:#f06548,secondary:#f7b84b"
                                             style="width:120px;height:120px">
-                                        </lord-icon>
-                                        <div class="mt-4 pt-2 fs-15">
-                                            <h4>Oops...! Something went Wrong !</h4>
-                                            <p class="text-muted mx-4 mb-0">Deal bilgileri getirilemedi!</p>
-                                        </div>
+                                          </lord-icon>
+                                          <div class="mt-4 pt-2 fs-15">
+                                            <h4>Silme Hatası</h4>
+                                            <p class="text-muted mx-4 mb-0">Sözleşme silinemedi!</p>
+                                          </div>
+                                        </div>`,
+                                            showCancelButton: true,
+                                            showConfirmButton: false,
+                                            customClass: {
+                                                cancelButton: 'btn btn-primary w-xs mb-1'
+                                            },
+                                            cancelButtonText: 'Geri Dön',
+                                            buttonsStyling: false,
+                                            showCloseButton: true
+                                        });
+                                    }
+                                })
+                                .catch(error => {
+                                    console.error('Error:', error);
+                                    Swal.fire({
+                                        html: `
+                                    <div class="mt-3">
+                                      <lord-icon
+                                        src="https://cdn.lordicon.com/tdrtiskw.json"
+                                        trigger="loop"
+                                        colors="primary:#f06548,secondary:#f7b84b"
+                                        style="width:120px;height:120px">
+                                      </lord-icon>
+                                      <div class="mt-4 pt-2 fs-15">
+                                        <h4>Bağlantı Hatası</h4>
+                                        <p class="text-muted mx-4 mb-0">Bir hata oluştu!</p>
+                                      </div>
                                     </div>`,
+                                        showCancelButton: true,
+                                        showConfirmButton: false,
+                                        customClass: {
+                                            cancelButton: 'btn btn-primary w-xs mb-1'
+                                        },
+                                        cancelButtonText: 'Geri Dön',
+                                        buttonsStyling: false,
+                                        showCloseButton: true
+                                    });
+                                });
+                        }
+                    });
+                }
+
+                // Edit form submit handler
+                document.getElementById('edit-deals-form').addEventListener('submit', function(e) {
+                    e.preventDefault();
+
+                    const formData = new FormData(this);
+                    const dealId = document.getElementById('editDealId').value;
+
+                    fetch(`/deals/${dealId}`, {
+                            method: 'POST',
+                            body: formData,
+                            headers: {
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute(
+                                    'content'),
+                                'Accept': 'application/json',
+                                'X-Requested-With': 'XMLHttpRequest'
+                            },
+                        })
+                        .then(response => response.text())
+                        .then(responseText => {
+                            const data = JSON.parse(responseText);
+
+                            if (data.success) {
+                                // Modal'ı kapat
+                                const editModal = bootstrap.Modal.getInstance(document.getElementById('editDealModal'));
+                                editModal.hide();
+
+                                // Başarılı güncelleme SweetAlert'i
+                                Swal.fire({
+                                    html: '<div class="mt-3"><lord-icon src="https://cdn.lordicon.com/lupuorrc.json" trigger="loop" colors="primary:#25a0e2,secondary:#00bd9d" style="width:120px;height:120px"></lord-icon><div class="mt-4 pt-2 fs-15"><h4>Başarılı!</h4><p class="text-muted mx-4 mb-0">Deal başarıyla güncellendi</p></div></div>',
                                     showCancelButton: true,
                                     showConfirmButton: false,
                                     customClass: {
-                                        cancelButton: "btn btn-primary w-xs mb-1"
+                                        cancelButton: "btn btn-success w-xs mb-1"
                                     },
-                                    cancelButtonText: "Dismiss",
+                                    cancelButtonText: "Tamam",
+                                    buttonsStyling: false,
+                                    showCloseButton: true
+                                }).then(() => window.location.reload());
+                            } else {
+                                // Hata SweetAlert'i
+                                Swal.fire({
+                                    html: '<div class="mt-3"><lord-icon src="https://cdn.lordicon.com/tdrtiskw.json" trigger="loop" colors="primary:#f06548,secondary:#f7b84b" style="width:120px;height:120px"></lord-icon><div class="mt-4 pt-2 fs-15"><h4>Hata!</h4><p class="text-muted mx-4 mb-0">' +
+                                        (data.message || 'Deal güncellenirken bir sorun oluştu') +
+                                        '</p></div></div>',
+                                    showCancelButton: true,
+                                    showConfirmButton: false,
+                                    customClass: {
+                                        cancelButton: "btn btn-danger w-xs mb-1"
+                                    },
+                                    cancelButtonText: "Tamam",
                                     buttonsStyling: false,
                                     showCloseButton: true
                                 });
@@ -854,248 +1105,28 @@
                             console.error('Error:', error);
                             Swal.fire({
                                 html: `
-                                <div class="mt-3">
-                                    <lord-icon
-                                        src="https://cdn.lordicon.com/tdrtiskw.json"
-                                        trigger="loop"
-                                        colors="primary:#f06548,secondary:#f7b84b"
-                                        style="width:120px;height:120px">
-                                    </lord-icon>
-                                    <div class="mt-4 pt-2 fs-15">
-                                        <h4>Oops...! Something went Wrong !</h4>
-                                        <p class="text-muted mx-4 mb-0">Bir hata oluştu!</p>
-                                    </div>
-                                </div>`,
-                                showCancelButton: true,
-                                showConfirmButton: false,
-                                customClass: {
-                                    cancelButton: "btn btn-primary w-xs mb-1"
-                                },
-                                cancelButtonText: "Dismiss",
-                                buttonsStyling: false,
-                                showCloseButton: true
-                            });
-                        });
-                }
-
-                // Delete Deal fonksiyonu
-                function deleteDeal(dealId) {
-                    // 1️⃣ Önce onay sor
-                    Swal.fire({
-                        html: `
-                        <div class="mt-3">
-                            <lord-icon
-                                src="https://cdn.lordicon.com/gsqxdxog.json"
-                                trigger="loop"
-                                colors="primary:#f7b84b,secondary:#f06548"
-                                style="width:100px;height:100px">
-                            </lord-icon>
-                            <div class="mt-4 pt-2 fs-15 mx-5">
-                                <h4>{{ __('deals.delete_deal') }}</h4>
-                                <p class="text-muted mx-4 mb-0">{{ __('deals.delete_deal_info') }}</p>
-                            </div>
-                        </div>`,
-                        showCancelButton: true,
-                        customClass: {
-                            confirmButton: "btn btn-primary w-xs me-2 mb-1",
-                            cancelButton: "btn btn-danger w-xs mb-1",
-                        },
-                        cancelButtonText: "{{ __('deals.no') }}",
-                        confirmButtonText: "{{ __('deals.yes') }}",
-                        buttonsStyling: false,
-                        showCloseButton: true
-                    }).then((result) => {
-                        if (!result.isConfirmed) return;
-                        
-                        // 2️⃣ Onay verildiyse silme isteğini yolla
-                        const destroyUrlTemplate = "{{ route('deals.destroy', ':id') }}";
-                        fetch(destroyUrlTemplate.replace(':id', dealId), {
-                                method: 'DELETE',
-                                headers: {
-                                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                                    'Accept': 'application/json'
-                                }
-                            })
-                            .then(async response => {
-                                const data = await response.json();
-                                if (response.ok) {
-                                    // 3️⃣ Başarılıysa başarı uyarısı göster ve yenile
-                                    Swal.fire({
-                                        html: `
-                                        <div class="mt-3">
-                                            <lord-icon
-                                                src="https://cdn.lordicon.com/lupuorrc.json"
-                                                trigger="loop"
-                                                colors="primary:#0ab39c,secondary:#405189"
-                                                style="width:120px;height:120px">
-                                            </lord-icon>
-                                            <div class="mt-4 pt-2 fs-15">
-                                                <h4>{{ __('deals.deal_deleted') }}</h4>
-                                                <p class="text-muted mx-4 mb-0">{{ __('deals.deal_deleted_info') }}</p>
-                                            </div>
-                                        </div>`,
-                                        showCancelButton: true,
-                                        showConfirmButton: false,
-                                        customClass: {
-                                            cancelButton: "btn btn-primary w-xs mb-1"
-                                        },
-                                        cancelButtonText: "{{ __('deals.back') }}",
-                                        buttonsStyling: false,
-                                        showCloseButton: true
-                                    }).then(() => window.location.reload());
-                                } else {
-                                    // 4️⃣ Hata mesajını göster
-                                    Swal.fire({
-                                        html: `
-                                        <div class="mt-3">
-                                            <lord-icon
-                                                src="https://cdn.lordicon.com/tdrtiskw.json"
-                                                trigger="loop"
-                                                colors="primary:#f06548,secondary:#f7b84b"
-                                                style="width:120px;height:120px">
-                                            </lord-icon>
-                                            <div class="mt-4 pt-2 fs-15">
-                                                <h4>Oops...! Something went Wrong !</h4>
-                                                <p class="text-muted mx-4 mb-0">${data.message || '{{ __('deals.error_saving_data') }}'}</p>
-                                            </div>
-                                        </div>`,
-                                        showCancelButton: true,
-                                        showConfirmButton: false,
-                                        customClass: {
-                                            cancelButton: "btn btn-primary w-xs mb-1"
-                                        },
-                                        cancelButtonText: "Dismiss",
-                                        buttonsStyling: false,
-                                        showCloseButton: true
-                                    });
-                                }
-                            })
-                            .catch(() => {
-                                // 5️⃣ Network hatası vs.
-                                Swal.fire({
-                                    html: `
-                                    <div class="mt-3">
-                                        <lord-icon
-                                            src="https://cdn.lordicon.com/tdrtiskw.json"
-                                            trigger="loop"
-                                            colors="primary:#f06548,secondary:#f7b84b"
-                                            style="width:120px;height:120px">
-                                        </lord-icon>
-                                        <div class="mt-4 pt-2 fs-15">
-                                            <h4>Oops...! Something went Wrong !</h4>
-                                            <p class="text-muted mx-4 mb-0">{{ __('deals.error_loading_data') }}</p>
-                                        </div>
-                                    </div>`,
-                                    showCancelButton: true,
-                                    showConfirmButton: false,
-                                    customClass: {
-                                        cancelButton: "btn btn-primary w-xs mb-1"
-                                    },
-                                    cancelButtonText: "Dismiss",
-                                    buttonsStyling: false,
-                                    showCloseButton: true
-                                });
-                            });
-                    });
-                }
-
-                // Edit form submit handler
-                document.getElementById('edit-deals-form').addEventListener('submit', function(e) {
-                    e.preventDefault();
-                    
-                    const formData = new FormData(this);
-                    const dealId = document.getElementById('editDealId').value;
-                    
-                    fetch(`/deals/${dealId}`, {
-                        method: 'POST',
-                        body: formData,
-                        headers: {
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                        },
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            // Modal'ı kapat
-                            const editModal = bootstrap.Modal.getInstance(document.getElementById('editDealModal'));
-                            editModal.hide();
-                            
-                            // Başarı mesajı
-                            Swal.fire({
-                                html: `
-                                <div class="mt-3">
-                                    <lord-icon
-                                        src="https://cdn.lordicon.com/lupuorrc.json"
-                                        trigger="loop"
-                                        colors="primary:#0ab39c,secondary:#405189"
-                                        style="width:120px;height:120px">
-                                    </lord-icon>
-                                    <div class="mt-4 pt-2 fs-15">
-                                        <h4>{{ __('deals.deal_updated') }}</h4>
-                                        <p class="text-muted mx-4 mb-0">{{ __('deals.deal_updated_info') }}</p>
-                                    </div>
-                                </div>`,
-                                showCancelButton: true,
-                                showConfirmButton: false,
-                                customClass: {
-                                    cancelButton: "btn btn-primary w-xs mb-1"
-                                },
-                                cancelButtonText: "{{ __('deals.back') }}",
-                                buttonsStyling: false,
-                                showCloseButton: true
-                            }).then(() => window.location.reload());
-                        } else {
-                            Swal.fire({
-                                html: `
-                                <div class="mt-3">
-                                    <lord-icon
-                                        src="https://cdn.lordicon.com/tdrtiskw.json"
-                                        trigger="loop"
-                                        colors="primary:#f06548,secondary:#f7b84b"
-                                        style="width:120px;height:120px">
-                                    </lord-icon>
-                                    <div class="mt-4 pt-2 fs-15">
-                                        <h4>Oops...! Something went Wrong !</h4>
-                                        <p class="text-muted mx-4 mb-0">Deal güncellenemedi!</p>
-                                    </div>
-                                </div>`,
-                                showCancelButton: true,
-                                showConfirmButton: false,
-                                customClass: {
-                                    cancelButton: "btn btn-primary w-xs mb-1"
-                                },
-                                cancelButtonText: "Dismiss",
-                                buttonsStyling: false,
-                                showCloseButton: true
-                            });
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        Swal.fire({
-                            html: `
                             <div class="mt-3">
-                                <lord-icon
-                                    src="https://cdn.lordicon.com/tdrtiskw.json"
-                                    trigger="loop"
-                                    colors="primary:#f06548,secondary:#f7b84b"
-                                    style="width:120px;height:120px">
-                                </lord-icon>
-                                <div class="mt-4 pt-2 fs-15">
-                                    <h4>Oops...! Something went Wrong !</h4>
-                                    <p class="text-muted mx-4 mb-0">Bir hata oluştu!</p>
-                                </div>
+                              <lord-icon
+                                src="https://cdn.lordicon.com/tdrtiskw.json"
+                                trigger="loop"
+                                colors="primary:#f06548,secondary:#f7b84b"
+                                style="width:120px;height:120px">
+                              </lord-icon>
+                              <div class="mt-4 pt-2 fs-15">
+                                <h4>Bağlantı Hatası</h4>
+                                <p class="text-muted mx-4 mb-0">Bir hata oluştu!</p>
+                              </div>
                             </div>`,
-                            showCancelButton: true,
-                            showConfirmButton: false,
-                            customClass: {
-                                cancelButton: "btn btn-primary w-xs mb-1"
-                            },
-                            cancelButtonText: "Dismiss",
-                            buttonsStyling: false,
-                            showCloseButton: true
+                                showCancelButton: true,
+                                showConfirmButton: false,
+                                customClass: {
+                                    cancelButton: 'btn btn-primary w-xs mb-1'
+                                },
+                                cancelButtonText: 'Geri Dön',
+                                buttonsStyling: false,
+                                showCloseButton: true
+                            });
                         });
-                    });
                 });
 
                 function onDragEnd(event, dealsTitleId) {
