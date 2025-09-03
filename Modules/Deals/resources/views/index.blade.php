@@ -155,15 +155,14 @@
 
             <div class="deals-container overflow-auto" style="height: 50rem;">
                 <div class="d-flex tasks-list gap-3" data-sortable-group="kanban" data-sortable-animation="150">
-                    @foreach ($dealsTitle as $dealsTitle)
+                    @foreach ($dealsTitle as $title)
                         <div class="col deal-column">
                             <div class="card">
-                                <a class="card-body {{ $dealsTitle->title_badge_class }}" data-bs-toggle="collapse"
-                                    href="#{{ Str::slug($dealsTitle->name, '_') }}" role="button" aria-expanded="true"
-                                    aria-controls="{{ Str::slug($dealsTitle->name, '_') }}"
-                                    >
+                                <a class="card-body {{ $title->title_badge_class }}" data-bs-toggle="collapse"
+                                    href="#{{ Str::slug($title->name, '_') }}" role="button" aria-expanded="true"
+                                    aria-controls="{{ Str::slug($title->name, '_') }}">
                                     <h5 class="card-title text-uppercase fw-semibold mb-1 fs-15">
-                                        {{ $dealsTitle->title }}
+                                        {{ $title->title }}
                                     </h5>
                                     <p class="text-muted mb-0">
                                         $0 <span class="fw-medium deal-count-badge">0 Deals</span>
@@ -171,23 +170,25 @@
                                 </a>
 
                                 <div class="card-body deals-list">
-                                    <div class="collapse show" id="{{ Str::slug($dealsTitle->name, '_') }}"
-                                        data-deals-title-id="{{ $dealsTitle->id }}">
+                                    <div class="collapse show" id="{{ Str::slug($title->name, '_') }}"
+                                        data-deals-title-id="{{ $title->id }}">
                                         @foreach ($deals as $deal)
-                                            @if ($deal->deals_title_id == $dealsTitle->id)
-                                                <div class="card mb-1 ribbon-box ribbon-fill ribbon-sm deal-item" data-deal-id="{{ $deal->id }}" data-position="{{ $loop->index }}">
+                                            @if ($deal->deals_title_id == $title->id)
+                                                <div class="card mb-1 ribbon-box ribbon-fill ribbon-sm deal-item"
+                                                    data-deal-id="{{ $deal->id }}"
+                                                    data-position="{{ $loop->index }}">
 
 
-                                                    @if ($dealsTitle->name == 'Proposal Sent')
+                                                    @if ($title->name == 'Proposal Sent')
                                                         <div class="ribbon ribbon-primary">
                                                             <i class="ri-briefcase-line"></i>
                                                         </div>
-                                                    {{-- Geçmiş tarihli deal'lar için kırmızı ribbon --}}
+                                                        {{-- Geçmiş tarihli deal'lar için kırmızı ribbon --}}
                                                     @elseif ($deal->due_date && $deal->due_date < now()->startOfDay())
                                                         <div class="ribbon ribbon-danger">
                                                             <i class="ri-alarm-warning-line"></i>
                                                         </div>
-                                                    {{-- 1 hafta kala olan deal'lar için turuncu ribbon --}}
+                                                        {{-- 1 hafta kala olan deal'lar için turuncu ribbon --}}
                                                     @elseif ($deal->due_date && $deal->due_date <= now()->addDays(7) && $deal->due_date >= now()->startOfDay())
                                                         <div class="ribbon ribbon-warning">
                                                             <i class="ri-time-line"></i>
@@ -216,14 +217,61 @@
                                                     <div class="collapse border-top border-top-dashed"
                                                         id="deal{{ $deal->id }}">
                                                         <div class="card-body">
-                                                            <h6 class="fs-14 mb-1">
-                                                                {{ $deal->company_name ?? 'N/A' }}
-                                                                @if ($deal->due_date)
-                                                                    <small class="badge bg-danger-subtle text-danger">
-                                                                        {{ \Carbon\Carbon::parse($deal->due_date)->diffForHumans() }}
-                                                                    </small>
-                                                                @endif
-                                                            </h6>
+                                                            <div class="d-flex justify-content-between align-items-start">
+                                                                <h6 class="fs-14 mb-1">
+                                                                    @if ($deal->owner_type == 'company')
+                                                                        @php
+                                                                            $company = collect($companies)->firstWhere(
+                                                                                'id',
+                                                                                $deal['owner_id'],
+                                                                            );
+                                                                        @endphp
+                                                                        {{ $company['name'] ?? 'N/A' }}
+                                                                    @else
+                                                                        @php
+                                                                            $contact = collect($contacts)->firstWhere(
+                                                                                'id',
+                                                                                $deal['owner_id'],
+                                                                            );
+                                                                        @endphp
+                                                                        {{ $contact['name'] ?? 'N/A' }}
+                                                                    @endif
+                                                                    @if ($deal->due_date)
+                                                                        <small class="badge bg-danger-subtle text-danger">
+                                                                            {{ \Carbon\Carbon::parse($deal->due_date)->diffForHumans() }}
+                                                                        </small>
+                                                                    @endif
+                                                                </h6>
+
+                                                                <div class="dropdown">
+                                                                    <button
+                                                                        class="btn btn-ghost-secondary btn-sm dropdown-toggle"
+                                                                        type="button" data-bs-toggle="dropdown"
+                                                                        aria-expanded="false">
+                                                                        <i class="ri-more-2-fill align-middle"></i>
+                                                                    </button>
+                                                                    <ul class="dropdown-menu dropdown-menu-end">
+                                                                        <li><a class="dropdown-item" href="#"
+                                                                                data-bs-toggle="modal" data-bs-target="#editDealModal"
+                                                                                onclick="editDeal({{ $deal->id }})"><i
+                                                                                    class="ri-pencil-fill align-bottom me-2 text-muted"></i>Düzenle</a>
+                                                                        </li>
+                                                                        <li><a class="dropdown-item" href="#"
+                                                                                data-bs-toggle="modal" data-bs-target="#addNoteModal"
+                                                                                onclick="addNote({{ $deal->id }})"><i
+                                                                                    class=" ri-sticky-note-fill align-bottom me-2 text-muted"></i>Not
+                                                                                Ekle</a></li>
+                                                                        <li>
+                                                                            <hr class="dropdown-divider">
+                                                                        </li>
+                                                                        <li><a class="dropdown-item text-danger"
+                                                                                href="#"
+                                                                                onclick="deleteDeal({{ $deal->id }})"><i
+                                                                                    class="ri-delete-bin-fill align-bottom me-2 text-danger"></i>Sil</a>
+                                                                        </li>
+                                                                    </ul>
+                                                                </div>
+                                                            </div>
                                                             <p class="text-muted">
                                                                 {{ $deal->description ?? 'No description available' }}
                                                             </p>
@@ -292,102 +340,136 @@
                             <div class="modal-content">
                                 <div class="modal-header bg-light p-3">
                                     <h5 class="modal-title" id="exampleModalLabel">
-                                        Create Deals
+                                        {{ __('deals.create_deals') }}
                                     </h5>
                                     <button type="button" class="btn-close" data-bs-dismiss="modal"
                                         aria-label="Close"></button>
                                 </div>
-                                <form class="needs-validation" novalidate id="deals-form" onsubmit="return false">
+                                <form class="needs-validation" novalidate id="deals-form" method="POST"
+                                    action="{{ route('deals.store') }}">
+                                    @csrf
                                     <div class="modal-body">
                                         <div class="mb-3">
-                                            <label for="deatType" class="form-label">Deals Type</label>
+                                            <label for="deatType" class="form-label">{{ __('deals.deal_type') }}</label>
                                             <select class="form-select" id="deatType" data-choices
-                                                aria-label="Default select example" required>
-                                                <option value="" data-custom-properties="[object Object]">
-                                                    Select deals type
-                                                </option>
-                                                <option value="Lead Disovered">Lead Disovered</option>
-                                                <option value="Contact Initiated">
-                                                    Contact Initiated
-                                                </option>
-                                                <option value="Need Identified">
-                                                    Need Identified
-                                                </option>
-                                                <option value="Meeting Arranged">
-                                                    Meeting Arranged
-                                                </option>
-                                                <option value="Offer Accepted">Offer Accepted</option>
+                                                aria-label="Default select example" required name="deals_title_id">
+                                                <option selected disabled value="">
+                                                    {{ __('deals.select_a_deal_type') }}</option>
+                                                @foreach ($dealsTitle as $dealTitle)
+                                                    @if ($dealTitle->default_title != false)
+                                                        <option value="{{ $dealTitle->id }}">{{ $dealTitle->title }}
+                                                        </option>
+                                                    @else
+                                                        <option value="{{ $dealTitle->id }}">{{ $dealTitle->title }}
+                                                        </option>
+                                                    @endif
+                                                @endforeach
                                             </select>
                                             <div class="invalid-feedback">
-                                                Please write an deals owner name.
+                                                {{ __('deals.please_write_an_deals_owner_name') }}
                                             </div>
                                         </div>
                                         <div class="mb-3">
-                                            <label for="dealTitle" class="form-label">Deal Title</label>
-                                            <input type="text" class="form-control" id="dealTitle"
-                                                placeholder="Enter title" required />
+                                            <label for="dealTitle"
+                                                class="form-label">{{ __('deals.deal_title') }}</label>
+                                            <input type="text" class="form-control" id="dealTitle" name="title"
+                                                placeholder="{{ __('deals.please_write_a_title') }}" required />
                                             <div class="invalid-feedback">
-                                                Please write a title.
+                                                {{ __('deals.please_write_a_title') }}
                                             </div>
                                         </div>
                                         <div class="mb-3">
-                                            <label for="dealValue" class="form-label">Value (USD)</label>
-                                            <input type="number" class="form-control" id="dealValue" step="0.01"
-                                                placeholder="Enter value" required />
+                                            <label for="dealValue" class="form-label">{{ __('deals.value') }} </label>
+                                            <div class="input-group">
+                                                <input type="number" class="form-control" id="dealValue" name="value"
+                                                    step="0.01" placeholder="{{ __('deals.please_write_a_value') }}"
+                                                    required />
+                                                <select class="form-select" id="dealCurrency" name="currency"
+                                                    style="max-width: 100px;" required>
+                                                    <option value="TRY">₺ TRY</option>
+                                                    <option value="USD">$ USD</option>
+                                                </select>
+                                            </div>
                                             <div class="invalid-feedback">
-                                                Please write a value.
+                                                {{ __('deals.please_write_a_value') }}
+                                            </div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="dealOwner"
+                                                class="form-label">{{ __('deals.deal_owner') }}</label>
+                                            <select class="form-select" id="dealOwner" name="owner_id" data-choices
+                                                data-choices-search-true aria-label="Default select example" required>
+                                                <option selected disabled value="">
+                                                    {{ __('deals.please_write_an_deals_owner_name') }}</option>
+                                                @foreach ($companies as $company)
+                                                    <option value="company:{{ $company['id'] }}"
+                                                        data-email="{{ $company['contact_email'] ?? '' }}" data-phone=""
+                                                        data-type="company">{{ $company['name'] }}</option>
+                                                @endforeach
+                                                @foreach ($contacts as $contact)
+                                                    <option value="contact:{{ $contact['id'] }}"
+                                                        data-email="{{ $contact['email'] ?? '' }}"
+                                                        data-phone="{{ $contact['phone'] ?? '' }}" data-type="contact">
+                                                        {{ $contact['name'] }}</option>
+                                                @endforeach
+                                            </select>
+                                            <div class="invalid-feedback">
+                                                {{ __('deals.please_write_an_deals_owner_name') }}
                                             </div>
                                         </div>
 
                                         <div class="mb-3">
-                                            <label for="dealOwner" class="form-label">Deals Owner</label>
-                                            <input type="text" class="form-control" id="dealOwner" required
-                                                placeholder="Enter owner name" />
-                                            <div class="invalid-feedback">
-                                                Please write an deals owner name.
-                                            </div>
-                                        </div>
-                                        <div class="mb-3">
-                                            <label for="dueDate" class="form-label">Due Date</label>
+                                            <label for="dueDate" class="form-label">{{ __('deals.due_date') }}</label>
                                             <input type="text" class="form-control" id="dueDate"
-                                                data-provider="flatpickr" placeholder="Select date" required />
+                                                data-provider="flatpickr"
+                                                placeholder="{{ __('deals.please_select_a_date') }}" required
+                                                name="due_date" format="Y-m-d" />
                                             <div class="invalid-feedback">
-                                                Please select a due date.
+                                                {{ __('deals.please_select_a_date') }}
                                             </div>
                                         </div>
 
+                                        @php
+
+                                        @endphp
+
                                         <div class="mb-3">
-                                            <label for="dealEmail" class="form-label">Email</label>
+                                            <label for="dealEmail" class="form-label">{{ __('deals.email') }}</label>
                                             <input type="email" class="form-control" id="dealEmail"
-                                                placeholder="Enter email" required />
+                                                placeholder="{{ __('deals.please_write_a_email') }}" required
+                                                name="email" />
                                             <div class="invalid-feedback">
-                                                Please write a email.
+                                                {{ __('deals.please_write_a_email') }}
                                             </div>
                                         </div>
 
                                         <div class="mb-3">
-                                            <label for="contactNumber" class="form-label">Contact</label>
+                                            <label for="contactNumber"
+                                                class="form-label">{{ __('deals.contact') }}</label>
                                             <input type="text" class="form-control" id="contactNumber"
-                                                placeholder="Enter contact number" required />
+                                                placeholder="{{ __('deals.please_enter_contact_number') }}" required
+                                                name="phone" />
                                             <div class="invalid-feedback">
-                                                Please add a contact.
+                                                {{ __('deals.please_enter_contact_number') }}
                                             </div>
                                         </div>
                                         <div class="mb-3">
-                                            <label for="contactDescription" class="form-label">Description</label>
-                                            <textarea class="form-control" id="contactDescription" rows="3" placeholder="Enter description" required></textarea>
+                                            <label for="contactDescription"
+                                                class="form-label">{{ __('deals.description') }}</label>
+                                            <textarea class="form-control" id="contactDescription" rows="3"
+                                                placeholder="{{ __('deals.please_enter_contact_description') }}" required name="description"></textarea>
                                             <div class="invalid-feedback">
-                                                Please add a description.
+                                                {{ __('deals.please_enter_contact_description') }}
                                             </div>
                                         </div>
                                     </div>
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-light" id="close-modal"
                                             data-bs-dismiss="modal">
-                                            Close
+                                            {{ __('deals.close') }}
                                         </button>
                                         <button type="submit" class="btn btn-primary">
-                                            <i class="ri-save-line align-bottom me-1"></i> Save
+                                            <i class="ri-save-line align-bottom me-1"></i> {{ __('deals.save') }}
                                         </button>
                                     </div>
                                 </form>
@@ -395,6 +477,143 @@
                         </div>
                     </div>
                     <!--end modal-->
+
+                    <!-- Edit Deal Modal -->
+                    <div class="modal fade" id="editDealModal" tabindex="-1" aria-labelledby="editDealModalLabel"
+                        aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                                <div class="modal-header bg-light p-3">
+                                    <h5 class="modal-title" id="editDealModalLabel">
+                                        {{ __('deals.edit_deal') }}
+                                    </h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
+                                </div>
+                                <form class="needs-validation" novalidate id="edit-deals-form" method="POST">
+                                    @method('PUT')
+                                    @csrf
+                                    <div class="modal-body">
+                                        <input type="hidden" id="editDealId" name="deal_id" />
+                                        <div class="mb-3">
+                                            <label for="editDeatType" class="form-label">{{ __('deals.deal_type') }}</label>
+                                            <select class="form-select" id="editDeatType" data-choices
+                                                aria-label="Default select example" required name="deals_title_id">
+                                                <option selected disabled value="">
+                                                    {{ __('deals.select_a_deal_type') }}</option>
+                                                @foreach ($dealsTitle as $dealTitle)
+                                                    <option value="{{ $dealTitle->id }}">{{ $dealTitle->title }}</option>
+                                                @endforeach
+                                            </select>
+                                            <div class="invalid-feedback">
+                                                {{ __('deals.please_write_an_deals_owner_name') }}
+                                            </div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="editDealTitle"
+                                                class="form-label">{{ __('deals.deal_title') }}</label>
+                                            <input type="text" class="form-control" id="editDealTitle" name="title"
+                                                placeholder="{{ __('deals.please_write_a_title') }}" required />
+                                            <div class="invalid-feedback">
+                                                {{ __('deals.please_write_a_title') }}
+                                            </div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="editDealValue" class="form-label">{{ __('deals.value') }} </label>
+                                            <div class="input-group">
+                                                <input type="number" class="form-control" id="editDealValue" name="value"
+                                                    step="0.01" placeholder="{{ __('deals.please_write_a_value') }}"
+                                                    required />
+                                                <select class="form-select" id="editDealCurrency" name="currency"
+                                                    style="max-width: 100px;" required>
+                                                    <option value="TRY">₺ TRY</option>
+                                                    <option value="USD">$ USD</option>
+                                                </select>
+                                            </div>
+                                            <div class="invalid-feedback">
+                                                {{ __('deals.please_write_a_value') }}
+                                            </div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="editDealOwner"
+                                                class="form-label">{{ __('deals.deal_owner') }}</label>
+                                            <select class="form-select" id="editDealOwner" name="owner_id" data-choices
+                                                data-choices-search-true aria-label="Default select example" required>
+                                                <option selected disabled value="">
+                                                    {{ __('deals.please_write_an_deals_owner_name') }}</option>
+                                                @foreach ($companies as $company)
+                                                    <option value="company:{{ $company['id'] }}"
+                                                        data-email="{{ $company['contact_email'] ?? '' }}" data-phone=""
+                                                        data-type="company">{{ $company['name'] }}</option>
+                                                @endforeach
+                                                @foreach ($contacts as $contact)
+                                                    <option value="contact:{{ $contact['id'] }}"
+                                                        data-email="{{ $contact['email'] ?? '' }}"
+                                                        data-phone="{{ $contact['phone'] ?? '' }}" data-type="contact">
+                                                        {{ $contact['name'] }}</option>
+                                                @endforeach
+                                            </select>
+                                            <div class="invalid-feedback">
+                                                {{ __('deals.please_write_an_deals_owner_name') }}
+                                            </div>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label for="editDueDate" class="form-label">{{ __('deals.due_date') }}</label>
+                                            <input type="text" class="form-control" id="editDueDate"
+                                                data-provider="flatpickr"
+                                                placeholder="{{ __('deals.please_select_a_date') }}" required
+                                                name="due_date" format="Y-m-d" />
+                                            <div class="invalid-feedback">
+                                                {{ __('deals.please_select_a_date') }}
+                                            </div>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label for="editDealEmail" class="form-label">{{ __('deals.email') }}</label>
+                                            <input type="email" class="form-control" id="editDealEmail"
+                                                placeholder="{{ __('deals.please_write_a_email') }}" required
+                                                name="email" />
+                                            <div class="invalid-feedback">
+                                                {{ __('deals.please_write_a_email') }}
+                                            </div>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label for="editContactNumber"
+                                                class="form-label">{{ __('deals.contact') }}</label>
+                                            <input type="text" class="form-control" id="editContactNumber"
+                                                placeholder="{{ __('deals.please_enter_contact_number') }}" required
+                                                name="phone" />
+                                            <div class="invalid-feedback">
+                                                {{ __('deals.please_enter_contact_number') }}
+                                            </div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="editContactDescription"
+                                                class="form-label">{{ __('deals.description') }}</label>
+                                            <textarea class="form-control" id="editContactDescription" rows="3"
+                                                placeholder="{{ __('deals.please_enter_contact_description') }}" required name="description"></textarea>
+                                            <div class="invalid-feedback">
+                                                {{ __('deals.please_enter_contact_description') }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-light" id="close-edit-modal"
+                                            data-bs-dismiss="modal">
+                                            {{ __('deals.close') }}
+                                        </button>
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="ri-save-line align-bottom me-1"></i> Güncelle
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <!--end edit modal-->
+
                 </div>
                 <!-- container-fluid -->
             </div>
@@ -481,7 +700,7 @@
                                 onEnd: function(evt) {
                                     removeNoDealImage();
                                     updateDealsCounters();
-                                    
+
                                     // onDragEnd fonksiyonunu çağır
                                     if (evt.item && evt.to) {
                                         var dealsTitleId = evt.to.getAttribute('data-deals-title-id');
@@ -528,12 +747,356 @@
                     });
                 }
 
+                // Email ve telefon otomatik doldurma fonksiyonu
+                function autoFillContactInfo(selectElement) {
+                    var emailInput = document.getElementById('dealEmail');
+                    var phoneInput = document.getElementById('contactNumber');
+                    var selectedOption = selectElement.options[selectElement.selectedIndex];
+
+                    if (selectedOption) {
+                        // Email doldur
+                        var email = selectedOption.dataset.email;
+                        if (emailInput && email) {
+                            emailInput.value = email;
+                            console.log('Email otomatik dolduruldu: ' + email);
+                        }
+
+                        // Telefon doldur (sadece contact'lar için)
+                        var phone = selectedOption.dataset.phone;
+                        if (phoneInput && phone) {
+                            phoneInput.value = phone;
+                            console.log('Telefon otomatik dolduruldu: ' + phone);
+                        }
+                    }
+                }
+
                 // Initialize on page load
                 document.addEventListener('DOMContentLoaded', function() {
                     initializeDealsKanban();
+
+                    // Deal owner select'ine change event listener ekle
+                    var dealOwnerSelect = document.getElementById('dealOwner');
+                    if (dealOwnerSelect) {
+                        dealOwnerSelect.addEventListener('change', function() {
+                            if (this.value) {
+                                autoFillContactInfo(this);
+                            }
+                        });
+                    }
                 });
 
+                // Edit Deal fonksiyonu
+                function editDeal(dealId) {
+                    // AJAX ile deal bilgilerini getir
+                    fetch(`/deals/${dealId}/edit`)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                const deal = data.deal;
+                                
+                                // Form field'larını doldur
+                                document.getElementById('editDealId').value = deal.id;
+                                document.getElementById('editDealTitle').value = deal.title || '';
+                                document.getElementById('editDealValue').value = deal.value || '';
+                                document.getElementById('editDealEmail').value = deal.email || '';
+                                document.getElementById('editContactNumber').value = deal.phone || '';
+                                document.getElementById('editContactDescription').value = deal.description || '';
+                                document.getElementById('editDueDate').value = deal.due_date || '';
+                                
+                                // Select field'ları set et
+                                if (deal.deals_title_id) {
+                                    document.getElementById('editDeatType').value = deal.deals_title_id;
+                                }
+                                
+                                if (deal.currency) {
+                                    document.getElementById('editDealCurrency').value = deal.currency;
+                                }
+                                
+                                // Owner bilgisini set et
+                                if (deal.owner_type && deal.owner_id) {
+                                    const ownerValue = `${deal.owner_type}:${deal.owner_id}`;
+                                    document.getElementById('editDealOwner').value = ownerValue;
+                                }
+                                
+                                // Form action'ını güncelle
+                                document.getElementById('edit-deals-form').action = `/deals/${deal.id}`;
+                                
+                                // Modal'ı aç
+                                const editModal = new bootstrap.Modal(document.getElementById('editDealModal'));
+                                editModal.show();
+                            } else {
+                                Swal.fire({
+                                    html: `
+                                    <div class="mt-3">
+                                        <lord-icon
+                                            src="https://cdn.lordicon.com/tdrtiskw.json"
+                                            trigger="loop"
+                                            colors="primary:#f06548,secondary:#f7b84b"
+                                            style="width:120px;height:120px">
+                                        </lord-icon>
+                                        <div class="mt-4 pt-2 fs-15">
+                                            <h4>Oops...! Something went Wrong !</h4>
+                                            <p class="text-muted mx-4 mb-0">Deal bilgileri getirilemedi!</p>
+                                        </div>
+                                    </div>`,
+                                    showCancelButton: true,
+                                    showConfirmButton: false,
+                                    customClass: {
+                                        cancelButton: "btn btn-primary w-xs mb-1"
+                                    },
+                                    cancelButtonText: "Dismiss",
+                                    buttonsStyling: false,
+                                    showCloseButton: true
+                                });
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            Swal.fire({
+                                html: `
+                                <div class="mt-3">
+                                    <lord-icon
+                                        src="https://cdn.lordicon.com/tdrtiskw.json"
+                                        trigger="loop"
+                                        colors="primary:#f06548,secondary:#f7b84b"
+                                        style="width:120px;height:120px">
+                                    </lord-icon>
+                                    <div class="mt-4 pt-2 fs-15">
+                                        <h4>Oops...! Something went Wrong !</h4>
+                                        <p class="text-muted mx-4 mb-0">Bir hata oluştu!</p>
+                                    </div>
+                                </div>`,
+                                showCancelButton: true,
+                                showConfirmButton: false,
+                                customClass: {
+                                    cancelButton: "btn btn-primary w-xs mb-1"
+                                },
+                                cancelButtonText: "Dismiss",
+                                buttonsStyling: false,
+                                showCloseButton: true
+                            });
+                        });
+                }
 
+                // Delete Deal fonksiyonu
+                function deleteDeal(dealId) {
+                    // 1️⃣ Önce onay sor
+                    Swal.fire({
+                        html: `
+                        <div class="mt-3">
+                            <lord-icon
+                                src="https://cdn.lordicon.com/gsqxdxog.json"
+                                trigger="loop"
+                                colors="primary:#f7b84b,secondary:#f06548"
+                                style="width:100px;height:100px">
+                            </lord-icon>
+                            <div class="mt-4 pt-2 fs-15 mx-5">
+                                <h4>{{ __('deals.delete_deal') }}</h4>
+                                <p class="text-muted mx-4 mb-0">{{ __('deals.delete_deal_info') }}</p>
+                            </div>
+                        </div>`,
+                        showCancelButton: true,
+                        customClass: {
+                            confirmButton: "btn btn-primary w-xs me-2 mb-1",
+                            cancelButton: "btn btn-danger w-xs mb-1",
+                        },
+                        cancelButtonText: "{{ __('deals.no') }}",
+                        confirmButtonText: "{{ __('deals.yes') }}",
+                        buttonsStyling: false,
+                        showCloseButton: true
+                    }).then((result) => {
+                        if (!result.isConfirmed) return;
+                        
+                        // 2️⃣ Onay verildiyse silme isteğini yolla
+                        const destroyUrlTemplate = "{{ route('deals.destroy', ':id') }}";
+                        fetch(destroyUrlTemplate.replace(':id', dealId), {
+                                method: 'DELETE',
+                                headers: {
+                                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                                    'Accept': 'application/json'
+                                }
+                            })
+                            .then(async response => {
+                                const data = await response.json();
+                                if (response.ok) {
+                                    // 3️⃣ Başarılıysa başarı uyarısı göster ve yenile
+                                    Swal.fire({
+                                        html: `
+                                        <div class="mt-3">
+                                            <lord-icon
+                                                src="https://cdn.lordicon.com/lupuorrc.json"
+                                                trigger="loop"
+                                                colors="primary:#0ab39c,secondary:#405189"
+                                                style="width:120px;height:120px">
+                                            </lord-icon>
+                                            <div class="mt-4 pt-2 fs-15">
+                                                <h4>{{ __('deals.deal_deleted') }}</h4>
+                                                <p class="text-muted mx-4 mb-0">{{ __('deals.deal_deleted_info') }}</p>
+                                            </div>
+                                        </div>`,
+                                        showCancelButton: true,
+                                        showConfirmButton: false,
+                                        customClass: {
+                                            cancelButton: "btn btn-primary w-xs mb-1"
+                                        },
+                                        cancelButtonText: "{{ __('deals.back') }}",
+                                        buttonsStyling: false,
+                                        showCloseButton: true
+                                    }).then(() => window.location.reload());
+                                } else {
+                                    // 4️⃣ Hata mesajını göster
+                                    Swal.fire({
+                                        html: `
+                                        <div class="mt-3">
+                                            <lord-icon
+                                                src="https://cdn.lordicon.com/tdrtiskw.json"
+                                                trigger="loop"
+                                                colors="primary:#f06548,secondary:#f7b84b"
+                                                style="width:120px;height:120px">
+                                            </lord-icon>
+                                            <div class="mt-4 pt-2 fs-15">
+                                                <h4>Oops...! Something went Wrong !</h4>
+                                                <p class="text-muted mx-4 mb-0">${data.message || '{{ __('deals.error_saving_data') }}'}</p>
+                                            </div>
+                                        </div>`,
+                                        showCancelButton: true,
+                                        showConfirmButton: false,
+                                        customClass: {
+                                            cancelButton: "btn btn-primary w-xs mb-1"
+                                        },
+                                        cancelButtonText: "Dismiss",
+                                        buttonsStyling: false,
+                                        showCloseButton: true
+                                    });
+                                }
+                            })
+                            .catch(() => {
+                                // 5️⃣ Network hatası vs.
+                                Swal.fire({
+                                    html: `
+                                    <div class="mt-3">
+                                        <lord-icon
+                                            src="https://cdn.lordicon.com/tdrtiskw.json"
+                                            trigger="loop"
+                                            colors="primary:#f06548,secondary:#f7b84b"
+                                            style="width:120px;height:120px">
+                                        </lord-icon>
+                                        <div class="mt-4 pt-2 fs-15">
+                                            <h4>Oops...! Something went Wrong !</h4>
+                                            <p class="text-muted mx-4 mb-0">{{ __('deals.error_loading_data') }}</p>
+                                        </div>
+                                    </div>`,
+                                    showCancelButton: true,
+                                    showConfirmButton: false,
+                                    customClass: {
+                                        cancelButton: "btn btn-primary w-xs mb-1"
+                                    },
+                                    cancelButtonText: "Dismiss",
+                                    buttonsStyling: false,
+                                    showCloseButton: true
+                                });
+                            });
+                    });
+                }
+
+                // Edit form submit handler
+                document.getElementById('edit-deals-form').addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    const formData = new FormData(this);
+                    const dealId = document.getElementById('editDealId').value;
+                    
+                    fetch(`/deals/${dealId}`, {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                        },
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Modal'ı kapat
+                            const editModal = bootstrap.Modal.getInstance(document.getElementById('editDealModal'));
+                            editModal.hide();
+                            
+                            // Başarı mesajı
+                            Swal.fire({
+                                html: `
+                                <div class="mt-3">
+                                    <lord-icon
+                                        src="https://cdn.lordicon.com/lupuorrc.json"
+                                        trigger="loop"
+                                        colors="primary:#0ab39c,secondary:#405189"
+                                        style="width:120px;height:120px">
+                                    </lord-icon>
+                                    <div class="mt-4 pt-2 fs-15">
+                                        <h4>{{ __('deals.deal_updated') }}</h4>
+                                        <p class="text-muted mx-4 mb-0">{{ __('deals.deal_updated_info') }}</p>
+                                    </div>
+                                </div>`,
+                                showCancelButton: true,
+                                showConfirmButton: false,
+                                customClass: {
+                                    cancelButton: "btn btn-primary w-xs mb-1"
+                                },
+                                cancelButtonText: "{{ __('deals.back') }}",
+                                buttonsStyling: false,
+                                showCloseButton: true
+                            }).then(() => window.location.reload());
+                        } else {
+                            Swal.fire({
+                                html: `
+                                <div class="mt-3">
+                                    <lord-icon
+                                        src="https://cdn.lordicon.com/tdrtiskw.json"
+                                        trigger="loop"
+                                        colors="primary:#f06548,secondary:#f7b84b"
+                                        style="width:120px;height:120px">
+                                    </lord-icon>
+                                    <div class="mt-4 pt-2 fs-15">
+                                        <h4>Oops...! Something went Wrong !</h4>
+                                        <p class="text-muted mx-4 mb-0">Deal güncellenemedi!</p>
+                                    </div>
+                                </div>`,
+                                showCancelButton: true,
+                                showConfirmButton: false,
+                                customClass: {
+                                    cancelButton: "btn btn-primary w-xs mb-1"
+                                },
+                                cancelButtonText: "Dismiss",
+                                buttonsStyling: false,
+                                showCloseButton: true
+                            });
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        Swal.fire({
+                            html: `
+                            <div class="mt-3">
+                                <lord-icon
+                                    src="https://cdn.lordicon.com/tdrtiskw.json"
+                                    trigger="loop"
+                                    colors="primary:#f06548,secondary:#f7b84b"
+                                    style="width:120px;height:120px">
+                                </lord-icon>
+                                <div class="mt-4 pt-2 fs-15">
+                                    <h4>Oops...! Something went Wrong !</h4>
+                                    <p class="text-muted mx-4 mb-0">Bir hata oluştu!</p>
+                                </div>
+                            </div>`,
+                            showCancelButton: true,
+                            showConfirmButton: false,
+                            customClass: {
+                                cancelButton: "btn btn-primary w-xs mb-1"
+                            },
+                            cancelButtonText: "Dismiss",
+                            buttonsStyling: false,
+                            showCloseButton: true
+                        });
+                    });
+                });
 
                 function onDragEnd(event, dealsTitleId) {
                     // SortableJS event objesi kullanarak deal bilgilerini al
@@ -551,63 +1114,63 @@
                         console.log("toColumn: ", toColumn)
 
 
-                        
 
-                                                  // AJAX isteği ile backend'e deal'ın yeni pozisyonunu gönder
-                          updateDealPosition(dealId, toColumn, position);
-                      }
-                  }
+
+                        // AJAX isteği ile backend'e deal'ın yeni pozisyonunu gönder
+                        updateDealPosition(dealId, toColumn, position);
+                    }
+                }
 
                 // Deal pozisyonunu backend'e güncelleyen fonksiyon
                 function updateDealPosition(dealId, newTitleId, newPosition) {
                     fetch('/deals/update-position', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                        },
-                        body: JSON.stringify({
-                            deal_id: dealId,
-                            deals_title_id: newTitleId,
-                            position: newPosition
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                            },
+                            body: JSON.stringify({
+                                deal_id: dealId,
+                                deals_title_id: newTitleId,
+                                position: newPosition
+                            })
                         })
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            // Başarı toast notification
-                            Swal.fire({
-                                toast: true,
-                                position: 'top-end',
-                                icon: 'success',
-                                title: 'Deal pozisyonu güncellendi!',
-                                showConfirmButton: false,
-                                timer: 3000,
-                                timerProgressBar: true
-                            });
-                        } else {
-                            // Hata alert'i
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                // Başarı toast notification
+                                Swal.fire({
+                                    toast: true,
+                                    position: 'top-end',
+                                    icon: 'success',
+                                    title: 'Deal pozisyonu güncellendi!',
+                                    showConfirmButton: false,
+                                    timer: 3000,
+                                    timerProgressBar: true
+                                });
+                            } else {
+                                // Hata alert'i
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Hata!',
+                                    text: data.message || 'Deal pozisyonu güncellenirken hata oluştu',
+                                    showConfirmButton: true
+                                });
+                                location.reload();
+                            }
+                        })
+                        .catch(error => {
+                            console.error('AJAX hatası:', error);
+                            // Network hatası alert'i
                             Swal.fire({
                                 icon: 'error',
-                                title: 'Hata!',
-                                text: data.message || 'Deal pozisyonu güncellenirken hata oluştu',
+                                title: 'Bağlantı Hatası!',
+                                text: 'Sunucuyla bağlantı kurulamadı. Sayfa yeniden yüklenecek.',
                                 showConfirmButton: true
+                            }).then(() => {
+                                location.reload();
                             });
-                            location.reload();
-                        }
-                    })
-                    .catch(error => {
-                        console.error('AJAX hatası:', error);
-                        // Network hatası alert'i
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Bağlantı Hatası!',
-                            text: 'Sunucuyla bağlantı kurulamadı. Sayfa yeniden yüklenecek.',
-                            showConfirmButton: true
-                        }).then(() => {
-                            location.reload();
                         });
-                    });
                 }
             </script>
         @endsection

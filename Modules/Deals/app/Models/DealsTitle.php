@@ -47,4 +47,19 @@ class DealsTitle extends Model
         };
     }
 
+    /**
+     * Get the translation key for this deals title
+     */
+    public function getTranslationKeyAttribute()
+    {
+        return match ($this->id) {
+            1 => 'deals.need_to_contact',
+            2 => 'deals.contact_initiated',
+            3 => 'deals.needs_identified',
+            4 => 'deals.meeting_arranged',
+            5 => 'deals.offer_accepted',
+            default => null
+        };
+    }
+
 }

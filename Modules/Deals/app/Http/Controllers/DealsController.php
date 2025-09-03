@@ -8,20 +8,25 @@ use Modules\Deals\Models\Deal;
 use Modules\Deals\Models\DealsTitle;
 use Illuminate\Support\Facades\Auth;
 use Exception;
+use App\Contracts\ContactServiceInterface;
+use App\Contracts\CompanyServiceInterface;
 
 class DealsController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(ContactServiceInterface $contactService, CompanyServiceInterface $companyService)
     {
+        $contacts = $contactService->getAllContacts();
+        // dd($contacts);
+        $companies = $companyService->getAllCompanies();
         $deals = Deal::orderBy('deals_title_id', 'asc')->orderBy('position', 'asc')->get();
         $dealsTitle = DealsTitle::all();
         // dd($dealsTitle);
         $defaultTitles = DealsTitle::where('default_title', true)->get();
         $userTitles = DealsTitle::where('default_title', false)->get();
-        return view('deals::index', compact('deals', 'dealsTitle', 'defaultTitles', 'userTitles'));
+        return view('deals::index', compact('deals', 'dealsTitle', 'defaultTitles', 'userTitles', 'contacts', 'companies'));
     }
 
     /**
@@ -37,29 +42,40 @@ class DealsController extends Controller
      */
     public function store(Request $request)
     {
+        // dd($request->all());
+        $owner_type = explode(':', $request->owner_id)[0];
+        $owner_id = (int) explode(':', $request->owner_id)[1];
+        // dd($owner_type,$owner_id);
+        try {
         $validated = $request->validate([
             'title' => 'required|string|max:255',
-            'value' => 'required|integer',
+            'value' => 'required|numeric',
+            'currency' => 'required|string|in:TRY,USD',
             'due_date' => 'nullable|date',
+            'email' => 'required|email',
+            'phone' => 'nullable|string',
             'description' => 'nullable|string',
-            'contact_id' => 'required|exists:contacts,id',
+            'owner_id' => 'required|string', // company:1 veya contact:2 formatı
             'deals_title_id' => 'required|exists:deals_titles,id'
         ]);
-
-        // En yüksek position'ı bul ve +1 ekle
         $maxPosition = Deal::where('deals_title_id', $validated['deals_title_id'])->max('position') ?? 0;
 
         $deal = Deal::create([
             'title' => $validated['title'],
             'value' => $validated['value'],
+            'currency' => $validated['currency'],
             'due_date' => $validated['due_date'],
             'description' => $validated['description'],
-            'contact_id' => $validated['contact_id'],
+            'owner_id' => $owner_id,
+            'owner_type' => $owner_type,
             'deals_title_id' => $validated['deals_title_id'],
             'position' => $maxPosition + 1,
         ]);
 
-        return redirect()->route('deals.index')->with('success', 'Deal başarıyla oluşturuldu');
+            return redirect()->route('deals.index')->with('success', 'Deal başarıyla oluşturuldu');
+        } catch (Exception $e) {
+            return redirect()->back()->with('error', 'Deal oluşturulamadı')->with('error_message', $e->getMessage());
+        }
     }
 
     /**

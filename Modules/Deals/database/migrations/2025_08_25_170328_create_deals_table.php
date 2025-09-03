@@ -15,9 +15,11 @@ return new class extends Migration
             $table->id();
             $table->string('title');
             $table->integer('value');
+            $table->enum('currency', ['TRY', 'USD']);
             $table->date('due_date')->nullable();
             $table->string('description')->nullable();
-            $table->foreignId('contact_id')->constrained('contacts');
+            $table->unsignedBigInteger('owner_id');
+            $table->enum('owner_type', ['contact', 'company']);
             $table->foreignId('deals_title_id')->constrained('deals_titles');
             $table->integer('position')->default(0);
             $table->timestamps();
@@ -31,4 +33,6 @@ return new class extends Migration
     {
         Schema::dropIfExists('deals');
     }
+    
+    
 };

@@ -17,24 +17,22 @@ class Deal extends Model
     protected $fillable = [
         'title',
         'value',
+        'currency',
         'due_date',
         'description',
-        'contact_id',
+        'owner_id',
+        'owner_type',
         'deals_title_id',
         'position'
     ];
 
-    public function contact()
+    /**
+     * Polymorphic relationship - owner can be Contact or Company
+     */
+    public function owner()
     {
-        if (!$this->contact_id) {
-            return null;
-        }
-        
-        $contactService = app(ContactServiceInterface::class);
-        return $contactService->getContactById($this->contact_id);
+        return $this->morphTo();
     }
-
-
 
     public function dealsTitle()
     {
