@@ -866,7 +866,8 @@
                 // Edit Deal fonksiyonu
                 function editDeal(dealId) {
                     // AJAX ile deal bilgilerini getir
-                    fetch(`/deals/${dealId}/edit`)
+                    var editUrl = "{{ route('deals.edit', ':id') }}".replace(':id', dealId);
+                    fetch(editUrl)
                         .then(response => response.json())
                         .then(data => {
                             if (data.success) {
@@ -955,7 +956,8 @@
                         }
                     }).then((result) => {
                         if (result.isConfirmed) {
-                            fetch(`/deals/${dealId}`, {
+                            var destroyUrl = "{{ route('deals.destroy', ':id') }}".replace(':id', dealId);
+                            fetch(destroyUrl, {
                                     method: 'DELETE',
                                     headers: {
                                         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute(
@@ -1053,7 +1055,8 @@
                     const formData = new FormData(this);
                     const dealId = document.getElementById('editDealId').value;
 
-                    fetch(`/deals/${dealId}`, {
+                    var updateUrl = "{{ route('deals.update', ':id') }}".replace(':id', dealId);
+                    fetch(updateUrl, {
                             method: 'POST',
                             body: formData,
                             headers: {
@@ -1154,7 +1157,8 @@
 
                 // Deal pozisyonunu backend'e güncelleyen fonksiyon
                 function updateDealPosition(dealId, newTitleId, newPosition) {
-                    fetch('/deals/update-position', {
+                    var updateUrl = "{{ route('deals.updatePosition') }}";
+                    fetch(updateUrl, {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json',
